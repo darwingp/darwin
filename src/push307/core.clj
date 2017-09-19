@@ -53,6 +53,8 @@
   [state stack item]
   (assoc state stack (cons item (stack state))))
 
+;; NB: this is an optimized implementation. The semantics are:
+;;     (reduce #(push-to-stack % stack %1) state items)
 (defn push-many-to-stack
   "Pushes each item in items in order of appearance to stack in state, returning the resulting state."
   [state stack items]
@@ -182,6 +184,7 @@
   until the exec stack is empty. Returns the state of the stacks after the
   program finishes executing."
   [program start-state]
+  ;; FIXME: This code will reverse program twice. Is that okay?
   (loop [st (push-many-to-stack start-state :exec (reverse program))] ;; push the program to the exec stack
     (if (empty-stack? st :exec)
       st
