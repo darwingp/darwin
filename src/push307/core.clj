@@ -51,26 +51,37 @@
 (defn push-to-stack
   "Pushes item onto stack in state, returning the resulting state."
   [state stack item]
-  :STUB
-  )
+  (assoc state stack (cons item (stack state))))
+
+(defn push-many-to-stack
+  "Pushes each item in items in order of appearance to stack in state, returning the resulting state."
+  [state stack items]
+  (assoc state stack (concat (reverse items) (stack state))))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
   [state stack]
-  :STUB
-  )
+  (assoc state stack (rest (stack state))))
+
+(defn pop-n-stack
+  "Removes an arbitrary number of elements from the top of the stack,
+   returning the resulting state"
+  [state stack n]
+  (loop [nrem n
+         prevstate state]
+    (if (= 0 nrem)
+      prevstate
+      (recur (- nrem 1) (pop-stack prevstate stack)))))
 
 (defn peek-stack
   "Returns top item on a stack. If stack is empty, returns :no-stack-item"
   [state stack]
-  :STUB
-  )
+  (first (stack state)))
 
 (defn empty-stack?
   "Returns true if the stack is empty in state."
   [state stack]
-  :STUB
-  )
+  (empty? (stack state)))
 
 (defn get-args-from-stacks
   "Takes a state and a list of stacks to take args from. If there are enough args
@@ -171,8 +182,10 @@
   until the exec stack is empty. Returns the state of the stacks after the
   program finishes executing."
   [program start-state]
-  :STUB
-  )
+  (loop [st (push-many-to-stack start-state :exec (reverse program))] ;; push the program to the exec stack
+    (if (empty-stack? st :exec)
+      st
+      (recur (interpret-one-step st)))))
 
 
 ;;;;;;;;;;
