@@ -48,6 +48,8 @@
    :string '()
    :input {}})
 
+;; NB: stacks are lists where the head of a stack is (first stack).
+
 (defn push-to-stack
   "Pushes item onto stack in state, returning the resulting state."
   [state stack item]
@@ -184,7 +186,7 @@
   until the exec stack is empty. Returns the state of the stacks after the
   program finishes executing."
   [program start-state]
-  ;; FIXME: This code will reverse program twice. Is that okay?
+  ;; NB: This code will reverse program twice. Is that okay?
   (loop [st (push-many-to-stack start-state :exec (reverse program))] ;; push the program to the exec stack
     (if (empty-stack? st :exec)
       st
