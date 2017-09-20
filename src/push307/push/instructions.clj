@@ -1,4 +1,4 @@
-(ns pushLib.instructions
+(ns push307.push.instructions
   (:gen-class))
 
 (defn in1
