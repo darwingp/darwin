@@ -48,7 +48,9 @@
    :string '()
    :input {}})
 
+;;
 ;; NB: stacks are lists where the head of a stack is (first stack).
+;;
 
 (defn push-to-stack
   "Pushes item onto stack in state, returning the resulting state."
@@ -87,6 +89,7 @@
   [state stack]
   (empty? (stack state)))
 
+;; WRITTEN BY Professor Helmuth
 (defn get-args-from-stacks
   "Takes a state and a list of stacks to take args from. If there are enough args
   on each of the desired stacks, returns a map of the form {:state :args}, where
