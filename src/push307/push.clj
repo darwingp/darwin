@@ -1,4 +1,6 @@
 (ns push307.push
+  (:require [push307.push.instructions :refer :all])
+  (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
 

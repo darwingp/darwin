@@ -1,4 +1,5 @@
 (ns push307.push.instructions
+  (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
 (defn in1
