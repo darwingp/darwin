@@ -1,13 +1,16 @@
 (ns push307.push.instructions
-  (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
 (defn in1
   "Pushes the input labeled :in1 on the inputs map onto the :exec stack.
   Can't use make-push-instruction, since :input isn't a stack, but a map."
   [state]
-  :STUB
+  (cons (:in1 (:input state)) (:exec state))
   )
+
+; (defn makeInstruction
+;   [stack]
+; )
 
 (defn integer_+
   "Adds the top two integers and leaves result on the integer stack.
@@ -25,7 +28,7 @@
 (defn integer_*
   "Multiplies the top two integers and leaves result on the integer stack."
   [state]
-  :STUB
+  (make-push-instruction state *' [:integer :integer] :integer))
   )
 
 (defn integer_%
@@ -33,5 +36,19 @@
   In other words, it acts like integer division most of the time, but if the
   denominator is 0, it returns the numerator, to avoid divide-by-zero errors."
   [state]
-  :STUB
+  (make-push-instruction state (fn [x y] (if (= 0 y) x (/ x y))) [:integer :integer] :integer))
+  )
+
+(defn integer_>
+  "Pushes true onto the boolean stack if the second
+  item is greater than the top item, else false"
+  [state]
+  (make-push-instruction state (fn [x y] (> y x)) [:integer :integer] :boolean))
+  )
+
+(defn integer_<
+  "Pushes true onto the boolean stack if the second
+  item is less than the top item, else false."
+  [state]
+  (make-push-instruction state (fn [x y] (< y x)) [:integer :integer] :boolean))
   )
