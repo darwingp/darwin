@@ -11,3 +11,10 @@ There are two ways to run the main PushGP function:
 1. Load `core.clj` into the interpreter, and then run `(-main)`.
 2. From the command line, run `lein run`.
 
+## TODO
+- [ ] Implement generative planning
+- [ ] Build unit and integration tests for push interpreter
+- [ ] Implement CI pipeline strategy
+- [ ] Implement push operations
+- [ ] Implement push interpreter
+- [ ] Work on GP system
