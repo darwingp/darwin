@@ -12,9 +12,11 @@ There are two ways to run the main PushGP function:
 2. From the command line, run `lein run`.
 
 ## TODO
-- [ ] Implement generative planning
-- [ ] Build unit and integration tests for push interpreter
+- [ ] Split push307.core into more logical namespaces
+- [ ] Split tests into more logical namespaces
+- [ ] Figure out how to get generative testing working
+- [ ] Write unit, integration, and validity tests for push interpreter
 - [ ] Implement CI pipeline strategy
 - [ ] Implement push operations
-- [ ] Implement push interpreter
+- [ ] Implement interpret-one-step
 - [ ] Work on GP system

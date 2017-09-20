@@ -189,8 +189,11 @@
   until the exec stack is empty. Returns the state of the stacks after the
   program finishes executing."
   [program start-state]
-  ;; NB: This code will reverse program twice. Is that okay?
-  (loop [st (push-many-to-stack start-state :exec (reverse program))] ;; push the program to the exec stack
+  ;; NB: This code will reverse program twice. Is that bad?
+  (loop [st (push-many-to-stack
+              start-state 
+              :exec
+              (reverse program))] ;; push the program to the exec stack
     (if (empty-stack? st :exec)
       st
       (recur (interpret-one-step st)))))
