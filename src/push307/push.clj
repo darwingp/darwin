@@ -28,17 +28,22 @@
    1
    ))
 
-;;;;;;;;;;
-;; Interpreter
-
 (defn interpret-one-step
   "Helper function for interpret-push-program.
   Takes a Push state and executes the next instruction on the exec stack,
   or if the next element is a literal, pushes it onto the correct stack.
   Returns the new Push state."
   [push-state]
-  :STUB
-  )
+  (if (empty-stack? push-state :exec)
+    push-state
+    (let [v (peek-stack push-state :exec)
+          popped (pop-stack push-state :exec)
+          stack (stack-for v)]
+      (cond
+        (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
+        (fn? v) (v popped) ;; v is a function
+        (symbol? v) ((eval v) popped) ;; v is a symbol pointing to a function
+        :else (print "unexpected value")))))
 
 (defn interpret-push-program
   "Runs the given program starting with the stacks in start-state. Continues

@@ -14,6 +14,18 @@
   ;; NB: stacks are lists where the head of a stack is (first stack).
   ;;
 
+  (defn stack-for
+    "Returns a keyword to the stack that x should reside on,
+     or nil if no stack is appropriate."
+    [x]
+    (cond
+      (integer? x) :integer
+      (float? x) :float
+      (string? x) :string
+      (= true x) :boolean ;; JACK: is this the name we decided upon?
+      (= false x) :boolean
+      :else nil))  
+
   (defn push-to-stack
     "Pushes item onto stack in state, returning the resulting state."
     [state stack item]
@@ -44,7 +56,9 @@
   (defn peek-stack
     "Returns top item on a stack. If stack is empty, returns :no-stack-item"
     [state stack]
-    (first (stack state)))
+    (if (empty-stack? state stack)
+      :no-stack-item
+      (first (stack state))))
 
   (defn empty-stack?
     "Returns true if the stack is empty in state."
