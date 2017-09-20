@@ -1,6 +1,9 @@
 (ns push307.core
   (:gen-class))
 
+(require 'push307.pushlib.pushinstructions)
+(refer 'push307.pushlib.pushinstructions)
+
 ;;;;;;;;;;
 ;; Examples
 
@@ -123,56 +126,6 @@
 
 
 ;;;;;;;;;;
-;; Instructions
-
-(defn in1
-  "Pushes the input labeled :in1 on the inputs map onto the :exec stack.
-  Can't use make-push-instruction, since :input isn't a stack, but a map."
-  [state]
-  :STUB
-  )
-
-(defn integer_+
-  "Adds the top two integers and leaves result on the integer stack.
-  If integer stack has fewer than two elements, noops."
-  [state]
-  (make-push-instruction state +' [:integer :integer] :integer))
-
-;;;; This is an example of what would be necessary to implement integer_+
-;;;; without the useful helper function make-push-instruction.
-;; (defn integer_+_without_helpers
-;;   [state]
-;;   (if (< (count (:integer state)) 2)
-;;     state
-;;     (let [arg1 (peek-stack state :integer)
-;;           arg2 (peek-stack (pop-stack state :integer) :integer)
-;;           popped-twice (pop-stack (pop-stack state :integer) :integer)]
-;;       (push-to-stack popped-twice :integer (+' arg1 arg2)))))
-
-
-(defn integer_-
-  "Subtracts the top two integers and leaves result on the integer stack.
-  Note: the second integer on the stack should be subtracted from the top integer."
-  [state]
-  :STUB
-  )
-
-(defn integer_*
-  "Multiplies the top two integers and leaves result on the integer stack."
-  [state]
-  :STUB
-  )
-
-(defn integer_%
-  "This instruction implements 'protected division'.
-  In other words, it acts like integer division most of the time, but if the
-  denominator is 0, it returns the numerator, to avoid divide-by-zero errors."
-  [state]
-  :STUB
-  )
-
-
-;;;;;;;;;;
 ;; Interpreter
 
 (defn interpret-one-step
@@ -210,7 +163,7 @@
   )
 
 (defn tournament-selection
-  "Selects an individual from the population using a tournament. Returned 
+  "Selects an individual from the population using a tournament. Returned
   individual will be a parent in the next generation. Can use a fixed
   tournament size."
   [population]
