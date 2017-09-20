@@ -5,8 +5,6 @@
   (:require [push307.pushgp :refer :all])
   (:gen-class))
 
-
-
 ;;;;;;;;;;
 ;; The main function. Uses some problem-specific functions.
 
