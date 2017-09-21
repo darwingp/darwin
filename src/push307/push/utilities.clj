@@ -84,6 +84,7 @@
                  (rest stacks)
                  (conj args (peek-stack state stack))))))))
 
+;; WRITTEN BY Professor Helmuth
 (defn make-push-instruction
   "A utility function for making Push instructions. Takes a state, the function
   to apply to the args, the stacks to take the args from, and the stack to return
