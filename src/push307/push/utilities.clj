@@ -22,7 +22,7 @@
     (integer? x) :integer
     (float? x) :float
     (string? x) :string
-    (= true x) :boolean ;; JACK: is this the name we decided upon?
+    (= true x) :boolean
     (= false x) :boolean
     :else nil))  
 
