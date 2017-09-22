@@ -33,6 +33,10 @@
 
 ;; NB: this is an optimized implementation. The semantics are:
 ;;     (reduce #(push-to-stack % stack %1) state items)
+;; FIXME: we need to decide on semantics for this. This governs how
+;;        lists are pushed onto the stack. What's the structure of items?
+;;        Is the top at position 0 or the last position? What is the top
+;;        of items?
 (defn push-many-to-stack
   "Pushes each item in items in order of appearance to stack in state, returning the resulting state."
   [state stack items]
@@ -94,6 +98,36 @@
   (let [args-pop-result (get-args-from-stacks state arg-stacks)]
     (if (= args-pop-result :not-enough-args)
       state
-      (let [result (apply function (reverse (:args args-pop-result)))
+      (let [result (apply function (:args args-pop-result)) ;; removed reverse here
             new-state (:state args-pop-result)]
-        (push-to-stack new-state return-stack result)))))
+        
+        (push-return-stack new-state return-stack result)))))
+
+(defn push-return-stack
+  "Pushes a/many return value(s) to the stack(s).
+   If the value is a list/vector, items are pushed using
+   push-many-to-stack. If the value is a map, return-stack
+   is ignored, and for each k/v pair: push v onto stack k.
+   Maps can contain lists of values to push.
+
+   Otherwise, the value is pushed onto the stack in accordance with
+   Professor Helmuth's original make-push-instruction implementation."
+  [state return-stack result]
+  (cond
+    (or (list? result) (vector? result)) (push-many-to-stack state return-stack result)
+    (map? result) (reduce-kv
+                    (fn [m k v] 
+                      (if (or (list? v) (vector? v))
+                        (push-many-to-stack m k v)
+                        (push-to-stack m k v)))
+                    state
+                    result) ;;; FIXME: this pushes individual items backwards!!!
+    :else (push-to-stack state return-stack result)))
+
+(defmacro definstr
+  "Macro for defining Push instructions. Position 0 is the top arg,
+   the last position is the deepest (in the stacks) arg."
+  [name arg-stacks outputstack operation]
+  (list 'def name (list 'fn '[state]
+                  (list 'make-push-instruction 'state operation 
+                  arg-stacks outputstack))))
