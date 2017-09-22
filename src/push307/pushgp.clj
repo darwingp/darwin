@@ -28,12 +28,28 @@
     )
 
   (defn crossover
-    "Crosses over two programs (note: not individuals) using uniform crossover.
-    Returns child program."
+      "Crosses over two programs (note: not individuals) using uniform crossover.
+      Returns child program."
+      ;alternation
+      [prog-a prog-b]
+      :STUB
+      )
+
+  (defn alternation-crossover
+    "Crosses over two programs (note: not individuals) using alternation crossover
+    takes alternation rate and alignment-deviation"
     ;alternation
-    [prog-a prog-b]
-    :STUB
-    )
+    [prog-a prog-b, alternation-rate, alignment-deviation]
+    (loop [index 0 child '() pa prog-a pb prog-b] 
+      (if (= index (count prog-a))
+        child
+        (do
+          (if (< (rand) alternation-rate)
+            ;TODO: add gaussian noise to index (to true recur index)
+            (recur (+ index 1) (cons (first pa) child) pb pa)
+             (recur (+ index 1) (cons (first pa) child) pa pb)
+        )
+      ))
 
   (defn uniform-addition
     "Randomly adds new instructions before every instruction (and at the end of
