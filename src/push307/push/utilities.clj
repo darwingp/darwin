@@ -31,12 +31,14 @@
   [state stack item]
   (assoc state stack (cons item (stack state))))
 
-;; NB: this is an optimized implementation. The semantics are:
-;;     (reduce #(push-to-stack % stack %1) state items)
 (defn push-many-to-stack
-  "Pushes each item in items in order of appearance to stack in state, returning the resulting state."
+  "Pushes multiple items to the stack at once. Vectors are copied in order
+   to on top of the stack and lists are copied in reverse to on top of the stack."
   [state stack items]
-  (assoc state stack (concat (reverse items) (stack state))))
+  (let [newstack (if (vector? items)
+                     (concat items (stack state)) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
+                     (concat (reverse items) (stack state)))] ;; concat vectors onto the top of the stack in order
+    (assoc state stack newstack)))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
@@ -94,6 +96,36 @@
   (let [args-pop-result (get-args-from-stacks state arg-stacks)]
     (if (= args-pop-result :not-enough-args)
       state
-      (let [result (apply function (reverse (:args args-pop-result)))
+      (let [result (apply function (:args args-pop-result)) ;; removed reverse here
             new-state (:state args-pop-result)]
-        (push-to-stack new-state return-stack result)))))
+        
+        (push-return-stack new-state return-stack result)))))
+
+(defn push-return-stack
+  "Pushes a/many return value(s) to the stack(s).
+   If the value is a list/vector, items are pushed using
+   push-many-to-stack. If the value is a map, return-stack
+   is ignored, and for each k/v pair: push v onto stack k.
+   Maps can contain lists of values to push.
+
+   Otherwise, the value is pushed onto the stack in accordance with
+   Professor Helmuth's original make-push-instruction implementation."
+  [state return-stack result]
+  (cond
+    (or (list? result) (vector? result)) (push-many-to-stack state return-stack result)
+    (map? result) (reduce-kv
+                    (fn [m k v] 
+                      (if (or (list? v) (vector? v))
+                        (push-many-to-stack m k v)
+                        (push-to-stack m k v)))
+                    state
+                    result) ;;; FIXME: this pushes individual items backwards!!!
+    :else (push-to-stack state return-stack result)))
+
+(defmacro definstr
+  "Macro for defining Push instructions. Position 0 is the top arg,
+   the last position is the deepest (in the stacks) arg."
+  [name arg-stacks outputstack operation]
+  (list 'def name (list 'fn '[state]
+                  (list 'make-push-instruction 'state operation 
+                  arg-stacks outputstack))))
