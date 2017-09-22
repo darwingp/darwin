@@ -13,7 +13,7 @@
           (stack state-after)
           '(0 1 2))))))
 
-(deftest test-push-many-to-stack-list
+(deftest test-push-many-to-stack
   (testing "pushing many to the stack using a list"
     (let [state { :integer '(2 3) }
           stack :integer
@@ -22,9 +22,7 @@
       (is
         (=
           (stack state-after)
-          '(0 1 2 3))))))
-
-(deftest test-push-many-to-stack-vector
+          '(0 1 2 3)))))
   (testing "pushing many to the stack using a vector"
     (let [state { :integer '(2 3) }
           stack :integer
@@ -73,3 +71,11 @@
         (= v-empty true))
       (is
         (= v-nonempty false)))))
+
+(deftest test-push-return-stack
+  (testing "returning normal return value to the stack"
+    (let [state { :integer '(2 3) }
+          new-state (utilities/push-return-stack state :integer 1)]
+      (is (= (:integer new-state) '(1 2 3)))))
+  (testing "returning multiple values to the stack" :STUB)
+  (testing "returning multiple values to different stacks" :STUB))
