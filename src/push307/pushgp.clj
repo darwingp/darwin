@@ -22,6 +22,7 @@
     "Selects an individual from the population using a tournament. Returned
     individual will be a parent in the next generation. Can use a fixed
     tournament size."
+    ;epsilon
     [population]
     :STUB
     )
@@ -29,6 +30,7 @@
   (defn crossover
     "Crosses over two programs (note: not individuals) using uniform crossover.
     Returns child program."
+    ;alternation
     [prog-a prog-b]
     :STUB
     )

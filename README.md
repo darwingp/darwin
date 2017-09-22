@@ -11,6 +11,16 @@ There are two ways to run the main PushGP function:
 
 ## TODO
 
+### Nate
+- [ ] Selection scheme from class
+- [ ] External Selection scheme (crossover)
+- [ ] Tests and details for push system
+### Jack
+- [ ] Implement alternation crossover
+- [ ] Implement additional selection scheme
+- [ ] Implement uniform addition and uniform deletion
+
+### Other
 - [ ] Split push307.core into more logical namespaces
 - [ ] Split tests into more logical namespaces
 - [ ] Figure out how to get generative testing working
@@ -19,3 +29,4 @@ There are two ways to run the main PushGP function:
 - [ ] Implement push operations
 - [ ] Implement interpret-one-step
 - [ ] Work on GP system
+- [ ] Trace system for maintaining diversity
