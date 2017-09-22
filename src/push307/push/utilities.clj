@@ -31,16 +31,14 @@
   [state stack item]
   (assoc state stack (cons item (stack state))))
 
-;; NB: this is an optimized implementation. The semantics are:
-;;     (reduce #(push-to-stack % stack %1) state items)
-;; FIXME: we need to decide on semantics for this. This governs how
-;;        lists are pushed onto the stack. What's the structure of items?
-;;        Is the top at position 0 or the last position? What is the top
-;;        of items?
 (defn push-many-to-stack
-  "Pushes each item in items in order of appearance to stack in state, returning the resulting state."
+  "Pushes multiple items to the stack at once. Vectors are copied in order
+   to on top of the stack and lists are copied in reverse to on top of the stack."
   [state stack items]
-  (assoc state stack (concat (reverse items) (stack state))))
+  (let [newstack (if (vector? items)
+                     (concat items (stack state)) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
+                     (concat (reverse items) (stack state)))] ;; concat vectors onto the top of the stack in order
+    (assoc state stack newstack)))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
