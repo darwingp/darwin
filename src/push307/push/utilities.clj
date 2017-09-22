@@ -86,21 +86,6 @@
                  (rest stacks)
                  (conj args (peek-stack state stack))))))))
 
-;; WRITTEN BY Professor Helmuth
-(defn make-push-instruction
-  "A utility function for making Push instructions. Takes a state, the function
-  to apply to the args, the stacks to take the args from, and the stack to return
-  the result to. Applies the function to the args (taken from the stacks) and pushes
-  the return value onto return-stack in the resulting state."
-  [state function arg-stacks return-stack]
-  (let [args-pop-result (get-args-from-stacks state arg-stacks)]
-    (if (= args-pop-result :not-enough-args)
-      state
-      (let [result (apply function (:args args-pop-result)) ;; removed reverse here
-            new-state (:state args-pop-result)]
-        
-        (push-return-stack new-state return-stack result)))))
-
 (defn push-return-stack
   "Pushes a/many return value(s) to the stack(s).
    If the value is a list/vector, items are pushed using
@@ -121,6 +106,21 @@
                     state
                     result) ;;; FIXME: this pushes individual items backwards!!!
     :else (push-to-stack state return-stack result)))
+
+;; WRITTEN BY Professor Helmuth
+(defn make-push-instruction
+  "A utility function for making Push instructions. Takes a state, the function
+  to apply to the args, the stacks to take the args from, and the stack to return
+  the result to. Applies the function to the args (taken from the stacks) and pushes
+  the return value onto return-stack in the resulting state."
+  [state function arg-stacks return-stack]
+  (let [args-pop-result (get-args-from-stacks state arg-stacks)]
+    (if (= args-pop-result :not-enough-args)
+      state
+      (let [result (apply function (:args args-pop-result)) ;; removed reverse here
+            new-state (:state args-pop-result)]
+        
+        (push-return-stack new-state return-stack result)))))
 
 (defmacro definstr
   "Macro for defining Push instructions. Position 0 is the top arg,
