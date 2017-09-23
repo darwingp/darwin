@@ -50,6 +50,9 @@
              (recur (+ index 1) (cons (first pa) child) pa pb)
         )
       ))
+;; These parens are to make it compile so that tests could be ran
+))
+;; They are deletable
 
   (defn uniform-addition
     "Randomly adds new instructions before every instruction (and at the end of

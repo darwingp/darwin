@@ -77,5 +77,13 @@
     (let [state { :integer '(2 3) }
           new-state (utilities/push-return-stack state :integer 1)]
       (is (= (:integer new-state) '(1 2 3)))))
-  (testing "returning multiple values to the stack" :STUB)
-  (testing "returning multiple values to different stacks" :STUB))
+  (testing "returning multiple values to the stack"
+    (let [state { :integer '(1 2) }
+          new-state (utilities/push-return-stack state :integer [1 2 3])]
+      (is (= (:integer new-state) '(1 2 3 1 2)))))
+  (testing "returning multiple values to different stacks"
+    (let [state { :integer '(2 3) :exec '(4 5) }
+          pushes { :integer '(1 0) :exec [0 1 2 3] }
+          new-state (utilities/push-return-stack state nil pushes)]
+      (is (= (:integer new-state) '(0 1 2 3))) ;; TODO: use the logic from push-many-to-stack
+      (is (= (:exec new-state) '(0 1 2 3 4 5))))))
