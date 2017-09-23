@@ -12,12 +12,12 @@ There are two ways to run the main PushGP function:
 ## TODO
 
 ### Nate
-- [ ] Selection scheme from class
-- [ ] External Selection scheme (crossover)
-- [ ] Tests and details for push system
+- [ ] Crossover operator from class
+- [ ] Epsilon-Lexicase Selection
+- [x] Tests and details for push system
 ### Jack
 - [ ] Implement alternation crossover
-- [ ] Implement additional selection scheme
+- [ ] Implement any selection operator
 - [ ] Implement uniform addition and uniform deletion
 
 ### Other
