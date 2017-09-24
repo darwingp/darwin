@@ -40,7 +40,9 @@
     ; CITE: https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
     ; DESC: The Box-Muller method for generating uniformly distributed random numbers 
     [alignment]   ;standard deviation (usually around 10)
-    
+    (let [u (rand) v (rand)]
+      (* (Math/sqrt (* -2 (Math/log u))) (Math/cos (* 2 Math/PI v)))
+    )
   )
 
   (defn alternation-crossover
