@@ -37,7 +37,7 @@
       (cond
         (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
         (fn? v) (v popped) ;; v is a function
-        (symbol? v) ((eval v) popped) ;; v is a symbol pointing to a function
+        (symbol? v) ((resolve v) popped) ;; v is a symbol pointing to a function
         :else (print "unexpected value")))))
 
 (defn interpret-push-program

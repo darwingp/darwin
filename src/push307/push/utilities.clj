@@ -15,7 +15,7 @@
     (string? x) :string
     (= true x) :boolean
     (= false x) :boolean
-    :else nil))  
+    :else nil))
 
 (defn push-to-stack
   "Pushes item onto stack in state, returning the resulting state."
