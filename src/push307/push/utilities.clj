@@ -119,7 +119,6 @@
       state
       (let [result (apply function (:args args-pop-result))
             new-state (:state args-pop-result)]
-        
         (push-return-stack new-state return-stack result)))))
 
 (defmacro definstr
