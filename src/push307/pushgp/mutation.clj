@@ -59,3 +59,14 @@
   [prog]
   (filter keep? prog)
   )
+
+(defn uniform-mutation
+  "probability of adding instruction that replaces parent instruction (constant
+  program length)"
+  [program]
+  (loop [final [] orig program]
+    (if (empty? orig) final
+        (let [element (if (add?) (first orig) (rand-instruction instructions))]
+          (recur (conj final element) (rest orig))
+
+))))
