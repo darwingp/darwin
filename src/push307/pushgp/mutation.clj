@@ -66,7 +66,7 @@
   [program]
   (loop [final [] orig program]
     (if (empty? orig) final
-        (let [element (if (add?) (first orig) (rand-instruction instructions))]
-          (recur (conj final element) (rest orig))
-
-))))
+          (recur 
+           ;add either prog element or random instruction
+           (conj final (if (add?) (first orig) (rand-instruction instructions))) 
+           (rest orig)))))
