@@ -19,7 +19,9 @@ There are two ways to run the main PushGP function:
 - [x] Implement alternation crossover
 - [ ] Implement crossover operators
 - [x] Implement uniform addition, uniform deletion, uniform mutation
-
+- [ ] Update standard noise deviation
+- [ ] Refactor uniform operators
+- [ ] Work on test
 ### Other
 - [ ] Split push307.core into more logical namespaces
 - [ ] Split tests into more logical namespaces
