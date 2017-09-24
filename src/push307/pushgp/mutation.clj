@@ -1,14 +1,19 @@
 (ns push307.pushgp.mutation
   (:gen-class))
 
-(def deletion-percentage 5)
+(def event-percentage 5)
 (def instructions '(:a :b :c :d)) ; placeholder
 
 (defn keep?
   "returns false n% of time"
-  []
+  [x]  ;used as filter, ignore input
   ;arbitrary value in range 0-100 (exclusive) has n% chance of returning false...
-  (<= deletion-percentage (rand-int 100)))
+  (<= event-percentage (rand-int 100)))
+
+(defn add?
+ "returns true n% of time"
+  []
+  (>= event-percentage (rand-int 100)))
 
 (defn add-to-end
   "takes in a program and instructions and has 5% chance of adding a rand instruction to end
@@ -30,10 +35,11 @@
   the program) with some probability. Returns child program."
   [program]
   ;add to list based on probablistic predicate
-  (add-to-end instructions      ;add element (5% chance) to end (beginning of list with recursion putting elements behind
-  (loop [final [] orig  program]    ;tail recursion on two lists (original and result
+  (add-to-end instructions      ;add element (n% chance) to end (beginning of list with recursion putting elements behind
+  (loop [final [] orig program]    ;tail recursion on two lists (original and result
     (if (empty? orig) final         ;return new list
-        (if (not keep?)                  ;will return true 5% of the time
+        (if (add?) 
+                      ;will return true n% of the time
           (recur
            (conj
             (conj final (first orig))  ;add first element of original to final list
