@@ -3,17 +3,6 @@
   (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
-; ; An example Push state
-; (def example-push-state
-;   {:exec '(integer_+ integer_-)
-;    :integer '(1 2 3 4 5 6 7)
-;    :string '("abc" "def")
-;    :input {:in1 4 :in2 6}})
-;
-; ; An example Push program
-; (def example-push-program
-;   '(3 5 integer_* "hello" 4 "world" integer_-))
-
 ;;;;;;;;;;
 ;; Instructions must all be either functions that take one Push
 ;; state and return another or constant literals.
@@ -27,6 +16,12 @@
    0
    1
    ))
+
+(def empty-push-state
+  {:exec '()   
+   :integer '()
+   :string '()
+   :input {}})
 
 (defn interpret-one-step
   "Helper function for interpret-push-program.

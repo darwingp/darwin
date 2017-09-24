@@ -1,15 +1,6 @@
 (ns push307.push.utilities
   (:gen-class))
 
-;;;;;;;;;;
-;; Utilities
-
-(def empty-push-state
-  {:exec '()   
-   :integer '()
-   :string '()
-   :input {}})
-
 ;;
 ;; NB: stacks are lists where the head of a stack is (first stack).
 ;;
@@ -75,7 +66,7 @@
   the stacks. If there aren't enough args on the stacks, returns :not-enough-args."
   [state stacks]
   (loop [state state
-         stacks stacks
+         stacks (reverse stacks)
          args '()]
     (if (empty? stacks)
       {:state state :args args}
@@ -122,8 +113,8 @@
         (push-return-stack new-state return-stack result)))))
 
 (defmacro definstr
-  "Macro for defining Push instructions. Position 0 is the top arg,
-   the last position is the deepest (in the stacks) arg."
+  "Macro for defining Push instructions. Position 0 is the deepest arg,
+   the last position is the top of the stack."
   [name arg-stacks outputstack operation]
   (list 'def name (list 'fn '[state]
                   (list 'make-push-instruction 'state operation 

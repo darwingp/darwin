@@ -87,3 +87,8 @@
           new-state (utilities/push-return-stack state nil pushes)]
       (is (= (:integer new-state) '(0 1 2 3))) ;; TODO: use the logic from push-many-to-stack
       (is (= (:exec new-state) '(0 1 2 3 4 5))))))
+
+(deftest test-get-args-from-stack
+  (testing "getting two different arguments off the stack"
+
+  ))
