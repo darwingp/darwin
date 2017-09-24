@@ -16,9 +16,9 @@ There are two ways to run the main PushGP function:
 - [ ] Epsilon-Lexicase Selection
 - [x] Tests and details for push system
 ### Jack
-- [ ] Implement alternation crossover
-- [ ] Implement any selection operator
-- [ ] Implement uniform addition and uniform deletion
+- [x] Implement alternation crossover
+- [ ] Implement crossover operators
+- [x] Implement uniform addition, uniform deletion, uniform mutation
 
 ### Other
 - [ ] Split push307.core into more logical namespaces
