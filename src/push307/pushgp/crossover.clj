@@ -1,12 +1,14 @@
 (ns push307.pushgp.crossover
   (:gen-class))
 
+(def get-gene (fn [x y] 
+                (if (= (rand-int 2) 1) x y)))
+
 (defn uniform-crossover
    "Crosses over two programs (note: not individuals) using uniform crossover.
    Returns child program."
-   ;alternation
    [prog-a prog-b]
-   :STUB
+   (map get-gene prog-a prog-b)
    )
 
 (defn add-noise
