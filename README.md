@@ -18,11 +18,13 @@ There are two ways to run the main PushGP function:
 - [x] Tests and details for push system
 ### Jack
 - [x] Implement alternation crossover
+- [ ] Dial in gaussian noise
 - [ ] Implement crossover operators
 - [x] Implement uniform addition, uniform deletion, uniform mutation
 - [ ] Update standard noise deviation
 - [ ] Refactor uniform operators
-- [ ] Work on test
+- [ ] Work on Tests
+- [ ] Monitoring and visualizations
 ### Other
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
