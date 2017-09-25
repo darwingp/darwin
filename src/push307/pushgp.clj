@@ -16,7 +16,9 @@
     "Creates and returns a new program. Takes a list of instructions and
     a maximum initial program size."
     [instructions max-initial-program-size]
-    :STUB
+    ;TODO: generators vs. loop
+    ;(loop [prog '() count max-initial-program-size ])
+    
     )
 
   (defn select-and-vary
@@ -43,6 +45,7 @@
     "
     [population generation]
     :STUB
+    ;TODO: attempt to implement graphical system for real-time graphing
     )
 
   (defn push-gp
