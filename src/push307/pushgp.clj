@@ -12,13 +12,19 @@
   ;    :errors [8 7 6 5 4 3 2 1 0 1]
   ;    :total-error 37})
 
+  ;Individual attributes:
+  ; :program
+  ; :errors
+  ; :total-error
+  ; :output-behavior (string of actions?)
+
   (defn make-random-push-program
     "Creates and returns a new program. Takes a list of instructions and
     a maximum initial program size."
     [instructions max-initial-program-size]
     ;TODO: generators vs. loop
     ;(loop [prog '() count max-initial-program-size ])
-    
+
     )
 
   (defn select-and-vary

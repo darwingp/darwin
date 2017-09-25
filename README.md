@@ -28,6 +28,7 @@ There are two ways to run the main PushGP function:
 - [ ] Random generation of push programs
 - [ ] Crossover, generation, mutation
 - [ ] Random number scheme for testing
+- [ ] Work on individual format
 ### Other
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
