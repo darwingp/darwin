@@ -1,30 +1,23 @@
 (ns push307.pushgp.testcases
+  (:require [push307.pushgp.utilities :refer :all])
   (:gen-class))
 
-;; HELPERS
+(defn target-function
+  "The target function: f(x) = x^3 + x + 3"
+  [x]
+  (+ (+ (reduce * (repeat 3 x)) x) 3))
 
-(defn concat-tests
-  "Turns a list of tests into a single test, returning the average fitness."
-  [tests]
-  :STUB
-)
+(defn delta-error
+  "Creates a function for measuring the difference between
+   a single integer return value of a program and a function f."
+  [f]
+  (fn [inputs ret-state] 
+    (let [ints (:integer ret-state)]
+      (if (empty? ints)
+        (reduce * (repeat 20 (bigint 1000))) ;; REALLY large error
+        (Math/abs (- (apply f inputs) (first ints)))))))
 
-;; What's a test case?
-;; 1. function taking a program and returning an error?
+(testcase tf-one [1] (delta-error target-function))
+(testcase tf-two [2] (delta-error target-function))
 
-;; RUNNING TESTS
-
-(defn fitness
-  "Determines the fitness of a program using a test"
-  [program test]
-  :STUB
-  )
-
-(defn avg-fitness
-  "Determines the average fitness of a program using multiple tests"
-  [program tests]
-  (/ (map #(fitness program %) tests) (count tests)))
-
-(def fitness-gt <)
-
-;; TESTS THEMSELVES?
+(def all [tf-one tf-two])

@@ -64,29 +64,3 @@
     :STUB
     )
 
-
-  ;;;;;;;;;;
-  ;; The functions below are specific to a particular problem.
-  ;; A different problem would require replacing these functions.
-  ;; Problem: f(x) = x^3 + x + 3
-
-  (defn target-function
-    "Target function: f(x) = x^3 + x + 3
-    Should literally compute this mathematical function."
-    [x]
-    :STUB
-    )
-
-  (defn regression-error-function
-    "Takes an individual and evaluates it on some test cases. For each test case,
-    runs program with the input set to :in1 in the :input map part of the Push state.
-    Then, the output is the integer on top of the integer stack in the Push state
-    returned by the interpreter. Computes each error by comparing output of
-    the program to the correct output.
-    Returns the individual with :errors set to the list of errors on each case,
-    and :total-error set to the sum of the errors.
-    Note: You must consider what to do if the program doesn't leave anything
-    on the integer stack."
-    [individual]
-    :STUB
-    )

@@ -5,6 +5,13 @@
 ;; NB: stacks are lists where the head of a stack is (first stack).
 ;;
 
+(defn set-input
+  "Sets an arbitrary input on a state."
+  [state n v]
+  (let [inpts (:input state)
+        input-key (keyword (str "in" n))]
+    (assoc state :input (assoc inpts input-key v))))
+
 (defn stack-for
   "Returns a keyword to the stack that x should reside on,
    or nil if no stack is appropriate."
