@@ -15,6 +15,11 @@
   []
   (>= event-percentage (rand-int 100)))
 
+(defn rand-instruction
+  "returns a random instruction"
+  [instructions]
+  (nth instructions (rand-int (count instructions)))) ;use nth with the length of the given instruction list
+
 (defn add-to-end
   "takes in a program and instructions and has 5% chance of adding a rand instruction to end
   (which will actually be the beginning because of the recursive method"
@@ -23,11 +28,6 @@
     (cons (rand-instruction instructions) prog)
     prog
   ))
-
-(defn rand-instruction
-  "returns a random instruction"
-  [instructions]
-  (nth instructions (rand-int (count instructions)))) ;use nth with the length of the given instruction list
 
 ;TODO: addition should be refactored
 (defn uniform-addition

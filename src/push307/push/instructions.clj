@@ -36,3 +36,14 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
+(def all
+  '(in1
+    in2
+    integer_+
+    integer_-
+    integer_*
+    integer_%
+    integer_>
+    integer_<
+    0
+    1))

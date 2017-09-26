@@ -1,4 +1,5 @@
 (ns push307.pushgp
+  (:require [push307.pushgp.utilities :refer :all])
   (:require [push307.pushgp.crossover :refer :all])
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
@@ -33,8 +34,16 @@
     to use probabilistically. Gives 50% chance to crossover,
     25% to uniform-addition, and 25% to uniform-deletion."
     [population]
-    :STUB
-    )
+    (let [v (rand-int 100)]
+      (new-individual
+        (cond
+          (< v 50) (uniform-crossover
+                     (:program (tournament-selection population 20))
+                     (:program (tournament-selection population 20)))
+          (< v 75) (uniform-addition
+                     (:program (tournament-selection population 20)))
+          :else    (uniform-deletion
+                     (:program (tournament-selection population 20)))))))
 
   (defn report
     "Reports information on the population each generation. Should look something
@@ -52,7 +61,45 @@
     [population generation]
     :STUB
     ;TODO: attempt to implement graphical system for real-time graphing
+    population ;; needs to return population for push-gp function to work.
     )
+
+  (defn find-or-stop
+    "Returns either the first element of lst for which p returns
+     true, or returns nil"
+    [p max-elems lst]
+    (loop [remaining max-elems
+           l lst]
+      (if (zero? remaining)
+        nil
+        (if (empty? lst)
+           nil
+           (if (p (first lst))
+             (first lst)
+             (recur (dec remaining) (rest lst)))))))
+
+  (defn make-generations
+    "Returns a lazily-evaluated, Aristotelian infinite list
+     representing all countable generations."
+    [population-size instrs max-initial-program-size]
+    (iterate
+      (fn [population]
+        (repeatedly
+         #(select-and-vary population)
+         population-size))
+      (repeatedly
+        #(new-individual
+           (make-random-push-program
+             instrs
+             max-initial-program-size))
+        population-size)))
+
+  (defn population-has-solution
+    "Returns true if population has a program with zero error.
+     False otherwise."
+    [population]
+    (println population)
+    (not (not-any? zero? (map :total-error population))))
 
   (defn push-gp
     "Main GP loop. Initializes the population, and then repeatedly
@@ -70,6 +117,15 @@
      - instructions (a list of instructions)
      - max-initial-program-size (max size of randomly generated programs)"
     [{:keys [population-size max-generations error-function instructions max-initial-program-size]}]
-    :STUB
-    )
-
+    (if
+      (true?
+        (find-or-stop
+          population-has-solution
+          max-generations
+          (map-indexed #(report %2 %1) ; report returns the population it reports.
+            (make-generations
+              population-size
+              instructions
+              max-initial-program-size))))
+      :SUCCESS
+      nil))
