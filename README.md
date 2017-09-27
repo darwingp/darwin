@@ -12,9 +12,9 @@ There are two ways to run the main PushGP function:
 ## TODO
 
 ### Nate
-- [ ] Tournament Selection
-- [ ] Lexicase Selection
-- [ ] Epsilon-Lexicase Selection
+- [x] Tournament Selection
+- [x] Lexicase Selection
+- [x] Epsilon-Lexicase Selection
 - [x] Tests and details for push system
 ### Jack
 - [x] Implement alternation crossover
