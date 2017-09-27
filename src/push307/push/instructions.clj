@@ -36,6 +36,9 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
+;;;;;;;;;;
+;; Instructions must all be either functions that take one Push
+;; state and return another or constant literals.
 (def all
   '(in1
     in2

@@ -3,20 +3,6 @@
   (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
-;;;;;;;;;;
-;; Instructions must all be either functions that take one Push
-;; state and return another or constant literals.
-(def instructions
-  (list
-   'in1
-   'integer_+
-   'integer_-
-   'integer_*
-   'integer_%
-   0
-   1
-   ))
-
 (def empty-push-state
   {:exec '()   
    :integer '()
@@ -37,7 +23,7 @@
       (cond
         (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
         (fn? v) (v popped) ;; v is a function
-        (symbol? v) ((resolve v) popped) ;; v is a symbol pointing to a function
+        (symbol? v) ((ns-resolve 'push307.push.instructions v) popped) ;; v is a symbol pointing to a function
         :else (print "unexpected value")))))
 
 (defn interpret-push-program

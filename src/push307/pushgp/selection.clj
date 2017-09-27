@@ -33,10 +33,9 @@
   individual will be a parent in the next generation. Can use a fixed
   tournament size."
   [population number-to-select]
-  (let [subpop (map #(%)
-                    (repeat
-                      number-to-select
-                      (fn [] (random-choice population))))]
+  (let [subpop (repeatedly
+                 number-to-select
+                 #(random-choice population))]
     (best-overall-fitness subpop)))
 
 (defn -lexicase-selection

@@ -2,6 +2,8 @@
   (:require [push307.pushgp.utilities :refer :all])
   (:gen-class))
 
+;; Linear Regression Testcases
+
 (defn target-function
   "The target function: f(x) = x^3 + x + 3"
   [x]
@@ -19,5 +21,13 @@
 
 (testcase tf-one [1] (delta-error target-function))
 (testcase tf-two [2] (delta-error target-function))
+(testcase tf-500 [500] (delta-error target-function))
 
-(def all [tf-one tf-two])
+;;;;;;;;;;
+;; Testcases are functions that take a push program
+;; and return an error value. They are defined through
+;; the testcase macro.
+(def all
+  (list
+    tf-one
+    tf-two))

@@ -6,43 +6,41 @@
 ;; TESTS
 ;; Tests are functions which take a program and return an error.
 
+(defn mk-inputs
+  "takes a state and sets multiple inputs on it"
+  [inputs]
+  (apply
+    hash-map 
+    (flatten
+      (map-indexed
+        (fn [idx x] [(keyword (str "in" (inc idx))) x])
+        inputs))))
+
 (defn make-testcase
   "Tests are functions that take a program and return an error.
    This function takes inputs which are used to construct an initial
    Push state with in1 etc set in increasing order, eg [in1 in2 in3]."
   [inputs error-fn]
-  ;; TODO: use reduce!
-  (let [new-state (loop [st empty-push-state
-                         idx 1
-                         is inputs]
-                    (println (str "I: " idx))
-                    (if
-                      (empty? is)
-                      st
-                      (recur
-                        (set-input st idx (first inputs))
-                        (inc idx)
-                        (rest inputs))))]
+  (let [state (assoc empty-push-state :input (mk-inputs inputs))]
     (fn [program]
-      (error-fn inputs (interpret-push-program program new-state)))))
+      (error-fn inputs (interpret-push-program program state)))))
 
 (defmacro testcase
   "Defines a testcase."
   [name inputs error-fn]
   (list 'def name (list 'make-testcase inputs error-fn)))
 
-(defn run-tests [individual tests]
+(defn run-tests
   "Runs each of an individual's tests, Returning an individual with
    :errors set to the errors encountered running tests on the
    individual. Then sums that and sets it to :total-error."
-  (let [program (:program individual)
-        errors (map #(% program) tests)]
-    { :errors errors
-      :total-error (reduce +' errors)
-      :program program }))
+  [individual tests]
+  (let [errors (map #(% (:program individual)) tests)]
+    (assoc (assoc individual :errors errors) :total-error (reduce +' errors))))
 
-(defn new-individual [program]
+(defn new-individual
   "Creates a blank individual from a push program in list form."
+  [program]
   { :program program :errors '() :total-error 0 })
 
 (defn random-choice
