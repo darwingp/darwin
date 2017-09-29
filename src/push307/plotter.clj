@@ -57,6 +57,11 @@
     (reduce (line-from-points gr)  (state :points))
 ))
 
+(defn update-graph1
+  [pt] ;(gen pt)
+
+)
+
 (defn init-sub-window
   "create a new sub window in the jframe"
   [x y width height color]
