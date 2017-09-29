@@ -1,31 +1,41 @@
 (ns push307.plotter
   (:gen-class)
 )
+
+;Java import
 (import '(java.awt Color Dimension Graphics Point))
 (import '(javax.swing JPanel JFrame JLabel))
 
+;Java window components
 (def frame (JFrame. "GP Plotter"))
 (def panel (JPanel.))
 
 ;graphical setup
 (def frame-width 1000)
-(def frame-height 750)
+(def frame-height 700)
 (def window-buffer 10)
 (def sub-window-width  (- (/ frame-width 2) (* 2 window-buffer)))
 (def sub-window-height (- (/ frame-height 2) (* 2 window-buffer)))
+
+;colors
 (def window-color (Color. 66 66 66))
 (def background-color  (Color. 188 188 188))
 (def line-color (Color. 255 153 0))
 
-;specific window 00 pts
+;specific sub-window (0, 0) reference pts
 (def w1-zero (list window-buffer (+ window-buffer sub-window-height)))
+(def w2-zero (list (+ window-buffer sub-window-width) window-buffer))
+(def w3-zero (list window-buffer (+ (* 2 window-buffer) (* 2 sub-window-height))))
+(def w4-zero (list (+ (* 2 window-buffer) (* 2 sub-window-width)) (+ (* 2 window-buffer) (* 2 sub-window-height))))
 
-;statistical params
-(def generations 20)
+;generational params
+(def generations 100)
 (def gen-increment (/ sub-window-width generations))
 
+;set panel size
 (.setPreferredSize panel (Dimension. frame-width frame-height))
 
+;generate random test-pts for display
 (def test-pts
   (fn [length] 
     (loop [pts '() count length]
@@ -36,7 +46,7 @@
 
 (def stateExample {
     ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
-     :points-fit (test-pts generations)
+     :points-fit (cons '(0 100) (test-pts generations))
               
                    ; generation, value (value out of 100)
 })
@@ -100,6 +110,7 @@
   []
   (doto frame
     (.setSize frame-width frame-height)   ;set frame size from preset
+    (.setResizable false)
     (.add panel)
     (.pack)
     ;(.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE) ; (repl problem)
