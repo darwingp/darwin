@@ -1,6 +1,10 @@
 (ns push307.plotter
   (:gen-class)
 )
+; -----------------------------------
+; GP Plotting system using Java Swing
+; -- Creates 4 windows to graph to --
+; -----------------------------------
 
 ;Java import
 (import '(java.awt Color Dimension Graphics Point))
@@ -35,7 +39,7 @@
 ;set panel size
 (.setPreferredSize panel (Dimension. frame-width frame-height))
 
-;generate random test-pts for display
+;TESTING FUNC: generate random test-pts for display
 (def test-pts
   (fn [length] 
     (loop [pts '() count length]
@@ -44,6 +48,7 @@
 
 ))
 
+;TESTING MAP
 (def stateExample {
     ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
      :points-fit (cons '(0 100) (test-pts generations))
@@ -65,8 +70,15 @@
     p2 ;return for reduce
 ))
 
-
-
+;method for updating graph from main
+(defn add-pt
+  "takes pt, previous pt and norm-function format: (prev-pt pt)"
+  [pts norm]
+  ((line-from-points (.getGraphics panel)) (map (normalize-to-graph norm) pts))
+  ;returns pt for use in main (also for reduce when testing)
+)
+  
+;TESTING FUNC
 (defn update-points
   "reduce points to lines from given state"
   [state]
@@ -74,14 +86,15 @@
     (reduce (line-from-points gr)  (map (normalize-to-graph w1-zero) (state :points-fit)))
 ))
 
+
 (defn normalize-to-graph
+  "take point and map to graph based on zero pt"
   [zero-pt]
   (fn [input-pt] (list 
-                  (+ (first zero-pt) (* gen-increment (first input-pt)))
-                  (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
-                  )
+                    (+ (first zero-pt) (* gen-increment (first input-pt)))
+                    (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
+                 )
 ))
-
 
 (defn init-sub-window
   "create a new sub window in the jframe"
@@ -105,7 +118,7 @@
   (add-sub (+ (/ frame-width 2) window-buffer)  (+ (/ frame-height 2) window-buffer))
 )
 
-(defn init-plotter
+(defn init-window
   "get jpanel in jframe, setup prefs"
   []
   (doto frame
@@ -122,11 +135,12 @@
 (defn start-plotter
   "test pts added"
   [& args]
-  (init-plotter)       ;build up window
+  (init-window)       ;build up window
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows)  ;add sub-windows
 
   (update-points stateExample)   ;add test points
+  "done"
 
 )
