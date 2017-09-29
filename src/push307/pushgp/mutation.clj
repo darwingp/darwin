@@ -38,7 +38,7 @@
   (add-to-end instructions      ;add element (n% chance) to end (beginning of list with recursion putting elements behind
   (loop [final [] orig program]    ;tail recursion on two lists (original and result
     (if (empty? orig) final         ;return new list
-        (if (add?) 
+        (if (add?)
                       ;will return true n% of the time
           (recur
            (conj
@@ -66,7 +66,7 @@
   [program]
   (loop [final [] orig program]
     (if (empty? orig) final
-          (recur 
+          (recur
            ;add either prog element or random instruction
-           (conj final (if (add?) (first orig) (rand-instruction instructions))) 
+           (conj final (if (add?) (first orig) (rand-instruction instructions)))
            (rest orig)))))
