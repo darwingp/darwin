@@ -28,7 +28,7 @@
 
 (def get-random-push
   "returns a random instruction or random literal depending in percent likelihood of literal"
-  (fn [inst lit] 
+  (fn [inst lit]
     (if (< (rand) literal%)     ;random decision based on percent literals
       (nth lit (rand-int (count lit)))
       (nth inst (rand-int (count inst))))))
@@ -36,10 +36,9 @@
 (defn generate-random-program
   "Creates and returns a new program (note: not individual).
    Takes a list of instructions and a maximum initial program size."
-  [instructions literals max-initial-program-size] 
+  [instructions literals max-initial-program-size]
   ;create random program length within range n%-100% max-initial-program-size
   (let [progsize (Math/round (* max-initial-program-size (gen-rand-length)))]
   (loop [prog '() count progsize]
     (if (= count 0) prog
         (recur (cons (get-random-push instructions literals) prog) (- count 1))))))
-

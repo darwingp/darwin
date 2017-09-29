@@ -19,4 +19,3 @@
       (=
         (:boolean (push/interpret-push-program `(5 1 integer_>) push/empty-push-state))
         '(true)))))
-        
