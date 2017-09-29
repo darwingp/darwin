@@ -17,21 +17,28 @@
 (def background-color  (Color. 188 188 188))
 (def line-color (Color. 255 153 0))
 
+;specific window 00 pts
+(def w1-zero (list window-buffer (+ window-buffer sub-window-height)))
+
 ;statistical params
-(def generations 100)
+(def generations 20)
 (def gen-increment (/ sub-window-width generations))
 
 (.setPreferredSize panel (Dimension. frame-width frame-height))
 
+(def test-pts
+  (fn [length] 
+    (loop [pts '() count length]
+      (if (= count 0) pts
+          (recur (cons (list count (rand-int 100)) pts) (- count 1))))
+
+))
 
 (def stateExample {
-    :points '((1 15) (2 30) (3 50) (4 53) (5 20) (6 170) (7 200) (8 111)
-              (9 150) (10 200) (11 250) (12 234) (13 275) (14 300) (15 295) (16 320)
-              (17 330) (18 327) (19 335) (20 322) (21 332) (22 317) (23 325) (24 326)
-              (25 328) (26 334) (27 350) (28 356) (29 354) (30 357) (31 359) (32 360)
-              (33 352) (34 350) (35 358) (36 356) (37 360) (38 362) (39 365) (40 360)
-              )
-                   ; generation, value
+    ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
+     :points-fit (test-pts generations)
+              
+                   ; generation, value (value out of 100)
 })
 
 
@@ -41,9 +48,9 @@
   (fn [p1 p2]
     (.setColor gr line-color)
     (.drawLine gr
-               (* (first p1) gen-increment )
+               (first p1)
                (second p1)
-               (* (first p2) gen-increment)
+               (first p2)
                (second p2))
     p2 ;return for reduce
 ))
@@ -54,13 +61,17 @@
   "reduce points to lines from given state"
   [state]
   (let [gr (.getGraphics panel)]
-    (reduce (line-from-points gr)  (state :points))
+    (reduce (line-from-points gr)  (map (normalize-to-graph w1-zero) (state :points-fit)))
 ))
 
-(defn update-graph1
-  [pt] ;(gen pt)
+(defn normalize-to-graph
+  [zero-pt]
+  (fn [input-pt] (list 
+                  (+ (first zero-pt) (* gen-increment (first input-pt)))
+                  (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
+                  )
+))
 
-)
 
 (defn init-sub-window
   "create a new sub window in the jframe"
