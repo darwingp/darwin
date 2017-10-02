@@ -23,6 +23,9 @@
 (def sub-window-width (- frame-width (* 2 window-buffer)))
 (def line-rule-increment (int (/ sub-window-height horiz-lines)))
 
+(def legend-width (int (/ sub-window-width 8)))
+(def legend-height (int (/ sub-window-height 4)))
+
 ;colors
 (def window-color (Color. 10 53 63))
 (def background-color  (Color. 69 106 114))
@@ -75,14 +78,6 @@
     p2 ;return for reduce
 ))
 
-;method for updating graph from main
-(defn add-pt
-  "takes pt, previous pt and norm-function format: (prev-pt pt)"
-  [pts norm]
-  ((line-from-points (.getGraphics panel) line-color-1) (map (normalize-to-graph norm) pts))
-  ;returns pt for use in main (also for reduce when testing)
-)
-
 (defn normalize-to-graph
   "take point and map to graph based on zero pt"
   [zero-pt]
@@ -91,6 +86,15 @@
                     (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
                  )
 ))
+
+;method for updating graph from main
+(defn add-pt
+  "takes pt, previous pt and norm-function format: (prev-pt pt)"
+  [pts norm]
+  ((line-from-points (.getGraphics panel) line-color-1) (map (normalize-to-graph norm) pts))
+  ;returns pt for use in main (also for reduce when testing)
+)
+
   
 ;TESTING FUNC
 (defn update-points
@@ -120,7 +124,7 @@
   (list (first pt) (- (second pt) line-rule-increment )))
 
 (defn add-windows-lines
-  "create 4 subwindows based on buffer"
+  "create 4 subwindows based on buffer and horizontal reference lines"
   []
                                        
   (add-sub window-buffer window-buffer)
@@ -132,6 +136,39 @@
             (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))
         
 ))
+
+(defn add-label
+  "add a label and color field"
+  [text color x y]
+  (let [gr (.getGraphics panel)]
+    (.setColor gr color)
+    (.drawString gr text x y)
+)
+
+)
+
+(defn add-legend
+ "add color-coded legend"
+ [num-lines]
+ (let [
+       upper-left-x (- frame-width (* 2 window-buffer) legend-width)
+       upper-left-y (* 2 window-buffer)
+       gr  (.getGraphics panel)
+       ]
+   (.setColor gr background-color)
+   (.fillRect gr upper-left-x upper-left-y legend-width legend-height)
+   (loop [remaining-labels num-lines 
+          x (+ upper-left-x 10) 
+          y (+ upper-left-y 10) 
+          colors (list line-color-1 line-color-2 line-color-3 line-color-4)]
+     (if (= remaining-labels 0) "added legend labels"
+         (do
+           (add-label "test"  (first colors) x y)
+           (recur (- remaining-labels 1) x (+ y 30) (rest colors))
+          )
+   ))
+)
+)
 
 (defn init-window
   "get jpanel in jframe, setup prefs"
@@ -154,7 +191,7 @@
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows
-
+  (add-legend 4)
   (update-points stateExample)   ;add test points
   "done"
 
