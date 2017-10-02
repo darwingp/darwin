@@ -18,19 +18,23 @@
 (def frame-width 1000)
 (def frame-height 700)
 (def window-buffer 10)
-(def sub-window-width  (- (/ frame-width 2) (* 2 window-buffer)))
-(def sub-window-height (- (/ frame-height 2) (* 2 window-buffer)))
+(def horiz-lines 10)
+(def sub-window-height (- frame-height (* 2 window-buffer)))
+(def sub-window-width (- frame-width (* 2 window-buffer)))
+(def line-rule-increment (int (/ sub-window-height horiz-lines)))
 
 ;colors
-(def window-color (Color. 66 66 66))
-(def background-color  (Color. 188 188 188))
-(def line-color (Color. 255 153 0))
+(def window-color (Color. 10 53 63))
+(def background-color  (Color. 69 106 114))
+(def horiz-rule-color (Color. 57 88 94))
+(def line-color-1 (Color. 255 112 13))
+(def line-color-2 (Color. 255 170 0))
+(def line-color-3 (Color. 232 129 0))
+(def line-color-4 (Color. 232 62 0))
 
 ;specific sub-window (0, 0) reference pts
-(def w1-zero (list window-buffer (+ window-buffer sub-window-height)))
-(def w2-zero (list (+ window-buffer sub-window-width) window-buffer))
-(def w3-zero (list window-buffer (+ (* 2 window-buffer) (* 2 sub-window-height))))
-(def w4-zero (list (+ (* 2 window-buffer) (* 2 sub-window-width)) (+ (* 2 window-buffer) (* 2 sub-window-height))))
+(def w-zero (list window-buffer (+ window-buffer sub-window-height)))
+
 
 ;generational params
 (def generations 100)
@@ -52,6 +56,7 @@
 (def stateExample {
     ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
      :points-fit (cons '(0 100) (test-pts generations))
+     :points-other (cons '(0 100) (test-pts generations))
               
                    ; generation, value (value out of 100)
 })
@@ -59,9 +64,9 @@
 
 (defn line-from-points
   "lambda used with update-points reduce to create lines between points"
-  [gr]
+  [gr color]
   (fn [p1 p2]
-    (.setColor gr line-color)
+    (.setColor gr color)
     (.drawLine gr
                (first p1)
                (second p1)
@@ -74,18 +79,9 @@
 (defn add-pt
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [pts norm]
-  ((line-from-points (.getGraphics panel)) (map (normalize-to-graph norm) pts))
+  ((line-from-points (.getGraphics panel) line-color-1) (map (normalize-to-graph norm) pts))
   ;returns pt for use in main (also for reduce when testing)
 )
-  
-;TESTING FUNC
-(defn update-points
-  "reduce points to lines from given state"
-  [state]
-  (let [gr (.getGraphics panel)]
-    (reduce (line-from-points gr)  (map (normalize-to-graph w1-zero) (state :points-fit)))
-))
-
 
 (defn normalize-to-graph
   "take point and map to graph based on zero pt"
@@ -95,6 +91,17 @@
                     (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
                  )
 ))
+  
+;TESTING FUNC
+(defn update-points
+  "reduce points to lines from given state"
+  [state]
+  (let [gr (.getGraphics panel)]
+    (reduce (line-from-points gr line-color-1)  (map (normalize-to-graph w-zero) (state :points-fit)))
+    (reduce (line-from-points gr line-color-2)  (map (normalize-to-graph w-zero) (state :points-other)))
+))
+
+
 
 (defn init-sub-window
   "create a new sub window in the jframe"
@@ -108,15 +115,23 @@
   "lambda to simplify generation of subwindows"
   (fn [x y] (init-sub-window x y sub-window-width sub-window-height window-color)))
 
-(defn add-windows
+(defn sub-increment
+  [pt]
+  (list (first pt) (- (second pt) line-rule-increment )))
+
+(defn add-windows-lines
   "create 4 subwindows based on buffer"
   []
-                                        ;TODO: make this code not suck
+                                       
   (add-sub window-buffer window-buffer)
-  (add-sub (+ (/ frame-width 2) window-buffer) window-buffer)
-  (add-sub window-buffer  (+ (/ frame-height 2) window-buffer))
-  (add-sub (+ (/ frame-width 2) window-buffer)  (+ (/ frame-height 2) window-buffer))
-)
+
+  (loop [remaining horiz-lines loc w-zero endloc (list (+ window-buffer sub-window-width) (+ sub-window-height window-buffer))]
+    (if (= remaining 0) "added horizontal rules"
+        (do 
+          ((line-from-points (.getGraphics panel) horiz-rule-color) loc endloc)
+            (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))
+        
+))
 
 (defn init-window
   "get jpanel in jframe, setup prefs"
@@ -138,7 +153,7 @@
   (init-window)       ;build up window
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
-  (add-windows)  ;add sub-windows
+  (add-windows-lines)  ;add sub-windows
 
   (update-points stateExample)   ;add test points
   "done"
