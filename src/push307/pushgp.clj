@@ -4,6 +4,7 @@
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
   (:require [push307.pushgp.generation :refer :all])
+  (:require [push307.plotter :refer :all])
   (:gen-class))
 
 ; ; An example individual in the population
@@ -53,6 +54,12 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [population generation]
   :STUB
   ;TODO: attempt to implement graphical system for real-time graphing
+  (let [current-state {}                ;do something to pop
+        ]
+    (add-pt current-state :points-fit line-color1)
+    (add-pt current-state :points-behavior line-color2)
+    (add-pt current-state :points-error line-color3)
+    (add-pt current-state :lowest-size line-color4))
   population ;; needs to return population for push-gp function to work.
   )
 

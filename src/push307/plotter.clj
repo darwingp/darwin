@@ -50,7 +50,7 @@
 
 ;TESTING FUNC: generate random test-pts for display
 (def test-pts
-  (fn [length] 
+  (fn [length]
     (loop [pts '() count length]
       (if (= count 0) pts
           (recur (cons (list count (rand-int 100)) pts) (- count 1))))
@@ -61,7 +61,8 @@
 (def stateExample {
     ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
      :points-fit (cons '(0 100) (test-pts generations))
-     :points-other (cons '(0 100) (test-pts generations))        
+     :points-other (cons '(0 100) (test-pts generations))
+     :generation 3
                    ; generation, value (value out of 100)
 })
 
@@ -82,22 +83,28 @@
 (defn normalize-to-graph
   "take point and map to graph based on zero pt"
   [zero-pt]
-  (fn [input-pt] 
-    (list 
+  (fn [input-pt]
+    (list
        (+ (first zero-pt) (* gen-increment (first input-pt)))
        (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
     )
 ))
 
 ;method for updating graph from main
+;example use: (add-pt current-state :points-fit line-color1)
 (defn add-pt
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
-  [pts norm]
-  ((line-from-points (.getGraphics panel) line-color-1) (map (normalize-to-graph norm) pts))
-  ;returns pt for use in main (also for reduce when testing)
+  [state data-type color]
+  (if (< (:generation state) 1) state    ;if generation is zero, no line between points possible
+    (let [gen (:generation state)
+        current-pt ((normalize-to-graph w-zero) (nth (data-type state) gen))
+        previous-pt ((normalize-to-graph w-zero) (nth (data-type state) (- gen 1)))
+        ])
+        ((line-from-points (.getGraphics panel) color) current-pt previous-pt))
+        state
 )
 
-  
+
 ;TESTING FUNC
 (defn update-points
   "reduce points to lines from given state"
@@ -129,17 +136,17 @@
 (defn add-windows-lines
   "create 1 subwindow based on buffer and horizontal reference lines"
   []
-  ;add sub-window                                
+  ;add sub-window
   (add-sub window-buffer window-buffer)
 
   ;add horizontal lines to window
-  (loop [remaining horiz-lines 
-         loc w-zero 
+  (loop [remaining horiz-lines
+         loc w-zero
          endloc (list (+ window-buffer sub-window-width) (+ sub-window-height window-buffer))]
     (if (= remaining 0) "added horizontal rules"
-        (do 
+        (do
           ((line-from-points (.getGraphics panel) horiz-rule-color) loc endloc)
-            (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))       
+            (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))
 ))
 
 (defn add-label
@@ -166,15 +173,15 @@
    (.fillRect gr upper-left-x upper-left-y legend-width legend-height)
 
    ;add labels
-   (loop [remaining-labels num-lines 
-          x (+ upper-left-x 10) 
+   (loop [remaining-labels num-lines
+          x (+ upper-left-x 10)
           y (+ upper-left-y 10 line-increment)
           colors color-list
           text labels
           ]
      (if (= remaining-labels 0) "added legend labels"
          (do
-           (add-label (first text)  (first colors) x y) 
+           (add-label (first text)  (first colors) x y)
            (recur (- remaining-labels 1) x (+ y line-increment) (rest colors) (rest text))
           )
    ))
@@ -196,7 +203,7 @@
 
 (defn start-plotter
   "test pts added"
-  [& args]
+  []
   (init-window)       ;build up window
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
