@@ -38,6 +38,48 @@
         :else    (uniform-deletion
                    (:program (tournament-selection population 20)))))))
 
+(defn best-fit
+  "takes population and determines best function fitness"
+  [population]
+  ;returns value 0-100
+  ;(reduce min ;list of fitnesses here)
+  100
+)
+
+(defn behavior-diversity
+  "measures behavioral diversity"
+  [population]
+  ;returns value 0-100
+  20
+)
+(defn average-error
+  "get average error of population"
+  [population]
+  ;returns value 0-100
+  40
+)
+
+(defn lowest-size
+  "return lowest program length of population"
+  [population]
+  ;returns value 0-100
+  50
+)
+
+
+(defn fill-state
+  "takes population and creates list of values"
+  [pop]
+  (let [state {}]
+    (assoc state :points-fit (best-fit pop))
+    (assoc state :points-behavior (behavior-diversity pop))
+    (assoc state :average-error (average-error pop))
+    (assoc state :lowest-size (lowest-size pop))
+    (assoc state :generation (:gen pop))
+    state
+))
+
+
 (defn report
   "Reports information on the population each generation. Should look something
   like the following (should contain all of this info; format however you think
@@ -54,12 +96,29 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [population generation]
   :STUB
   ;TODO: attempt to implement graphical system for real-time graphing
-  (let [current-state {}                ;do something to pop
+  (let [current-state (fill-state population)
         ]
+    ;state looks like this: {:points-fit 2 :points-behavior 2 :average-error 5 :lowest-size 6 :generation 3)
+    ;plot data points
     (add-pt current-state :points-fit line-color1)
     (add-pt current-state :points-behavior line-color2)
-    (add-pt current-state :points-error line-color3)
-    (add-pt current-state :lowest-size line-color4))
+    (add-pt current-state :average-error line-color3)
+    (add-pt current-state :lowest-size line-color4)
+    (println "------------------------------------")
+    (print   "        Report for Generation")
+    (println (:generation current-state))
+    (println "------------------------------------")
+    (print "Best program: ")
+    (println "prog here")
+    (print "Best size: ")
+    (println (:lowest-size current-state))
+    (print "Best total fitness: " )
+    (println (:points-fit current-state))
+    (print "Average population error: ")
+    (println (:average-error current-state))
+    (print "Best errors: ")
+    (println "Errors here"))
+  ;note: need some way of recording previous values
   population ;; needs to return population for push-gp function to work.
   )
 
