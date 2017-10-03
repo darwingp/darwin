@@ -23,8 +23,9 @@
 (def sub-window-width (- frame-width (* 2 window-buffer)))
 (def line-rule-increment (int (/ sub-window-height horiz-lines)))
 
-(def legend-width (int (/ sub-window-width 8)))
-(def legend-height (int (/ sub-window-height 4)))
+;base legend size on window (this will resize interior components
+(def legend-width (int (/ sub-window-width 6)))
+(def legend-height (int (/ sub-window-height 5)))
 
 ;colors
 (def window-color (Color. 10 53 63))
@@ -34,14 +35,15 @@
 (def line-color-2 (Color. 255 170 0))
 (def line-color-3 (Color. 232 129 0))
 (def line-color-4 (Color. 232 62 0))
+(def all-line-colors (list line-color-1 line-color-2 line-color-3 line-color-4))
 
 ;specific sub-window (0, 0) reference pts
 (def w-zero (list window-buffer (+ window-buffer sub-window-height)))
 
-
 ;generational params
 (def generations 100)
 (def gen-increment (/ sub-window-width generations))
+(def data-fields (list "Fitness" "Behavior diversity" "Minimum error" "Total pop. error"))
 
 ;set panel size
 (.setPreferredSize panel (Dimension. frame-width frame-height))
@@ -59,8 +61,7 @@
 (def stateExample {
     ;:points-fit '((0 10) (1 15) (2 30) (3 50) (4 53) (5 20) (6 60) (7 95)
      :points-fit (cons '(0 100) (test-pts generations))
-     :points-other (cons '(0 100) (test-pts generations))
-              
+     :points-other (cons '(0 100) (test-pts generations))        
                    ; generation, value (value out of 100)
 })
 
@@ -71,20 +72,21 @@
   (fn [p1 p2]
     (.setColor gr color)
     (.drawLine gr
-               (first p1)
-               (second p1)
-               (first p2)
-               (second p2))
+       (first p1)
+       (second p1)
+       (first p2)
+       (second p2))
     p2 ;return for reduce
 ))
 
 (defn normalize-to-graph
   "take point and map to graph based on zero pt"
   [zero-pt]
-  (fn [input-pt] (list 
-                    (+ (first zero-pt) (* gen-increment (first input-pt)))
-                    (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
-                 )
+  (fn [input-pt] 
+    (list 
+       (+ (first zero-pt) (* gen-increment (first input-pt)))
+       (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
+    )
 ))
 
 ;method for updating graph from main
@@ -106,7 +108,6 @@
 ))
 
 
-
 (defn init-sub-window
   "create a new sub window in the jframe"
   [x y width height color]
@@ -119,52 +120,62 @@
   "lambda to simplify generation of subwindows"
   (fn [x y] (init-sub-window x y sub-window-width sub-window-height window-color)))
 
+
 (defn sub-increment
+  "modify in x,y to draw horizontal lines"
   [pt]
   (list (first pt) (- (second pt) line-rule-increment )))
 
 (defn add-windows-lines
-  "create 4 subwindows based on buffer and horizontal reference lines"
+  "create 1 subwindow based on buffer and horizontal reference lines"
   []
-                                       
+  ;add sub-window                                
   (add-sub window-buffer window-buffer)
 
-  (loop [remaining horiz-lines loc w-zero endloc (list (+ window-buffer sub-window-width) (+ sub-window-height window-buffer))]
+  ;add horizontal lines to window
+  (loop [remaining horiz-lines 
+         loc w-zero 
+         endloc (list (+ window-buffer sub-window-width) (+ sub-window-height window-buffer))]
     (if (= remaining 0) "added horizontal rules"
         (do 
           ((line-from-points (.getGraphics panel) horiz-rule-color) loc endloc)
-            (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))
-        
+            (recur (- remaining 1) (sub-increment loc) (sub-increment endloc))))       
 ))
 
 (defn add-label
-  "add a label and color field"
+  "add a label and line"
   [text color x y]
-  (let [gr (.getGraphics panel)]
+  (let [gr (.getGraphics panel) line-length 30]
     (.setColor gr color)
-    (.drawString gr text x y)
-)
-
+    (.drawString gr text (+ x line-length 5) y)
+    (.drawLine gr x (- y 4) (+ x line-length) (- y 4))
+  )
 )
 
 (defn add-legend
  "add color-coded legend"
- [num-lines]
+ [num-lines labels color-list]
  (let [
        upper-left-x (- frame-width (* 2 window-buffer) legend-width)
        upper-left-y (* 2 window-buffer)
        gr  (.getGraphics panel)
+       line-increment (int (/ legend-height (+ num-lines 1)))
        ]
+   ;add window
    (.setColor gr background-color)
    (.fillRect gr upper-left-x upper-left-y legend-width legend-height)
+
+   ;add labels
    (loop [remaining-labels num-lines 
           x (+ upper-left-x 10) 
-          y (+ upper-left-y 10) 
-          colors (list line-color-1 line-color-2 line-color-3 line-color-4)]
+          y (+ upper-left-y 10 line-increment)
+          colors color-list
+          text labels
+          ]
      (if (= remaining-labels 0) "added legend labels"
          (do
-           (add-label "test"  (first colors) x y)
-           (recur (- remaining-labels 1) x (+ y 30) (rest colors))
+           (add-label (first text)  (first colors) x y) 
+           (recur (- remaining-labels 1) x (+ y line-increment) (rest colors) (rest text))
           )
    ))
 )
@@ -183,7 +194,6 @@
   )
 )
 
-
 (defn start-plotter
   "test pts added"
   [& args]
@@ -191,7 +201,7 @@
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows
-  (add-legend 4)
+  (add-legend (count all-line-colors) data-fields all-line-colors)
   (update-points stateExample)   ;add test points
   "done"
 
