@@ -88,7 +88,6 @@
 (defn add-pt
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [state data-type color]
-  (if (< (:generation state) 1) state    ;if generation is zero, no line between points possible
     (let [gen (:generation state)
           current-pt ((normalize-to-graph w-zero) (list gen (data-type state)))
           previous-pt ((normalize-to-graph w-zero) (list (:generation previous-values) (data-type previous-values)))
@@ -97,7 +96,6 @@
         (assoc previous-values data-type (data-type state))
         (assoc previous-values :generation gen)
         state
-  )
 ))
 
 (defn init-sub-window
