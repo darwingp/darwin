@@ -32,11 +32,10 @@
   [prog-a prog-b alternation-rate alignment-deviation]
 
   (loop [index 0 child '() pa prog-a pb prog-b]
-    (if (or (= index (count prog-a)) (= index (count prog-b)))
-      ;if a list is of different lengths, nil elements will be added and must be removed
+    (if (or (>= index (count prog-a)) (>= index (count prog-b)))
       (reverse child)
       (do
         (if (< (rand) alternation-rate)
-          (recur (+ index (add-noise 10)) (cons (nth pa index) child) pb pa)
-           (recur (+ index 1) (cons (nth pa index) child) pa pb)
+          (recur (+ index (add-noise 10)) (cons (nth pa (Math/abs index)) child) pb pa)
+           (recur (+ index 1) (cons (nth pa (Math/abs index)) child) pa pb)
     )))))
