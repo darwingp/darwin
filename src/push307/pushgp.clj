@@ -39,12 +39,13 @@
         :else    (uniform-deletion
                    (:program (tournament-selection population 20)))))))
 
+(def indiv-error 
+  (fn [x] (:total-error x)))
+
 (defn best-fit
   "takes population and determines best function fitness"
   [population]
-  ;returns value 0-100
-  ;(reduce min ;list of fitnesses here)
-  100
+  (reduce min (map indiv-error pop))
 )
 
 ;; Should behavior-diversity, average-error, and lowest-size really return
