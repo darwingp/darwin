@@ -4,6 +4,8 @@
 
 ;; Linear Regression Testcases
 
+(defn abs [n] (max n (- n)))
+
 (defn target-function
   "The target function: f(x) = x^3 + x + 3"
   [x]
@@ -17,7 +19,7 @@
     (let [ints (:integer ret-state)]
       (if (empty? ints)
         (reduce * (repeat 20 (bigint 1000))) ;; REALLY large error
-        (Math/abs (- (apply f inputs) (first ints)))))))
+        (abs (- (apply f inputs) (first ints)))))))
 
 (testcase tf-one [1] (delta-error target-function))
 (testcase tf-two [2] (delta-error target-function))

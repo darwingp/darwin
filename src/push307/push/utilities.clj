@@ -5,13 +5,6 @@
 ;; NB: stacks are lists where the head of a stack is (first stack).
 ;;
 
-(defn set-input
-  "Sets an arbitrary input on a state."
-  [state n v]
-  (let [inpts (:input state)
-        input-key (keyword (str "in" n))]
-    (assoc state :input (assoc inpts input-key v))))
-
 (defn stack-for
   "Returns a keyword to the stack that x should reside on,
    or nil if no stack is appropriate."
@@ -126,3 +119,26 @@
   (list 'def name (list 'fn '[state]
                   (list 'make-push-instruction 'state operation 
                   arg-stacks outputstack))))
+
+(defn mk-inputs
+  "Takes a state and sets multiple inputs (in1, in2, ...) on it
+   based on the values in the input list inputs."
+  [inputs]
+  (apply
+    hash-map 
+    (flatten
+      (map-indexed
+        (fn [idx x] [(keyword (str "in" (inc idx))) x])
+        inputs))))
+
+(defn make-input-instruction
+  "Returns an instruction to push input i to the exec stack."
+  [i]
+  #(push-return-stack % :exec ((keyword (str "in" i)) (:input %))))
+
+(defn set-input
+  "Sets an arbitrary input on a state."
+  [state n v]
+  (let [inpts (:input state)
+        input-key (keyword (str "in" n))]
+    (assoc state :input (assoc inpts input-key v))))

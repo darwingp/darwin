@@ -3,19 +3,6 @@
   (:require [push307.push :refer :all])
   (:gen-class))
 
-;; TESTS
-;; Tests are functions which take a program and return an error.
-
-(defn mk-inputs
-  "takes a state and sets multiple inputs on it"
-  [inputs]
-  (apply
-    hash-map 
-    (flatten
-      (map-indexed
-        (fn [idx x] [(keyword (str "in" (inc idx))) x])
-        inputs))))
-
 (defn make-testcase
   "Tests are functions that take a program and return an error.
    This function takes inputs which are used to construct an initial

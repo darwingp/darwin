@@ -2,8 +2,9 @@
   (:require [push307.push.utilities :refer :all])
   (:gen-class))
 
-;; Behavior implemented according to
-;; http://faculty.hampshire.edu/lspector/push3-description.html#Type
+;; CITE: http://faculty.hampshire.edu/lspector/push3-description.html#Type
+;; DESC:
+;; Behavior implemented according to document at URL ^
 ;; Push functions come after their arguments.
 ;; Given the following Push expression: (arg1 arg2 func)
 ;;   1. exec: (arg1 arg2 func)
@@ -14,16 +15,6 @@
 ;;      arg: arg2 arg1
 ;;   Finally in LISP land (definstr):
 ;;     (func arg1 arg2)
-
-(def in1
-  "Pushes the input labeled :in1 on the inputs map onto the :exec stack.
-  Can't use make-push-instruction, since :input isn't a stack, but a map."
-  (fn [state] (cons (:in1 (:input state)) (:exec state))))
-
-(def in2
-  "Pushes the input labeled :in1 on the inputs map onto the :exec stack.
-  Can't use make-push-instruction, since :input isn't a stack, but a map."
-  (fn [state] (cons (:in2 (:input state)) (:exec state))))
 
 (definstr integer_+ [:integer :integer] :integer +')
 (definstr integer_- [:integer :integer] :integer -')
@@ -36,17 +27,11 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-;;;;;;;;;;
-;; Instructions must all be either functions that take one Push
-;; state and return another or constant literals.
 (def all
-  '(in1
-    in2
-    integer_+
+  '(integer_+
     integer_-
     integer_*
     integer_%
     integer_>
-    integer_<
-    0
-    1))
+    integer_<))
+

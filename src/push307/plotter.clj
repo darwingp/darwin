@@ -1,6 +1,6 @@
 (ns push307.plotter
-  (:gen-class)
-)
+  (:gen-class))
+
 ; -----------------------------------
 ; GP Plotting system using Java Swing
 ; -- Creates 4 windows to graph to --
@@ -85,6 +85,13 @@
 ;method for updating graph from main
 ;example use: (add-pt current-state :points-fit line-color1)
 
+;; state looks like this:
+;; { :points-fit 2
+;;   :points-behavior 2
+;;   :average-error 5
+;;   :lowest-size 6
+;;   :generation 3)
+
 (defn add-pt
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [state data-type color]
@@ -103,8 +110,7 @@
   [x y width height color]
     (let [gr (.getGraphics panel)]  ;get graphics object
       (.setColor gr color)
-      (.fillRect gr x y width height)
-))
+      (.fillRect gr x y width height)))
 
 (def add-sub
   "lambda to simplify generation of subwindows"
@@ -188,6 +194,7 @@
   "initialize plotter window and build graphical elements"
   []
   (init-window)       ;build up window
+  ;; FIXME: is there a callback for doto?
   (Thread/sleep 1000)  ;needs a slight delay
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows

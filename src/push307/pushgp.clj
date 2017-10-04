@@ -1,10 +1,11 @@
 (ns push307.pushgp
+  (:require [push307.push.utilities :refer :all])
   (:require [push307.pushgp.utilities :refer :all])
   (:require [push307.pushgp.crossover :refer :all])
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
   (:require [push307.pushgp.generation :refer :all])
-  (:require [push307.plotter :refer :all])
+ ; (:require [push307.plotter :refer :all])
   (:gen-class))
 
 ; ; An example individual in the population
@@ -46,39 +47,38 @@
   100
 )
 
+;; Should behavior-diversity, average-error, and lowest-size really return
+;; a value from 0 to 100?
+
 (defn behavior-diversity
-  "measures behavioral diversity"
+  "Returns a measure of the behavioral diversity of a population of individuals."
   [population]
   ;returns value 0-100
   20
 )
+
 (defn average-error
-  "get average error of population"
+  "Returns the average error of population of individuals."
   [population]
   ;returns value 0-100
-  40
-)
+  (/ (reduce +' (map overall-error population)) (count population)))
 
 (defn lowest-size
-  "return lowest program length of population"
+  "Returns the length of the shortest program in a population of indivudals"
   [population]
   ;returns value 0-100
-  50
-)
-
+  (apply min
+    (map count
+      (map :program population))))
 
 (defn fill-state
   "takes population and creates list of values"
   [pop]
-  (let [state {}]
-    (assoc state :points-fit (best-fit pop))
-    (assoc state :points-behavior (behavior-diversity pop))
-    (assoc state :average-error (average-error pop))
-    (assoc state :lowest-size (lowest-size pop))
-    (assoc state :generation (:gen pop))
-    state
-))
-
+  { :points-fit (best-fit pop)
+    :points-behavior (behavior-diversity pop)
+    :average-error (average-error pop)
+    :lowest-size (lowest-size pop)
+    :generation (:gen pop) })
 
 (defn report
   "Reports information on the population each generation. Should look something
@@ -94,33 +94,30 @@ Best total error: 727
 Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   "
   [population generation]
-  :STUB
-  ;TODO: attempt to implement graphical system for real-time graphing
-  (let [current-state (fill-state population)
-        ]
-    ;state looks like this: {:points-fit 2 :points-behavior 2 :average-error 5 :lowest-size 6 :generation 3)
-    ;plot data points
-    (add-pt current-state :points-fit line-color1)
-    (add-pt current-state :points-behavior line-color2)
-    (add-pt current-state :average-error line-color3)
-    (add-pt current-state :lowest-size line-color4)
+  ; TODO: attempt to implement graphical system for real-time graphing
+  ; note: need some way of recording previous values
+ ;  (let [current-state (fill-state population)]
+    ; plot data points
+  ;  (add-pt current-state :points-fit line-color1)
+  ;  (add-pt current-state :points-behavior line-color2)
+  ;  (add-pt current-state :average-error line-color3)
+  ;  (add-pt current-state :lowest-size line-color4)
+
+    ; print to console
     (println "------------------------------------")
-    (print   "        Report for Generation")
-    (println (:generation current-state))
+    (println (str "        Report for Generation" generation))
+
     (println "------------------------------------")
     (print "Best program: ")
-    (println "prog here")
+    (println (best-overall-fitness population))
     (print "Best size: ")
-    (println (:lowest-size current-state))
+    (println (lowest-size population))
     (print "Best total fitness: " )
-    (println (:points-fit current-state))
+    (println (best-fit population))
     (print "Average population error: ")
-    (println (:average-error current-state))
+    (println (average-error population))
     (print "Best errors: ")
-    (println "Errors here"))
-  ;note: need some way of recording previous values
-  population ;; needs to return population for push-gp function to work.
-  )
+    (println "Errors here")) ; )
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
@@ -134,30 +131,35 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [p max-elems lst]
   (loop [remaining max-elems
          l lst]
-    (if (zero? remaining)
+    (if (or (zero? remaining) (empty? l))
       nil
-      (if (empty? lst)
-         nil
-         (let [v (first lst)]
-           (if (p v)
-             v
-             (recur (dec remaining) (rest lst))))))))
+      (let [v (first l)]
+        (if (p v)
+          v
+          (recur (dec remaining) (rest l)))))))
 
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
-  [population-size instrs max-initial-program-size]
+  [population-size instrs literals max-initial-program-size]
   (iterate
     (fn [population]
-      (take population-size
-        (repeatedly
-          #(select-and-vary population))))
-    (take population-size
       (repeatedly
-        #(new-individual
-          (generate-random-program
-            instrs
-            max-initial-program-size))))))
+        population-size
+        #(select-and-vary population)))
+    (repeatedly
+      population-size
+      #(new-individual
+        (generate-random-program
+          instrs
+          literals
+          max-initial-program-size)))))
+
+(defn foreach
+  "Applies a function to each element of a and its index. Returns the col."
+  [f col]
+  (map-indexed f col)
+  col)
 
 (defn push-gp
   "Main GP loop. Initializes the population, and then repeatedly
@@ -171,18 +173,21 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
    - max-generations
    - testcases (a list of test cases)
    - instructions (a list of instructions)
+   - literals (a list of literals)
+   - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)"
-  [{:keys [population-size max-generations testcases error-function instructions max-initial-program-size]}]
-  (if
-    (nil?
-      (find-or-stop
-        population-has-solution
-        max-generations
-        (map-indexed #(report %2 %1) ; report returns the population it reports.
-          (map #(map (fn [x] (run-tests x testcases)) %)
-            (make-generations
-              population-size
-              instructions
-              max-initial-program-size)))))
-    nil
-    :SUCCESS))
+  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
+  (let [all-inputs (map make-input-instruction (map inc (range number-inputs)))
+        all-instrs (concat all-inputs instructions)
+        target-gen (find-or-stop
+                      population-has-solution
+                      max-generations
+                      (foreach #(report %2 %1)
+                        (map #(map (fn [x] (run-tests x testcases)) %)
+                        (make-generations
+                          population-size
+                          all-instrs
+                          literals
+                          max-initial-program-size))))]
+    (if (nil? target-gen) nil :SUCCESS)))
+

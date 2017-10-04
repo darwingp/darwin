@@ -24,7 +24,7 @@
         (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
         (fn? v) (v popped) ;; v is a function
         (symbol? v) ((ns-resolve 'push307.push.instructions v) popped) ;; v is a symbol pointing to a function
-        :else (print "unexpected value")))))
+        :else (println (str "unexpected value: " v))))))
 
 (defn interpret-push-program
   "Runs the given program starting with the stacks in start-state. Continues

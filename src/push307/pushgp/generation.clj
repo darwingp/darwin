@@ -2,14 +2,14 @@
   (:gen-class))
 
 
-(def test-literals (range 10))
-(def instructions '(in1 in2
-    integer_+
-    integer_-
-    integer_*
-    integer_%
-    integer_>
-    integer_<))
+;; (def test-literals (range 10))
+;; (def instructions '(in1 in2
+;;     integer_+
+;;     integer_-
+;;     integer_*
+;;     integer_%
+;;     integer_>
+;;     integer_<))
 
 ;The following configure the random generation of programs
 ;----
@@ -18,8 +18,7 @@
 (def rand-prog-length% 0.75) ;%low end of max-initial random range
 
 ;this is the percent likelihood that a literal will be added to a random program
-(def literal% 0.25)
-
+(def literal% (- 1 rand-prog-length%))
 
 (def gen-rand-length
   "generate a random % between rand-prog-length and 100%"
