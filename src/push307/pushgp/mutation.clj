@@ -2,6 +2,8 @@
   (:gen-class))
 
 (def event-percentage 5)
+
+;; TODO: these end up in programs
 (def instructions '(:a :b :c :d)) ; placeholder
 
 (defn keep?
@@ -57,8 +59,7 @@
 (defn uniform-deletion
   "Randomly deletes instructions from program at some rate. Returns child program."
   [prog]
-  (filter keep? prog)
-  )
+  (filter keep? prog))
 
 (defn uniform-mutation
   "probability of adding instruction that replaces parent instruction (constant
