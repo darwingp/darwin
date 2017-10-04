@@ -27,7 +27,7 @@ There are two ways to run the main PushGP function:
 - [x] Monitoring and visualizations
 - [x] Random generation of push programs
 - [x] Crossover, generation
-- [ ] Mutation
+- [x] Mutation
 - [ ] Random number scheme for testing
 - [ ] Work on individual format
 ### Other
