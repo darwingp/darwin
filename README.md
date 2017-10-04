@@ -19,14 +19,15 @@ There are two ways to run the main PushGP function:
 ### Jack
 - [x] Implement alternation crossover
 - [ ] Dial in gaussian noise
-- [ ] Implement crossover operators
+- [x] Implement crossover operators
 - [x] Implement uniform addition, uniform deletion, uniform mutation
 - [ ] Update standard noise deviation
 - [ ] Refactor uniform operators
 - [ ] Work on Tests
-- [ ] Monitoring and visualizations
-- [ ] Random generation of push programs
-- [ ] Crossover, generation, mutation
+- [x] Monitoring and visualizations
+- [x] Random generation of push programs
+- [x] Crossover, generation
+- [ ] Mutation
 - [ ] Random number scheme for testing
 - [ ] Work on individual format
 ### Other
