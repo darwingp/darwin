@@ -1,7 +1,7 @@
 (ns push307.pushgp.crossover
   (:gen-class))
 
-(def get-gene (fn [x y] 
+(def get-gene (fn [x y]
                 (if (= (rand-int 2) 1) x y)))
 
 (defn uniform-crossover
@@ -14,12 +14,12 @@
 (defn add-noise
   "returns gaussian noise for alternation crossover index modification"
   ; CITE: https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
-  ; DESC: The Box-Muller method for generating uniformly distributed random numbers 
+  ; DESC: The Box-Muller method for generating uniformly distributed random numbers
   [alignment]   ;standard deviation (usually around 10)
   (let [u (rand) v (rand)]
     ; TODO: modify by alignment
-    (Math/round 
-     (* (Math/sqrt (* -2 (Math/log u))) 
+    (Math/round
+     (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v))))
   )
   ;TODO: how does standard deviation factor in? this mostly returns 0, 1, 2 +/-, rarely +/- 3
@@ -31,12 +31,12 @@
   ;alternation
   [prog-a prog-b alternation-rate alignment-deviation]
 
-  (loop [index 0 child '() pa prog-a pb prog-b] 
-    (if (= index (count prog-a))
+  (loop [index 0 child '() pa prog-a pb prog-b]
+    (if (or (= index (count prog-a)) (= index (count prog-b)))
       ;if a list is of different lengths, nil elements will be added and must be removed
-      (filter #(not= nil %) (reverse child))
+      (reverse child)
       (do
         (if (< (rand) alternation-rate)
-          (recur (+ index (add-noise 10)) (cons (first pa) child) (rest pb) (rest pa))
-           (recur (+ index 1) (cons (first pa) child) (rest pa) (rest pb))
+          (recur (+ index (add-noise 10)) (cons (nth pa index) child) pb pa)
+           (recur (+ index 1) (cons (nth pa index) child) pa pb)
     )))))
