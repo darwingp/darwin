@@ -22,20 +22,21 @@
      (* (Math/sqrt (* -2 (Math/log u))) 
         (Math/cos (* 2 Math/PI v))))
   )
+  ;TODO: how does standard deviation factor in? this mostly returns 0, 1, 2 +/-, rarely +/- 3
 )
 
 (defn alternation-crossover
   "Crosses over two programs (note: not individuals) using alternation crossover
   takes alternation rate and alignment-deviation"
   ;alternation
-  [prog-a prog-b, alternation-rate, alignment-deviation]
+  [prog-a prog-b alternation-rate alignment-deviation]
+
   (loop [index 0 child '() pa prog-a pb prog-b] 
     (if (= index (count prog-a))
       ;if a list is of different lengths, nil elements will be added and must be removed
-      (filter #(not= nil %) (reverse child))    
+      (filter #(not= nil %) (reverse child))
       (do
         (if (< (rand) alternation-rate)
-          ;TODO: add gaussian noise to index (to true recur index)
           (recur (+ index (add-noise 10)) (cons (first pa) child) (rest pb) (rest pa))
            (recur (+ index 1) (cons (first pa) child) (rest pa) (rest pb))
     )))))

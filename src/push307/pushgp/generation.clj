@@ -18,7 +18,7 @@
 (def rand-prog-length% 0.75) ;%low end of max-initial random range
 
 ;this is the percent likelihood that a literal will be added to a random program
-(def literal% 0.25)
+(def literal% 0.5)
 
 
 (def gen-rand-length
