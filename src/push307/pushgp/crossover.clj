@@ -17,13 +17,11 @@
   ; DESC: The Box-Muller method for generating uniformly distributed random numbers
   [alignment]   ;standard deviation (usually around 10)
   (let [u (rand) v (rand)]
-    ; TODO: modify by alignment
+    (* alignment
     (Math/round
      (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v))))
-  )
-  ;TODO: how does standard deviation factor in? this mostly returns 0, 1, 2 +/-, rarely +/- 3
-)
+  )))
 
 (defn alternation-crossover
   "Crosses over two programs (note: not individuals) using alternation crossover
