@@ -39,7 +39,7 @@
         :else    (uniform-deletion
                    (:program (tournament-selection population 20)))))))
 
-(def indiv-error 
+(def indiv-error
   (fn [x] (:total-error x)))
 
 (defn best-fit
@@ -47,20 +47,15 @@
   [population]
   (reduce min (map indiv-error population)))
 
-;; Should behavior-diversity, average-error, and lowest-size really return
-;; a value from 0 to 100?
-
 (defn behavior-diversity
   "Returns a measure of the behavioral diversity of a population of individuals."
   [population]
-  ;returns value 0-100
   20
 )
 
 (defn average-error
   "Returns the average error of population of individuals."
   [population]
-  ;returns value 0-100
   (/ (reduce +' (map overall-error population)) (count population)))
 
 (defn lowest-size
@@ -168,4 +163,3 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
         trace (fn [idx v] (report v idx) v)]
      (first (drop-while #(not (population-has-solution %)) (map-indexed trace tested-gens)))))
-

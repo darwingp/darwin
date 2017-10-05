@@ -30,7 +30,7 @@
   [prog-a prog-b alternation-rate alignment-deviation]
 
   (loop [index 0 child '() pa prog-a pb prog-b]
-    (if (or (>= index (count prog-a)) (>= index (count prog-b)))
+    (if (or (>= (Math/abs index) (count prog-a)) (>= (Math/abs index) (count prog-b)))
       (reverse child)
       (do
         (if (< (rand) alternation-rate)
