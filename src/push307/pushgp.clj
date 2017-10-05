@@ -45,8 +45,7 @@
 (defn best-fit
   "takes population and determines best function fitness"
   [population]
-  (reduce min (map indiv-error pop))
-)
+  (reduce min (map indiv-error population)))
 
 ;; Should behavior-diversity, average-error, and lowest-size really return
 ;; a value from 0 to 100?
@@ -106,7 +105,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
 
     ; print to console
     (println "------------------------------------")
-    (println (str "        Report for Generation" generation))
+    (println (str "        Report for Generation " generation))
 
     (println "------------------------------------")
     (print "Best program: ")
@@ -126,19 +125,6 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [population]
   (not (empty? (filter zero? (map :total-error population)))))
 
-(defn find-or-stop
-  "Returns either the first element of lst for which p returns
-   true, or returns nil"
-  [p max-elems lst]
-  (loop [remaining max-elems
-         l lst]
-    (if (or (zero? remaining) (empty? l))
-      nil
-      (let [v (first l)]
-        (if (p v)
-          v
-          (recur (dec remaining) (rest l)))))))
-
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
@@ -155,12 +141,6 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
           instrs
           literals
           max-initial-program-size)))))
-
-(defn foreach
-  "Applies a function to each element of a and its index. Returns the col."
-  [f col]
-  (map-indexed f col)
-  col)
 
 (defn push-gp
   "Main GP loop. Initializes the population, and then repeatedly
@@ -180,15 +160,11 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
   (let [all-inputs (map make-input-instruction (map inc (range number-inputs)))
         all-instrs (concat all-inputs instructions)
-        target-gen (find-or-stop
-                      population-has-solution
-                      max-generations
-                      (foreach #(report %2 %1)
-                        (map #(map (fn [x] (run-tests x testcases)) %)
-                        (make-generations
-                          population-size
-                          all-instrs
-                          literals
-                          max-initial-program-size))))]
-    (if (nil? target-gen) nil :SUCCESS)))
+        gens (take max-generations (make-generations
+               population-size
+               all-instrs
+               literals
+               max-initial-program-size))
+        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)]
+     (doall (map-indexed #(report %2 %1) tested-gens))))
 
