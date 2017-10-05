@@ -165,6 +165,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
                all-instrs
                literals
                max-initial-program-size))
-        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)]
-     (doall (map-indexed #(report %2 %1) tested-gens))))
+        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
+        trace (fn [idx v] (report v idx) v)]
+     (first (drop-while #(not (population-has-solution %)) (map-indexed trace tested-gens)))))
 
