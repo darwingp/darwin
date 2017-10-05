@@ -101,7 +101,9 @@
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [state data-type color]
   ;set current max (maybe working?)
-  (if (= (:generation state) 1) (swap! max-vals assoc data-type (data-type state)) "not gen 1")
+  (if (= (:generation state) 0) (do 
+                                  (swap! max-vals assoc data-type (data-type state)) 
+                                  (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
           current-pt (
                       (normalize-to-graph w-zero (data-type (deref max-vals))) 
