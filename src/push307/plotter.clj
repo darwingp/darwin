@@ -45,16 +45,21 @@
 (def gen-increment (/ sub-window-width generations))
 (def data-fields (list "Fitness" "Behavior diversity" "Average error" "Lowest size"))
 
-;This is unfortunate but necessary: in order to plot lines, previous data must be known
-(def previous-values
-  {
-    :points-fit 100
-    :points-behavior 100
-    :average-error 100
-    :lowest-size 100
-    :generation 100
-  }
-)
+;note: use requires deref
+(def max-vals (atom {}))
+(swap! max-vals assoc :points-fit 700)
+(swap! max-vals assoc :points-behavior 700)
+(swap! max-vals assoc :average-error 700)
+(swap! max-vals assoc :lowest-size 700)
+
+;note: using this map requires deref
+(def previous-values (atom {}))
+;add values to prev
+(swap! previous-values assoc :generation 0)
+(swap! previous-values assoc :points-fit 700)
+(swap! previous-values assoc :points-behavior 700)
+(swap! previous-values assoc :average-error 700)
+(swap! previous-values assoc :lowest-size 700)
 
 ;set panel size
 (.setPreferredSize panel (Dimension. frame-width frame-height))
@@ -74,11 +79,11 @@
 
 (defn normalize-to-graph
   "take point and map to graph based on zero pt"
-  [zero-pt]
+  [zero-pt max-val]
   (fn [input-pt]
     (list
        (+ (first zero-pt) (* gen-increment (first input-pt)))
-       (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) 100)))
+       (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) max-val)))
     )
 ))
 
@@ -86,24 +91,30 @@
 ;example use: (add-pt current-state :points-fit line-color1)
 
 ;; state looks like this:
-;; { :points-fit 2
-;;   :points-behavior 2
+;; { :points-fit 3
+;;   :points-behavior 4 
 ;;   :average-error 5
-;;   :lowest-size 6
+;;   :lowest-size  3
 ;;   :generation 3)
 
 (defn add-pt
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [state data-type color]
+  ;set current max (maybe working?)
+  (if (= (:generation state) 1) (swap! max-vals assoc data-type (data-type state)) "not gen 1")
     (let [gen (:generation state)
-          current-pt ((normalize-to-graph w-zero) (list gen (data-type state)))
-          previous-pt ((normalize-to-graph w-zero) (list (:generation previous-values) (data-type previous-values)))
-         ]
+          current-pt (
+                      (normalize-to-graph w-zero (data-type (deref max-vals))) 
+                      (list gen (data-type state)))
+          previous-pt (
+                       (normalize-to-graph w-zero (data-type (deref max-vals))) 
+                       (list (:generation (deref previous-values)) (data-type (deref previous-values))))]
+
         ((line-from-points (.getGraphics panel) color) current-pt previous-pt)
-        (assoc previous-values data-type (data-type state))
-        (assoc previous-values :generation gen)
-        state
-))
+        ;set previous values
+        (swap! previous-values assoc data-type (data-type state))
+        (swap! previous-values assoc :generation gen)
+        state))
 
 (defn init-sub-window
   "create a new sub window in the jframe"
@@ -194,8 +205,8 @@
   "initialize plotter window and build graphical elements"
   []
   (init-window)       ;build up window
-  ;; FIXME: is there a callback for doto?
-  (Thread/sleep 1000)  ;needs a slight delay
+  ;; FIXME: is there a callback for doto?  -frame?
+  (Thread/sleep 1000)  ;needs a slight delay (can dial this back for optimization)
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows
   (add-legend (count all-line-colors) data-fields all-line-colors)
