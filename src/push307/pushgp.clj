@@ -27,14 +27,14 @@
   a child individual (note: not program). Chooses which genetic operator
   to use probabilistically. Gives 50% chance to crossover,
   25% to uniform-addition, and 25% to uniform-deletion."
-  [population]
+  [instructions population]
   (let [v (rand-int 100)]
     (new-individual
       (cond
         (< v 50) (uniform-crossover
                    (:program (tournament-selection population 20))
                    (:program (tournament-selection population 20)))
-        (< v 75) (uniform-addition
+        (< v 75) (uniform-addition instructions
                    (:program (tournament-selection population 20)))
         :else    (uniform-deletion
                    (:program (tournament-selection population 20)))))))
@@ -147,7 +147,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (fn [population]
       (repeatedly
         population-size
-        #(select-and-vary population)))
+        #(select-and-vary instrs population)))
     (repeatedly
       population-size
       #(new-individual

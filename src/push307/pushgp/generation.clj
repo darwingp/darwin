@@ -1,30 +1,16 @@
 (ns push307.pushgp.generation
   (:gen-class))
 
-
-;; (def test-literals (range 10))
-;; (def instructions '(in1 in2
-;;     integer_+
-;;     integer_-
-;;     integer_*
-;;     integer_%
-;;     integer_>
-;;     integer_<))
-
 ;The following configure the random generation of programs
 ;----
 ;rand-prog-length is a low end value for a percent range used to randomly reduce
 ;the max-initial-program-size length: for n, the actual length will be n%-100% of input
 (def rand-prog-length% 0.75) ;%low end of max-initial random range
-
-;this is the percent likelihood that a literal will be added to a random program
-
-(def literal% 0.5)
+(def literal% 0.5) ; Likelihood (percent) that a literal will be added to a random program.
 
 (def gen-rand-length
   "generate a random % between rand-prog-length and 100%"
   (fn [] (+ (rand (- 1 rand-prog-length%)) rand-prog-length% )))
-
 
 (def get-random-push
   "returns a random instruction or random literal depending in percent likelihood of literal"

@@ -3,6 +3,11 @@
   (:require [push307.push :refer :all])
   (:gen-class))
 
+(defn true-percent?
+  "Returns true n percent of the time."
+  [n]
+  (>= (inc (rand-int 100)) n))
+
 (defn make-testcase
   "Tests are functions that take a program and return an error.
    This function takes inputs which are used to construct an initial
@@ -33,8 +38,7 @@
 (defn random-choice
   "Selects an element in a collection by random"
   [coll]
-  (let [idx (inc (rand-int (dec (count coll))))]
-    (nth coll idx)))
+  (nth coll (rand-int (count coll))))
 
 ;; any time a test is mentioned, it's the idx in the individual.
 
