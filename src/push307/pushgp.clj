@@ -6,7 +6,7 @@
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
   (:require [push307.pushgp.generation :refer :all])
- ; (:require [push307.plotter :refer :all])
+  (:require [push307.plotter :refer :all])
   (:gen-class))
 
 ; ; An example individual in the population
@@ -36,7 +36,7 @@
                    (:program (tournament-selection population 20))
                    (:program (tournament-selection population 20))
                    0.2
-                   10
+                   30
                    )
         :else (uniform-addition instructions
                    (:program (tournament-selection population 20)))))))
@@ -90,12 +90,12 @@
 
 (defn fill-state
   "takes population and creates list of values"
-  [pop]
-  { :points-fit (best-fit pop)
+  [pop gen]
+  { :points-fit  (best-fit pop)
     :points-behavior (behavior-diversity pop)
     :average-error (average (map overall-error pop))
-    :lowest-size (lowest-size pop)
-    :generation (:gen pop) })
+    :best-size (count (:program (best-overall-fitness pop)))
+    :generation gen })
 
 (defn report
   "Reports information on the population each generation. Should look something
@@ -113,12 +113,12 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
   [population generation]
   ; TODO: attempt to implement graphical system for real-time graphing
   ; note: need some way of recording previous values
- ;  (let [current-state (fill-state population)]
+   (let [current-state (fill-state population generation)]
     ; plot data points
-  ;  (add-pt current-state :points-fit line-color1)
-  ;  (add-pt current-state :points-behavior line-color2)
-  ;  (add-pt current-state :average-error line-color3)
-  ;  (add-pt current-state :lowest-size line-color4)
+    (add-pt current-state :points-fit line-color-1)
+  ;  (add-pt current-state :points-behavior line-color-2)
+  ;  (add-pt current-state :average-error line-color-3)
+    (add-pt current-state :best-size line-color-4)
 
     ; print to console
     (println "------------------------------------")
@@ -140,7 +140,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (print "Best errors 20: ")
     (println (best-n-errors population 20))
     (print "Max error: ")
-    (println (apply max (map overall-error population))))
+    (println (apply max (map overall-error population)))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
