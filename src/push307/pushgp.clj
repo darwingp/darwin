@@ -32,14 +32,14 @@
   (let [v (rand-int 100)]
     (new-individual
       (cond
-        (< v 75) (uniform-addition instructions (alternation-crossover
+        (< v 65) (alternation-crossover
                    (:program (epsilon-lexicase-selection population 20))
                    (:program (epsilon-lexicase-selection population 20))
                    0.2
-                   10))
-        :else (uniform-crossover
+                   8)
+        :else (uniform-addition instructions
                   (:program (epsilon-lexicase-selection population 20))
-                  (:program (epsilon-lexicase-selection population 20)))))))
+                  )))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))
         ;  :else
