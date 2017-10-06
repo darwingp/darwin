@@ -66,7 +66,8 @@
 (defn mode
   "calculate mode of all errors"
   [numbers]
-  :Note: ;this is gonna be computationally intensive and not especially useful, right?
+  ;Note: this is gonna be computationally intensive and not especially useful, right?
+  0
 )
 
 (defn best-n-errors
