@@ -26,7 +26,7 @@
 
 ;NOTES:
 ;-------------------
-; Testing alternation crossover 1000 times with prog sizes of 30, 
+; Testing alternation crossover 1000 times with prog sizes of 30,
 ;0.2 alternation rate, 4 alignment deviation yielded an average size of 48.
 ; Code:
 ; (/ (reduce + (repeatedly 10000 #(count (alternation-crossover (range 40) (range 40) 0.2 4)))) 10000)
@@ -44,6 +44,6 @@
       (reverse child)
       (do
         (if (< (rand) alternation-rate)
-          (recur (+ index (add-noise 10)) (cons (nth pa (Math/abs index)) child) pb pa)
+          (recur (+ index (add-noise alignment-deviation)) (cons (nth pa (Math/abs index)) child) pb pa)
            (recur (+ index 1) (cons (nth pa (Math/abs index)) child) pa pb)
     )))))

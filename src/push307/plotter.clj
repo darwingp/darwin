@@ -43,14 +43,14 @@
 ;generational params
 (def generations 500)
 (def gen-increment (/ sub-window-width generations))
-(def data-fields (list "Fitness" "Behavior diversity" "Average error" "Lowest size"))
+(def data-fields (list "Fitness" "Behavior diversity" "Average error" "Best prog size"))
 
 ;note: use requires deref
 (def max-vals (atom {}))
 (swap! max-vals assoc :points-fit 700)
 (swap! max-vals assoc :points-behavior 700)
 (swap! max-vals assoc :average-error 700)
-(swap! max-vals assoc :lowest-size 700)
+(swap! max-vals assoc :best-size 700)
 
 ;note: using this map requires deref
 (def previous-values (atom {}))
@@ -59,7 +59,7 @@
 (swap! previous-values assoc :points-fit 700)
 (swap! previous-values assoc :points-behavior 700)
 (swap! previous-values assoc :average-error 700)
-(swap! previous-values assoc :lowest-size 700)
+(swap! previous-values assoc :best-size 700)
 
 ;set panel size
 (.setPreferredSize panel (Dimension. frame-width frame-height))
@@ -102,7 +102,7 @@
   [state data-type color]
   ;set current max (maybe working?)
   (if (= (:generation state) 0) (do
-                                  (swap! max-vals assoc data-type (data-type state))
+                                  (swap! max-vals assoc data-type (* 1.25 (data-type state)))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
           current-pt (
@@ -116,7 +116,7 @@
         ;set previous values
         (swap! previous-values assoc data-type (data-type state))
         (swap! previous-values assoc :generation gen)
-        state))
+        ))
 
 (defn init-sub-window
   "create a new sub window in the jframe"
