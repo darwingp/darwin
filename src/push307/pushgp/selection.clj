@@ -46,7 +46,7 @@
   [population number-to-select f]
   (best-overall-fitness (repeatedly
     number-to-select
-    #(get-parent f population)))
+    #(get-parent f population))))
 
 (defn lexicase-selection
   [population number-to-select]
