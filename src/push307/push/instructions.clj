@@ -40,7 +40,6 @@
   '(integer_+
     integer_-
     integer_*
-    integer_%
-    integer_>
-    integer_<))
-
+    integer_%))
+    ; integer_>
+    ; integer_<))
