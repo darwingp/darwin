@@ -43,7 +43,7 @@
 ;generational params
 (def generations 500)
 (def gen-increment (/ sub-window-width generations))
-(def data-fields (list "Fitness" "Behavior diversity" "Average error" "Lowest size"))
+(def data-fields (list "Fitness" "Behavior diversity" "Average error" "Best prog size"))
 
 ;note: use requires deref
 (def max-vals (atom {}))

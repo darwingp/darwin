@@ -35,8 +35,8 @@
         (< v 50) (alternation-crossover
                    (:program (tournament-selection population 20))
                    (:program (tournament-selection population 20))
-                   0.2
-                   30
+                   0.1
+                   15
                    )
         :else (uniform-addition instructions
                    (:program (tournament-selection population 20)))))))
