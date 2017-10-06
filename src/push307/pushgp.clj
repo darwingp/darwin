@@ -35,12 +35,12 @@
     (new-individual
       (cond
         (< v 65) (alternation-crossover
-                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                   (:program (lexicase-selection population 20))
+                   (:program (lexicase-selection population 20))
                    0.5
                    5)
         :else (uniform-addition instructions
-                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                  (:program (lexicase-selection population 20))
                   )))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))
