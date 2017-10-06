@@ -10,21 +10,24 @@
   (loop [tprime (range (number-tests population))
          s population]
     (if
-      (not
-        (and
-          (zero? (count tprime))
-          (> (count s) 1)))
+      (or
+        (zero? (count tprime))
+        (<= (count s) 1))
       (random-choice s)
       (let [lowert (random-choice tprime)
-            elite (best-fitness-in s lowert)]
+            elite (best-fitness-in s lowert)
+            elite-error (error-on-test elite lowert)]
         (recur
-          (remove #(= lowert %) tprime)
-          (filter #(comparator (error-on-test % lowert) elite) s))))))
+          (filter #(not (= lowert %)) tprime)
+          (filter #(comparator
+                     (error-on-test % lowert)
+                     elite-error) s))))))
 
 (defn within-epsilon
   "Implements the epsilon part of epsilon-lexicase"
   [x elite]
-  :STUB)
+  (let [deviation (- 1.0 (/ (float (overall-error elite)) (float (overall-error x))))]
+    (< deviation 0.5)))
 
 ;; SELECTION OPERATORS
 
@@ -41,9 +44,9 @@
 (defn -lexicase-selection
   "Performs lexicase selection on a population."
   [population number-to-select f]
-  (map
-    (fn [] (get-parent f population))
-    (range number-to-select)))
+  (best-overall-fitness (repeatedly
+    number-to-select
+    #(get-parent f population)))
 
 (defn lexicase-selection
   [population number-to-select]

@@ -21,15 +21,10 @@
         (reduce * (repeat 20 (bigint 1000))) ;; REALLY large error
         (abs (- (apply f inputs) (first ints)))))))
 
-(testcase tf-one [1] (delta-error target-function))
-(testcase tf-two [2] (delta-error target-function))
-(testcase tf-500 [500] (delta-error target-function))
-
 ;;;;;;;;;;
 ;; Testcases are functions that take a push program
 ;; and return an error value. They are defined through
 ;; the testcase macro.
 (def all
-  (list
-    tf-one
-    tf-two))
+  (map #(make-testcase [%] (delta-error target-function)) (take 10 (range))))
+

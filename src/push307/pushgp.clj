@@ -33,13 +33,13 @@
     (new-individual
       (cond
         (< v 50) (alternation-crossover
-                   (:program (tournament-selection population 20))
-                   (:program (tournament-selection population 20))
+                   (:program (epsilon-lexicase-selection population 20))
+                   (:program (epsilon-lexicase-selection population 20))
                    0.2
                    10
                    )
         :else (uniform-addition instructions
-                   (:program (tournament-selection population 20)))))))
+                   (:program (epsilon-lexicase-selection population 20)))))))
       ;  :else
       ;  (uniform-deletion
       ;   (:program (tournament-selection population 20)))))))
