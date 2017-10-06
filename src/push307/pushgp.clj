@@ -32,9 +32,12 @@
   (let [v (rand-int 100)]
     (new-individual
       (cond
-        (< v 50) (uniform-crossover
+        (< v 50) (alternation-crossover
                    (:program (tournament-selection population 20))
-                   (:program (tournament-selection population 20)))
+                   (:program (tournament-selection population 20))
+                   0.2
+                   10
+                   )
         (< v 75) (uniform-addition instructions
                    (:program (tournament-selection population 20)))
         :else    (uniform-deletion
