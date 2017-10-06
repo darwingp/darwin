@@ -42,10 +42,6 @@
                   (:program (epsilon-lexicase-selection population 20)))))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))
-
-        ; :else (uniform-crossover
-        ;           (:program (epsilon-lexicase-selection population 20))
-        ;           (:program (epsilon-lexicase-selection population 20)))))))
         ;  :else
         ;  (uniform-mutation instructions
         ;   (:program (tournament-selection population 20)))))))
@@ -136,7 +132,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (print "Best program errors: ")
     (println (:errors (best-overall-fitness population)))
     (print "Best program size: ")
-    (println (count (:program (best-overall-fitness population)))
+    (println (count (:program (best-overall-fitness population))))
     (print "Best total fitness: " )
     (println (best-fit population))
     ;(print "Median :total-error: ")
@@ -147,7 +143,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (println (best-n-errors population 20))
     ;(print "Max error: ")
     ;(println (apply max (map overall-error population)))))
-    )))
+    ))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
