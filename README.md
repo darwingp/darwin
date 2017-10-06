@@ -31,16 +31,12 @@ Car driver
 
 ### Nate
 
-- [x] Fix in1 appearing as a function.
 - [ ] Test operators
-- [x] Squash bugs
 - [ ] Implement structural diversity measurement func
 
 ### Jack
 
-- [x] Autoscale UI plotter
 - [ ] Test operators
-- [x] Dial in gaussian noise
 - [ ] Make sure textual reporting is good
 
 ### Pipedream
