@@ -132,7 +132,9 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (print "Average population error: ")
     (println (average (map overall-error population)))
     (print "Best errors 20: ")
-    (println (best-n-errors population 20)) )
+    (println (best-n-errors population 20))
+    (print "Max error: ")
+    (println (apply max (map overall-error population))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
