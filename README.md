@@ -11,36 +11,37 @@ There are two ways to run the main PushGP function:
 
 ## Idea for Expansion
 
-1. Plush Genomes
-2. Car driver
-   a. Avoid obstacles
+Car driver
+  - Avoid obstacles
+  - Continue after crashes
 
 ## TODO
+
+### Future Plans (after monday)
 
 - [ ] Push interpreter nested
 - [ ] More instructions
 - [ ] Measure Structural Diversity
 - [ ] Plush Genome
 
+### For Monday
+
+- [ ] Individual goals
+- [ ] Play with parameters to get better results
+
 ### Nate
+
+- [x] Fix in1 appearing as a function.
 - [ ] Test operators
-- [ ] Squash bugs
-- [ ] Implement structural diversity
-- [x] Tournament Selection
-- [x] Lexicase Selection
-- [x] Epsilon-Lexicase Selection
-- [x] Tests and details for push system
+- [x] Squash bugs
+- [ ] Implement structural diversity measurement func
+
 ### Jack
+
 - [ ] Autoscale UI plotter
 - [ ] Test operators
-- [x] Implement alternation crossover
 - [ ] Dial in gaussian noise
-- [x] Implement crossover operators
-- [x] Implement uniform addition, uniform deletion, uniform mutation
-- [x] Monitoring and visualizations
-- [x] Random generation of push programs
-- [x] Crossover, generation
-- [x] Mutation
+- [ ] Make sure textual reporting is good
 
 ### Pipedream
 
@@ -48,5 +49,7 @@ There are two ways to run the main PushGP function:
 - [ ] Random number mocking system for tests
 
 ### Other
+
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
+

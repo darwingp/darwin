@@ -1,4 +1,5 @@
 (ns push307.pushgp
+  (:require [push307.push.instructions :refer [ins]])
   (:require [push307.push.utilities :refer :all])
   (:require [push307.pushgp.utilities :refer :all])
   (:require [push307.pushgp.crossover :refer :all])
@@ -53,10 +54,14 @@
   20
 )
 
-(defn average-error
-  "Returns the average error of population of individuals."
-  [population]
-  (/ (reduce +' (map overall-error population)) (count population)))
+(defn median
+  [numbers]
+  (if (empty? numbers) nil
+    (nth numbers (quot (count numbers) 2))))
+
+(defn average
+  [numbers]
+    (quot (apply + numbers) (count numbers)))
 
 (defn lowest-size
   "Returns the length of the shortest program in a population of indivudals"
@@ -105,13 +110,14 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (println "------------------------------------")
     (print "Best program: ")
     (println (best-overall-fitness population))
-    (print "Best size: ")
+    (print "Smallest size: ")
     (println (lowest-size population))
     (print "Best total fitness: " )
     (println (best-fit population))
-    (print "Average population error: ")
-    (println (average-error population))
+    (print "Median :total-error: ")
+    (println (median (map overall-error population)))
     (print "Best errors: ")
+    ;; TODO: print out "best errors"
     (println "Errors here")) ; )
 
 (defn population-has-solution
@@ -153,13 +159,15 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)"
   [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
-  (let [all-inputs (map make-input-instruction (map inc (range number-inputs)))
+  (let [all-inputs (take number-inputs ins)
         all-instrs (concat all-inputs instructions)
-        gens (take max-generations (make-generations
-               population-size
-               all-instrs
-               literals
-               max-initial-program-size))
+        gens (take
+               max-generations
+               (make-generations
+                 population-size
+                 all-instrs
+                 literals
+                 max-initial-program-size))
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
         trace (fn [idx v] (report v idx) v)]
      (first (drop-while #(not (population-has-solution %)) (map-indexed trace tested-gens)))))
