@@ -34,10 +34,10 @@
   (let [v (rand-int 100)]
     (new-individual
       (cond
-        (< v 40) (alternation-crossover
+        (< v 50) (alternation-crossover
                    (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                    (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                   0.3
+                   0.2
                    10)
         :else (uniform-addition instructions
                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
