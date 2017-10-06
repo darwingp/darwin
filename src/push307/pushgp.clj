@@ -37,8 +37,8 @@
         (< v 65) (alternation-crossover
                    (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                    (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                   0.2
-                   8)
+                   0.5
+                   5)
         :else (uniform-addition instructions
                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                   )))))
