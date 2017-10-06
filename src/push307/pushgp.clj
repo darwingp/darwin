@@ -38,10 +38,11 @@
                    0.2
                    10
                    )
-        (< v 75) (uniform-addition instructions
-                   (:program (tournament-selection population 20)))
-        :else    (uniform-deletion
+        :else (uniform-addition instructions
                    (:program (tournament-selection population 20)))))))
+      ;  :else
+      ;  (uniform-deletion
+      ;   (:program (tournament-selection population 20)))))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
@@ -126,14 +127,16 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (println "------------------------------------")
     (print "Best program: ")
     (println (best-overall-fitness population))
+    (print "Best program errors: ")
+    (println (:errors (best-overall-fitness population)))
     (print "Smallest size: ")
     (println (lowest-size population))
     (print "Best total fitness: " )
     (println (best-fit population))
-    (print "Median :total-error: ")
-    (println (median (map overall-error population)))
-    (print "Average population error: ")
-    (println (average (map overall-error population)))
+    ;(print "Median :total-error: ")
+    ;(println (median (map overall-error population)))
+    ;(print "Average population error: ")
+    ;(println (average (map overall-error population)))
     (print "Best errors 20: ")
     (println (best-n-errors population 20))
     (print "Max error: ")
