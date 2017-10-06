@@ -36,7 +36,7 @@
   individual will be a parent in the next generation. Can use a fixed
   tournament size."
   [population number-to-select]
-  (best-overall-fitness 
+  (best-overall-fitness
     (repeatedly
       number-to-select
       #(random-choice population))))
@@ -46,7 +46,7 @@
   [population number-to-select f]
   (best-overall-fitness (repeatedly
     number-to-select
-    #(get-parent f population)))
+    #(get-parent f population))))
 
 (defn lexicase-selection
   [population number-to-select]
@@ -55,4 +55,3 @@
 (defn epsilon-lexicase-selection
   [population number-to-select]
   (-lexicase-selection population number-to-select within-epsilon))
-
