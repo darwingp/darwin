@@ -37,7 +37,7 @@ Car driver
 ### Jack
 
 - [ ] Test operators
-- [ ] Dial in gaussian noise
+- [ ] Make sure textual reporting is good
 
 ### Pipedream
 
@@ -48,4 +48,3 @@ Car driver
 
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
-

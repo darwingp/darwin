@@ -41,7 +41,7 @@
 (def w-zero (list window-buffer (+ window-buffer sub-window-height)))
 
 ;generational params
-(def generations 100)
+(def generations 500)
 (def gen-increment (/ sub-window-width generations))
 (def data-fields (list "Fitness" "Behavior diversity" "Average error" "Lowest size"))
 
@@ -92,7 +92,7 @@
 
 ;; state looks like this:
 ;; { :points-fit 3
-;;   :points-behavior 4 
+;;   :points-behavior 4
 ;;   :average-error 5
 ;;   :lowest-size  3
 ;;   :generation 3)
@@ -101,15 +101,15 @@
   "takes pt, previous pt and norm-function format: (prev-pt pt)"
   [state data-type color]
   ;set current max (maybe working?)
-  (if (= (:generation state) 0) (do 
-                                  (swap! max-vals assoc data-type (data-type state)) 
+  (if (= (:generation state) 0) (do
+                                  (swap! max-vals assoc data-type (data-type state))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
           current-pt (
-                      (normalize-to-graph w-zero (data-type (deref max-vals))) 
+                      (normalize-to-graph w-zero (data-type (deref max-vals)))
                       (list gen (data-type state)))
           previous-pt (
-                       (normalize-to-graph w-zero (data-type (deref max-vals))) 
+                       (normalize-to-graph w-zero (data-type (deref max-vals)))
                        (list (:generation (deref previous-values)) (data-type (deref previous-values))))]
 
         ((line-from-points (.getGraphics panel) color) current-pt previous-pt)

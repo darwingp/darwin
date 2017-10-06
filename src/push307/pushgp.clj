@@ -32,9 +32,12 @@
   (let [v (rand-int 100)]
     (new-individual
       (cond
-        (< v 50) (uniform-crossover
+        (< v 50) (alternation-crossover
                    (:program (tournament-selection population 20))
-                   (:program (tournament-selection population 20)))
+                   (:program (tournament-selection population 20))
+                   0.2
+                   10
+                   )
         (< v 75) (uniform-addition instructions
                    (:program (tournament-selection population 20)))
         :else    (uniform-deletion
@@ -63,6 +66,19 @@
   [numbers]
     (quot (apply + numbers) (count numbers)))
 
+(defn mode
+  "calculate mode of all errors"
+  [numbers]
+  ;Note: this is gonna be computationally intensive and not especially useful, right?
+  0
+)
+
+(defn best-n-errors
+  "returns lowest n errors in population"
+  [pop n]
+  (take n (sort (map overall-error pop)))
+)
+
 (defn lowest-size
   "Returns the length of the shortest program in a population of indivudals"
   [population]
@@ -76,7 +92,7 @@
   [pop]
   { :points-fit (best-fit pop)
     :points-behavior (behavior-diversity pop)
-    :average-error (average-error pop)
+    :average-error (average (map overall-error pop))
     :lowest-size (lowest-size pop)
     :generation (:gen pop) })
 
@@ -116,9 +132,12 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     (println (best-fit population))
     (print "Median :total-error: ")
     (println (median (map overall-error population)))
-    (print "Best errors: ")
-    ;; TODO: print out "best errors"
-    (println "Errors here")) ; )
+    (print "Average population error: ")
+    (println (average (map overall-error population)))
+    (print "Best errors 20: ")
+    (println (best-n-errors population 20))
+    (print "Max error: ")
+    (println (apply max (map overall-error population))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
