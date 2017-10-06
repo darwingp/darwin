@@ -102,7 +102,7 @@
   [state data-type color]
   ;set current max (maybe working?)
   (if (= (:generation state) 0) (do
-                                  (swap! max-vals assoc data-type (* 1.25 (data-type state)))
+                                  (swap! max-vals assoc data-type (data-type state))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
           current-pt (
