@@ -23,6 +23,8 @@
 ; :total-error
 ; :output-behavior (string of actions?)
 
+(def epsilon-percent 0.01)
+
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
@@ -33,12 +35,12 @@
     (new-individual
       (cond
         (< v 65) (alternation-crossover
-                   (:program (epsilon-lexicase-selection population 20))
-                   (:program (epsilon-lexicase-selection population 20))
+                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                   (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                    0.2
                    8)
         :else (uniform-addition instructions
-                  (:program (epsilon-lexicase-selection population 20))
+                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                   )))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))

@@ -24,10 +24,18 @@
                      elite-error) s))))))
 
 (defn within-epsilon
-  "Implements the epsilon part of epsilon-lexicase"
-  [x elite]
-  (let [deviation (- 1.0 (/ (float (overall-error elite)) (float (overall-error x))))]
-    (< deviation 0.5)))
+  "Implements the epsilon part of epsilon-lexicase.
+   Takes a percentage and returns a function that compares
+   two individuals and returns whether the first individual's
+   error is within ep-percent of the other.
+   ep-percent is a float from 0 to 1."
+  [ep-percent]
+  (fn
+    [x elite]
+    (let [x-err (float (overall-error x))
+          elite-err (float (overall-error elite))
+          delta (- 1.0 (/ elite-err x-err))]
+      (< delta ep-percent))))
 
 ;; SELECTION OPERATORS
 
@@ -53,5 +61,5 @@
   (-lexicase-selection population number-to-select =))
 
 (defn epsilon-lexicase-selection
-  [population number-to-select]
-  (-lexicase-selection population number-to-select within-epsilon))
+  [population number-to-select percent]
+  (-lexicase-selection population number-to-select (within-epsilon percent)))
