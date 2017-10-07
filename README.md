@@ -23,6 +23,7 @@ Car driver
 
 ### Future Plans (after monday)
 
+- [ ] Make decisions on things like error/fitness
 - [ ] Push interpreter nested
 - [ ] More instructions
 - [ ] Measure Structural Diversity

@@ -25,6 +25,8 @@
 
 (def epsilon-percent 0.01)
 
+;; TODO: I think there's a bug here,
+;;       it errors out after printing the first generation...
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
@@ -32,26 +34,16 @@
   25% to uniform-addition, and 25% to uniform-deletion."
   [instructions population]
   (let [v (rand-int 100)]
-    (new-individual
-      (cond
-        (< v 65) (alternation-crossover
-                   (:program (lexicase-selection population 20))
-                   (:program (lexicase-selection population 20))
-                   0.2
-                   6)
-        ; (< v 85) (alternation-crossover
-        ;            (:program (lexicase-selection population 20))
-        ;            (:program (lexicase-selection population 20))
-        ;            0.5
-        ;            6)
-        :else (uniform-addition instructions
-                  (:program (tournament-selection population 20))
-                  )))))
-        ; (uniform-addition instructions
-        ;            (:program (epsilon-lexicase-selection population 20)))
-        ;  :else
-        ;  (uniform-mutation instructions
-        ;   (:program (tournament-selection population 20)))))))
+    (cond
+      (< v 85) (alternation-crossover
+                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                 0.2
+                 6)
+  ;;    (< v 95) (uniform-addition instructions
+   ;;              (:program (epsilon-lexicase-selection population 20 epsilon-percent)))
+      :else    (uniform-addition instructions
+                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
@@ -107,22 +99,10 @@
     :generation gen })
 
 (defn report
-  "Reports information on the population each generation. Should look something
-  like the following (should contain all of this info; format however you think
-  looks best; feel free to include other info).
-
--------------------------------------------------------
-               Report for Generation 3
--------------------------------------------------------
-Best program: (in1 integer_% integer_* integer_- 0 1 in1 1 integer_* 0 integer_* 1 in1 integer_* integer_- in1 integer_% integer_% 0 integer_+ in1 integer_* integer_- in1 in1 integer_* integer_+ integer_* in1 integer_- integer_* 1 integer_%)
-Best program size: 33
-Best total error: 727
-Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
-  "
+  "Reports information on each generation."
   [population generation]
-  ; TODO: attempt to implement graphical system for real-time graphing
-  ; note: need some way of recording previous values
-   (let [current-state (fill-state population generation)]
+   (let [current-state (fill-state population generation)
+         best (best-overall-fitness population)]
     ; plot data points
     (add-pt current-state :points-fit line-color-1)
   ;  (add-pt current-state :points-behavior line-color-2)
@@ -132,25 +112,17 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
     ; print to console
     (println "------------------------------------")
     (println (str "        Report for Generation " generation))
-
     (println "------------------------------------")
     (print "Best program: ")
-    (println (:program (best-overall-fitness population)))
+    (println (:program best))
     (print "Best program errors: ")
-    (println (:errors (best-overall-fitness population)))
+    (println (:errors best))
     (print "Best program size: ")
-    (println (count (:program (best-overall-fitness population))))
+    (println (count (:program best)))
     (print "Best total fitness: " )
-    (println (best-fit population))
-    ;(print "Median :total-error: ")
-    ;(println (median (map overall-error population)))
-    ;(print "Average population error: ")
-    ;(println (average (map overall-error population)))
-    (print "Best errors 20: ")
-    (println (best-n-errors population 20))
-    ;(print "Max error: ")
-    ;(println (apply max (map overall-error population)))))
-    ))
+    (println (:total-error best))
+    (print "Best 20 errors: ")
+    (println (best-n-errors population 20))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
@@ -175,6 +147,11 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
           literals
           max-initial-program-size)))))
 
+(defn findl
+  "Finds the first element in l for which p is true"
+  [p l]
+  (first (drop-while #(not (p %)) l)))
+
 (defn push-gp
   "Main GP loop. Initializes the population, and then repeatedly
   generates and evaluates new populations. Stops and returns :SUCCESS
@@ -191,6 +168,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)"
   [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
+  (start-plotter)
   (let [all-inputs (take number-inputs ins)
         all-instrs (concat all-inputs instructions)
         gens (take
@@ -201,5 +179,6 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
                  literals
                  max-initial-program-size))
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
-        trace (fn [idx v] (report v idx) v)]
-     (first (drop-while #(not (population-has-solution %)) (map-indexed trace tested-gens)))))
+        trace (fn [idx v] (report v (inc idx)) v)
+        result (findl population-has-solution (map-indexed trace tested-gens))]
+    (if (nil? result) nil :SUCCESS)))

@@ -6,7 +6,7 @@
 (defn true-percent?
   "Returns true n percent of the time."
   [n]
-  (>= (inc (rand-int 100)) n))
+  (<= (inc (rand-int 100)) n))
 
 (defn make-testcase
   "Tests are functions that take a program and return an error.
