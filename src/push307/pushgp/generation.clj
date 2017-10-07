@@ -25,6 +25,5 @@
   [instructions literals max-initial-program-size]
   ;create random program length within range n%-100% max-initial-program-size
   (let [progsize (Math/round (* max-initial-program-size (gen-rand-length)))]
-  (loop [prog '() count progsize]
-    (if (= count 0) prog
-        (recur (cons (get-random-push instructions literals) prog) (- count 1))))))
+    (repeatedly progsize #(get-random-push instructions literals))))
+

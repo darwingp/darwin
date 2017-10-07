@@ -44,8 +44,8 @@
         ;            (:program (lexicase-selection population 20))
         ;            0.5
         ;            6)
-        :else (uniform-addition (concat instructions (map inc (range 10)))
-                  (:program (lexicase-selection population 20))
+        :else (uniform-addition instructions
+                  (:program (tournament-selection population 20))
                   )))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))
