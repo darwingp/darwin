@@ -38,7 +38,12 @@
                    (:program (lexicase-selection population 20))
                    (:program (lexicase-selection population 20))
                    0.2
-                   10)
+                   8)
+        ; (< v 85) (alternation-crossover
+        ;            (:program (lexicase-selection population 20))
+        ;            (:program (lexicase-selection population 20))
+        ;            0.5
+        ;            6)
         :else (uniform-addition instructions
                   (:program (tournament-selection population 20))
                   )))))

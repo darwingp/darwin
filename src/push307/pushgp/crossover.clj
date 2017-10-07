@@ -17,8 +17,8 @@
   ; DESC: The Box-Muller method for generating uniformly distributed random numbers
   [alignment]   ;standard deviation (usually around 10)
   (let [u (rand) v (rand)]
-    (* alignment
     (Math/round
+    (* alignment
      (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v))))
   )))
