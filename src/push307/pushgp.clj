@@ -135,7 +135,7 @@ Best errors: (117 96 77 60 45 32 21 12 5 0 3 4 3 0 5 12 21 32 45 60 77)
 
     (println "------------------------------------")
     (print "Best program: ")
-    (println (best-overall-fitness population))
+    (println (:program (best-overall-fitness population)))
     (print "Best program errors: ")
     (println (:errors (best-overall-fitness population)))
     (print "Best program size: ")
