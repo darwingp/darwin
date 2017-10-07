@@ -38,7 +38,7 @@
                    (:program (lexicase-selection population 20))
                    (:program (lexicase-selection population 20))
                    0.2
-                   8)
+                   6)
         ; (< v 85) (alternation-crossover
         ;            (:program (lexicase-selection population 20))
         ;            (:program (lexicase-selection population 20))
