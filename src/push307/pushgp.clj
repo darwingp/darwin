@@ -38,13 +38,13 @@
                    (:program (lexicase-selection population 20))
                    (:program (lexicase-selection population 20))
                    0.2
-                   8)
+                   6)
         ; (< v 85) (alternation-crossover
         ;            (:program (lexicase-selection population 20))
         ;            (:program (lexicase-selection population 20))
         ;            0.5
         ;            6)
-        :else (uniform-addition instructions
+        :else (uniform-addition (concat instructions (map inc (range 10)))
                   (:program (lexicase-selection population 20))
                   )))))
         ; (uniform-addition instructions
