@@ -17,32 +17,16 @@ Car driver
 
 ## TODO
 
+### For Monday
+
+- [ ] Make it work
+
 ### Future Plans (after monday)
 
 - [ ] Push interpreter nested
 - [ ] More instructions
 - [ ] Measure Structural Diversity
 - [ ] Plush Genome
-
-### For Monday
-
-- [ ] Individual goals
-- [ ] Play with parameters to get better results
-
-### Nate
-
-- [ ] Test operators
-- [ ] Implement structural diversity measurement func
-
-### Jack
-
-- [ ] Test operators
-- [ ] Make sure textual reporting is good
-
-### Pipedream
-
-- [ ] Measure Behavioral Diversity
-- [ ] Random number mocking system for tests
 
 ### Other
 
