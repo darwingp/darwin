@@ -34,16 +34,16 @@
   (let [v (rand-int 100)]
     (new-individual
       (cond
-        (< v 65) (uniform-crossover
-                   (:program (lexicase-selection population 20))
-                   (:program (lexicase-selection population 20)))
-                   ;0.5
-                   ;5)
-        (< v 80) (alternation-crossover
+        (< v 65) (alternation-crossover
                    (:program (lexicase-selection population 20))
                    (:program (lexicase-selection population 20))
-                   0.5
-                   5)
+                   0.2
+                   8)
+        ; (< v 85) (alternation-crossover
+        ;            (:program (lexicase-selection population 20))
+        ;            (:program (lexicase-selection population 20))
+        ;            0.5
+        ;            6)
         :else (uniform-addition instructions
                   (:program (lexicase-selection population 20))
                   )))))
