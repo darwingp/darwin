@@ -33,6 +33,7 @@
   to use probabilistically. Gives 50% chance to crossover,
   25% to uniform-addition, and 25% to uniform-deletion."
   [instructions population]
+  ;(println population)
   (let [v (rand-int 100)]
     (cond
       (< v 85) (alternation-crossover
