@@ -37,10 +37,10 @@
         (< v 65) (alternation-crossover
                    (:program (lexicase-selection population 20))
                    (:program (lexicase-selection population 20))
-                   0.5
-                   5)
+                   0.2
+                   10)
         :else (uniform-addition instructions
-                  (:program (lexicase-selection population 20))
+                  (:program (tournament-selection population 20))
                   )))))
         ; (uniform-addition instructions
         ;            (:program (epsilon-lexicase-selection population 20)))

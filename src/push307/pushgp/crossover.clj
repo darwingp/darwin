@@ -33,6 +33,11 @@
 ; This dropped to 45 with 0.3, 3
 ; I will test it more to see how we can mitigate bloat...
 
+(defn ensure-pos
+  ""
+  [x]
+  (if (< x 0) 0 x))
+
 (defn alternation-crossover
   "Crosses over two programs (note: not individuals) using alternation crossover
   takes alternation rate and alignment-deviation"
@@ -41,8 +46,8 @@
 
   (loop [index 0 child '() pa prog-a pb prog-b]
     (if (or
-        (>= (Math/abs index) (count prog-a))
-        (>= (Math/abs index) (count prog-b)))
+        (>= (ensure-pos index) (count prog-a))
+        (>= (ensure-pos index) (count prog-b)))
       (reverse child)
       (do
         (if (< (rand) alternation-rate)

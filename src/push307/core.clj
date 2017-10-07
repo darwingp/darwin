@@ -10,9 +10,9 @@
   [& args]
   (start-plotter)
   (push-gp {:instructions instructions/all
-            :literals '(0 1)
+            :literals (map inc (range 10))
             :testcases testcases/all
             :number-inputs 1
-            :max-generations 500
-            :population-size 200
+            :max-generations 5
+            :population-size 2
             :max-initial-program-size 50}))
