@@ -23,7 +23,8 @@
 ; :total-error
 ; :output-behavior (string of actions?)
 
-(def epsilon-percent 0.05)
+(def epsilon-percent 0.15)
+(def epsilon-pool-size 10)
 
 ;; TODO: I think there's a bug here,
 ;;       it errors out after printing the first generation...
@@ -38,22 +39,21 @@
         all-instrs instructions] ;concat literals
     (cond
       (< v 50)  (uniform-crossover
-                ;(:program (tournament-selection population 20))
-                (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
+                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
                 ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
                 ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
                  ;0.2
                  ;5
                  )
-
-      (< v 97) (uniform-addition all-instrs
-                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                  ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                 )
+      (< v 97) (uniform-addition instructions
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
+           
+      (< v 98) (uniform-addition literals
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
 
        :else   (uniform-deletion
-                         (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                         (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
                          )))))
                         ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
       ;                 ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
