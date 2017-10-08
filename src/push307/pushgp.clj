@@ -35,18 +35,30 @@
   [instructions literals population]
   (new-individual
   (let [v (rand-int 100)
-        all-instrs (concat instructions literals)]
+        all-instrs instructions] ;concat literals
     (cond
-      (< v 50) (uniform-crossover
-                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                ; 0.2
-                ; 6
+      (< v 50)  (uniform-crossover
+                ;(:program (tournament-selection population 20))
+                (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                 ;0.2
+                 ;5
                  )
-      (< v 75) (uniform-addition all-instrs
-                 (:program (epsilon-lexicase-selection population 20 epsilon-percent)))
-      :else    (uniform-deletion
-                 (:program (epsilon-lexicase-selection population 20 epsilon-percent)))))))
+
+      (< v 97) (uniform-addition all-instrs
+                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                  ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                 )
+
+       :else   (uniform-deletion
+                         (:program (epsilon-lexicase-selection population 20 epsilon-percent))
+                         )))))
+                        ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
+      ;                 ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
+      ;                  0.2
+      ;                  5 )))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
