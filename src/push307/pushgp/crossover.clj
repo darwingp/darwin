@@ -46,8 +46,8 @@
 
   (loop [index 0 child '() pa prog-a pb prog-b]
     (if (or
-        (>= (ensure-pos index) (count prog-a))
-        (>= (ensure-pos index) (count prog-b)))
+        (>= (Math/abs index) (count prog-a))
+        (>= (Math/abs index) (count prog-b)))
       (reverse child)
       (do
         (if (< (rand) alternation-rate)
