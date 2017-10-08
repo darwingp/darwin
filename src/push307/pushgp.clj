@@ -23,7 +23,7 @@
 ; :total-error
 ; :output-behavior (string of actions?)
 
-(def epsilon-percent 0.01)
+(def epsilon-percent 0.05)
 
 ;; TODO: I think there's a bug here,
 ;;       it errors out after printing the first generation...
