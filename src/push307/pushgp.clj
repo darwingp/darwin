@@ -35,30 +35,24 @@
   25% to uniform-addition, and 25% to uniform-deletion."
   [instructions literals population]
   (new-individual
-  (let [v (rand-int 100)
-        all-instrs instructions] ;concat literals
+  (let [v (rand-int 100)]
     (cond
       (< v 50)  (uniform-crossover
                   (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
                   (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-                ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
                  ;0.2
                  ;5
                  )
-      (< v 97) (uniform-addition instructions
+      (< v 99) (uniform-addition instructions
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
            
-      (< v 98) (uniform-addition literals
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-
-       :else   (uniform-deletion
-                         (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-                         )))))
-                        ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
-      ;                 ;(:program (epsilon-lexicase-selection population 20 epsilon-percent))
-      ;                  0.2
-      ;                  5 )))))
+ ;     (< v 98) (uniform-addition literals
+ ;                (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
+      :else    (uniform-deletion
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
+               ; 0.2
+               ; 5
+                )))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
