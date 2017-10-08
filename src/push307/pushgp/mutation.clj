@@ -27,9 +27,11 @@
 (defn uniform-mutation
   "Has an n percent chance of replacing each instruction in a program with a
    random instruction."
-  [instructions program]
+  [instructions literals percent-literal program]
   (map
     #(if (true-percent? event-percentage-add) ; do a mutation 5% of the time
-       (random-choice instructions)
+      (if (< (rand) percent-literal)
+       (random-choice literals)
+       (random-choice instructions))
        %)
     program))
