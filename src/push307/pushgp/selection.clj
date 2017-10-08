@@ -15,7 +15,7 @@
       :else (let [selected-test-idx (random-choice tprime)
                   elite (best-fitness-in s selected-test-idx)
                   elite-error (error-on-test elite selected-test-idx)
-                  
+
                   new-tprime (filter #(not (= selected-test-idx %)) tprime)
                   new-population (filter #(comparator (error-on-test % selected-test-idx) elite-error) s)]
               (recur new-tprime new-population)))))

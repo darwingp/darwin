@@ -5,8 +5,8 @@
 ;----
 ;rand-prog-length is a low end value for a percent range used to randomly reduce
 ;the max-initial-program-size length: for n, the actual length will be n%-100% of input
-(def rand-prog-length% 0.75) ;%low end of max-initial random range
-(def literal% 0.5) ; Likelihood (percent) that a literal will be added to a random program.
+(def rand-prog-length% 0.80) ;%low end of max-initial random range
+(def literal% 0.40) ; Likelihood (percent) that a literal will be added to a random program.
 
 (def gen-rand-length
   "generate a random % between rand-prog-length and 100%"
@@ -26,4 +26,3 @@
   ;create random program length within range n%-100% max-initial-program-size
   (let [progsize (Math/round (* max-initial-program-size (gen-rand-length)))]
     (repeatedly progsize #(get-random-push instructions literals))))
-
