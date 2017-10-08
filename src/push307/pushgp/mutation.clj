@@ -19,8 +19,8 @@
   [instructions program]
   (reduce
     #(if (true-percent? event-percentage-add) ;; do an addition 5% of the time
-      (conj %1 %2 (random-choice instructions))
-      (conj %1 %2))
+      (concat %1 (list %2 (random-choice instructions)))
+      (concat %1 (list %2)))
     (list)
     program))
 

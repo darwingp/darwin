@@ -82,8 +82,8 @@
   [zero-pt max-val]
   (fn [input-pt]
     (list
-       (+ (first zero-pt) (* gen-increment (first input-pt)))
-       (- (second zero-pt) (int (/ (* sub-window-height (second input-pt)) max-val)))
+       (+' (first zero-pt) (*' gen-increment (first input-pt)))
+       (-' (second zero-pt) (bigint (/ (*' sub-window-height (second input-pt)) max-val)))
     )
 ))
 

@@ -23,7 +23,7 @@
 ; :total-error
 ; :output-behavior (string of actions?)
 
-(def epsilon-percent 0.15)
+(def epsilon-percent 0.01)
 (def epsilon-pool-size 10)
 
 ;; TODO: I think there's a bug here,
@@ -37,13 +37,10 @@
   (new-individual
   (let [v (rand-int 100)]
     (cond
-      (< v 50)  (uniform-crossover
-                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-                 ;0.2
-                 ;5
-                 )
-      (< v 99) (uniform-addition instructions
+      (< v 50) (uniform-crossover
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
+      (< v 70) (uniform-addition instructions
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
       :else    (uniform-deletion
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
@@ -57,12 +54,6 @@
   [population]
   (reduce min (map indiv-error population)))
 
-(defn behavior-diversity
-  "Returns a measure of the behavioral diversity of a population of individuals."
-  [population]
-  20
-)
-
 (defn median
   [numbers]
   (if (empty? numbers) nil
@@ -71,13 +62,6 @@
 (defn average
   [numbers]
     (quot (apply + numbers) (count numbers)))
-
-(defn mode
-  "calculate mode of all errors"
-  [numbers]
-  ;Note: this is gonna be computationally intensive and not especially useful, right?
-  0
-)
 
 (defn best-n-errors
   "returns lowest n errors in population"
@@ -97,7 +81,7 @@
   "takes population and creates list of values"
   [pop gen]
   { :points-fit  (best-fit pop)
-    :points-behavior (behavior-diversity pop)
+ ;;   :points-behavior (behavior-diversity pop)
     :average-error (average (map overall-error pop))
     :best-size (count (:program (best-overall-fitness pop)))
     :generation gen })
@@ -111,7 +95,7 @@
     (add-pt current-state :points-fit line-color-1)
   ;  (add-pt current-state :points-behavior line-color-2)
   ;  (add-pt current-state :average-error line-color-3)
-    (add-pt current-state :best-size line-color-4)
+;    (add-pt current-state :best-size line-color-4)
 
     ; print to console
     (println "------------------------------------")
@@ -124,7 +108,7 @@
     (print "Best program size: ")
     (println (count (:program best)))
     (print "Best total fitness: " )
-    (println (:total-error best))
+    (println (double (:total-error best)))
     (print "Best 20 errors: ")
     (println (best-n-errors population 20))))
 
@@ -184,5 +168,6 @@
                  max-initial-program-size))
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
         trace (fn [idx v] (report v (inc idx)) v)
-        result (findl population-has-solution (map-indexed trace tested-gens))]
+        solution-or-empty #(or (population-has-solution %) (findl (fn [i] (empty? (:program i))) %))
+        result (findl solution-or-empty (map-indexed trace tested-gens))]
     (if (nil? result) nil :SUCCESS)))

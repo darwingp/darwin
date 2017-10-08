@@ -14,4 +14,4 @@
             :number-inputs 1
             :max-generations 500
             :population-size 200
-            :max-initial-program-size 75}))
+            :max-initial-program-size 45}))
