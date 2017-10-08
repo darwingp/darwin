@@ -37,13 +37,17 @@
   (new-individual
   (let [v (rand-int 100)]
     (cond
-      (< v 50) (uniform-crossover
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-      (< v 70) (uniform-addition instructions
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-      :else    (uniform-deletion
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
+      (< v 60) (uniform-crossover
+                  (:program (tournament-selection population 30))
+                  (:program (tournament-selection population 30)))
+      (< v 70) (uniform-deletion
+                 (:program (tournament-selection population 30)))
+      (< v 80) (uniform-addition instructions
+                (:program (tournament-selection population 30)))
+      :else (uniform-mutation
+                    instructions
+                    (:program (tournament-selection population 30)))
+
 ))))
 
 (def indiv-error
@@ -95,7 +99,7 @@
     (add-pt current-state :points-fit line-color-1)
   ;  (add-pt current-state :points-behavior line-color-2)
   ;  (add-pt current-state :average-error line-color-3)
-;    (add-pt current-state :best-size line-color-4)
+    (add-pt current-state :best-size line-color-4)
 
     ; print to console
     (println "------------------------------------")
@@ -169,5 +173,5 @@
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
         trace (fn [idx v] (report v (inc idx)) v)
         solution-or-empty #(or (population-has-solution %) (findl (fn [i] (empty? (:program i))) %))
-        result (findl solution-or-empty (map-indexed trace tested-gens))]
+        result (findl population-has-solution (map-indexed trace tested-gens))]
     (if (nil? result) nil :SUCCESS)))

@@ -3,7 +3,7 @@
   (:gen-class))
 
 (def event-percentage-add 7)
-(def event-percentage-del 3)
+(def event-percentage-del 7)
 
 (defn uniform-deletion
   "Randomly deletes instructions from program at some rate. Returns child program."
