@@ -45,14 +45,9 @@
                  )
       (< v 99) (uniform-addition instructions
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-           
- ;     (< v 98) (uniform-addition literals
- ;                (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
       :else    (uniform-deletion
-                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-               ; 0.2
-               ; 5
-                )))))
+                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
+))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
