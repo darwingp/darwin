@@ -23,7 +23,7 @@
 ; :total-error
 ; :output-behavior (string of actions?)
 
-(def epsilon-percent 0.01)
+(def epsilon-percent 0.05)
 (def epsilon-pool-size 10)
 
 ;; TODO: I think there's a bug here,
@@ -40,7 +40,7 @@
       (< v 50) (uniform-crossover
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-      (< v 70) (uniform-addition instructions
+      (< v 75) (uniform-addition instructions
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
       :else    (uniform-deletion
                  (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
@@ -95,7 +95,7 @@
     (add-pt current-state :points-fit line-color-1)
   ;  (add-pt current-state :points-behavior line-color-2)
   ;  (add-pt current-state :average-error line-color-3)
-;    (add-pt current-state :best-size line-color-4)
+    (add-pt current-state :best-size line-color-4)
 
     ; print to console
     (println "------------------------------------")
