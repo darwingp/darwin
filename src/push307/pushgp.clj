@@ -33,7 +33,7 @@
   to use probabilistically. Gives 50% chance to crossover,
   25% to uniform-addition, and 25% to uniform-deletion."
   [instructions population]
-  ;(println population)
+  (new-individual
   (let [v (rand-int 100)]
     (cond
       (< v 85) (alternation-crossover
@@ -44,7 +44,7 @@
   ;;    (< v 95) (uniform-addition instructions
    ;;              (:program (epsilon-lexicase-selection population 20 epsilon-percent)))
       :else    (uniform-addition instructions
-                 (:program (epsilon-lexicase-selection population 20 epsilon-percent))))))
+                 (:program (epsilon-lexicase-selection population 20 epsilon-percent)))))))
 
 (def indiv-error
   (fn [x] (:total-error x)))
