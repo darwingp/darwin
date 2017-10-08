@@ -8,7 +8,7 @@
   "Randomly deletes instructions from program at some rate. Returns child program."
   [prog]
   (filter
-    (fn [_] (true-percent? (- 100 event-percentage)))
+    (fn [_] (not (true-percent? event-percentage))) ;; Don't delete 95% of the time
     prog))
 
 (defn uniform-addition
@@ -17,8 +17,8 @@
    Returns child program."
   [instructions program]
   (reduce
-    #(if (true-percent? event-percentage)
-      (conj (conj %1 (random-choice instructions)) %2)
+    #(if (true-percent? event-percentage) ;; do an addition 5% of the time
+      (conj %1 %2 (random-choice instructions))
       (conj %1 %2))
     (list)
     program))
@@ -28,7 +28,7 @@
    random instruction."
   [instructions program]
   (map
-    #(if (true-percent? event-percentage)
+    #(if (true-percent? event-percentage) ; do a mutation 5% of the time
        (random-choice instructions)
        %)
     program))

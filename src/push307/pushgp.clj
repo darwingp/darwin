@@ -32,18 +32,20 @@
   a child individual (note: not program). Chooses which genetic operator
   to use probabilistically. Gives 50% chance to crossover,
   25% to uniform-addition, and 25% to uniform-deletion."
-  [instructions population]
+  [instructions literals population]
   (new-individual
-  (let [v (rand-int 100)]
+  (let [v (rand-int 100)
+        all-instrs (concat instructions literals)]
     (cond
-      (< v 85) (alternation-crossover
+      (< v 50) (uniform-crossover
                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
                  (:program (epsilon-lexicase-selection population 20 epsilon-percent))
-                 0.2
-                 6)
-  ;;    (< v 95) (uniform-addition instructions
-   ;;              (:program (epsilon-lexicase-selection population 20 epsilon-percent)))
-      :else    (uniform-addition instructions
+                ; 0.2
+                ; 6
+                 )
+      (< v 75) (uniform-addition all-instrs
+                 (:program (epsilon-lexicase-selection population 20 epsilon-percent)))
+      :else    (uniform-deletion
                  (:program (epsilon-lexicase-selection population 20 epsilon-percent)))))))
 
 (def indiv-error
@@ -139,7 +141,7 @@
     (fn [population]
       (repeatedly
         population-size
-        #(select-and-vary instrs population)))
+        #(select-and-vary instrs literals population)))
     (repeatedly
       population-size
       #(new-individual
