@@ -2,13 +2,14 @@
   (:require [push307.pushgp.utilities :refer :all])
   (:gen-class))
 
-(def event-percentage 7)
+(def event-percentage-add 7)
+(def event-percentage-del 5)
 
 (defn uniform-deletion
   "Randomly deletes instructions from program at some rate. Returns child program."
   [prog]
   (filter
-    (fn [_] (not (true-percent? event-percentage))) ;; Don't delete 95% of the time
+    (fn [_] (not (true-percent? event-percentage-del))) ;; Don't delete 95% of the time
     prog))
 
 (defn uniform-addition
@@ -17,7 +18,7 @@
    Returns child program."
   [instructions program]
   (reduce
-    #(if (true-percent? event-percentage) ;; do an addition 5% of the time
+    #(if (true-percent? event-percentage-add) ;; do an addition 5% of the time
       (conj %1 %2 (random-choice instructions))
       (conj %1 %2))
     (list)
@@ -28,7 +29,7 @@
    random instruction."
   [instructions program]
   (map
-    #(if (true-percent? event-percentage) ; do a mutation 5% of the time
+    #(if (true-percent? event-percentage-add) ; do a mutation 5% of the time
        (random-choice instructions)
        %)
     program))
