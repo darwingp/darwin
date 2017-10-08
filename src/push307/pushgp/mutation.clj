@@ -12,8 +12,9 @@
     prog))
 
 (defn uniform-addition
-  "Randomly adds new instructions before every instruction (and at the end of
-  the program) with some probability. Returns child program."
+  "Randomly adds new instructions before every instruction
+   (and at the end of the program) with some probability.
+   Returns child program."
   [instructions program]
   (reduce
     #(if (true-percent? event-percentage)
