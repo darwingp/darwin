@@ -2,11 +2,14 @@
   (:gen-class))
 
 (defn uniform-crossover
-   "Crosses over two programs (note: not individuals) using uniform crossover.
+  "Crosses over two programs (note: not individuals) using uniform crossover.
    Returns child program."
-   [prog-a prog-b]
-   (let [child-len (quot (+ (count prog-a) (count prog-b)) 2)] 
-     (take child-len (map #(if (= (rand-int 2) 1) %1 %2) (cycle prog-a) (cycle prog-b)))))
+  [a b]
+  (let [min-len (min (count a) (count b))
+        ap (take min-len a)
+        bp (take min-len b)
+        xs (if (= min-len (count a)) (drop min-len b) (drop min-len a))]
+    (concat (map #(if (= (rand-int 2) 1) %1 %2) ap bp) xs)))
 
 (defn add-noise
   "returns gaussian noise for alternation crossover index modification"
