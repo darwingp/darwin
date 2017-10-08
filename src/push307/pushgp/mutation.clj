@@ -2,8 +2,8 @@
   (:require [push307.pushgp.utilities :refer :all])
   (:gen-class))
 
-(def event-percentage-add 5); 7)
-(def event-percentage-del 5) ; 3)
+(def event-percentage-add 7)
+(def event-percentage-del 7)
 
 (defn uniform-deletion
   "Randomly deletes instructions from program at some rate. Returns child program."

@@ -10,7 +10,7 @@
 
 (defn get-random-push
   "returns a random instruction or random literal depending in percent likelihood of literal"
-   [inst lit]  
+   [inst lit]
    (if (< (rand) literal%)     ;random decision based on percent literals
      (nth lit (rand-int (count lit)))
      (nth inst (rand-int (count inst)))))
@@ -24,4 +24,3 @@
   (repeatedly
     (+ (Math/round (* (- max-initial-program-size min-prog-size) (rand))) min-prog-size)
     #(get-random-push instructions literals)))
-
