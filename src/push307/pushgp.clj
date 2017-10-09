@@ -45,7 +45,7 @@
       (< v 80) (uniform-addition instructions
                 (:program (tournament-selection population 30)))
       :else (uniform-mutation
-                    instructions (range 3) 0.05
+                    instructions (range 4) 0.15
                     (:program (tournament-selection population 30)))
 
 ))))
