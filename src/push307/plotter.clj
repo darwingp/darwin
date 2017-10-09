@@ -15,8 +15,10 @@
 (def panel (JPanel.))
 
 ;graphical setup
-(def frame-width 1000)
-(def frame-height 700)
+(def frame-width 750)
+(def frame-height 500)
+;(def frame-width 1000)
+;(def frame-height 700)
 (def window-buffer 10)
 (def horiz-lines 10)
 (def sub-window-height (- frame-height (* 2 window-buffer)))
@@ -154,7 +156,7 @@
 (defn add-label
   "add a label and line"
   [text color x y]
-  (let [gr (.getGraphics panel) line-length 30]
+  (let [gr (.getGraphics panel) line-length 10]
     (.setColor gr color)
     (.drawString gr text (+ x line-length 5) y)
     (.drawLine gr x (- y 4) (+ x line-length) (- y 4))
@@ -176,7 +178,7 @@
 
    ;add labels
    (loop [remaining-labels num-lines
-          x (+ upper-left-x 10)
+          x (+ upper-left-x 5)
           y (+ upper-left-y 10 line-increment)
           colors color-list
           text labels
