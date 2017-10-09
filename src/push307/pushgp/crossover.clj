@@ -6,7 +6,8 @@
    Returns child program."
   [a b]
   (let [min-len (min (count a) (count b))
-        final-len (Math/round (* (rand) (- (max (count a) (count b)) min-len)))  ;get random value within length difference
+        ;get random value within length difference to prevent lower or upper length trend
+        final-len (Math/round (* (rand) (- (max (count a) (count b)) min-len)))
         ap (take min-len a)
         bp (take min-len b)
         xs (if (= min-len (count a)) (drop min-len b) (drop min-len a))]
@@ -23,12 +24,6 @@
      (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v))))
   )))
-
-
-(defn ensure-pos
-  ""
-  [x]
-  (if (< x 0) 0 x))
 
 (defn alternation-crossover
   "Crosses over two programs (note: not individuals) using alternation crossover

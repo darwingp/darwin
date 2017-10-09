@@ -207,7 +207,6 @@
   "initialize plotter window and build graphical elements"
   []
   (init-window)       ;build up window
-  ;; FIXME: is there a callback for doto?  -frame?
   (Thread/sleep 1000)  ;needs a slight delay (can dial this back for optimization)
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows

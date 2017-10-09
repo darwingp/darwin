@@ -9,7 +9,7 @@
   "Runs push-gp, giving it a map of arguments."
   [& args]
   (push-gp {:instructions instructions/all
-            :literals '(1 2 3)
+            :literals '(1 2 3 4)
             :testcases testcases/all
             :number-inputs 1
             :max-generations 500

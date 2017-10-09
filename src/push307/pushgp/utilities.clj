@@ -55,10 +55,12 @@
     population))
 
 (defn overall-error
+  "return total error for individual"
   [individual]
   (:total-error individual))
 
 (defn best-overall-fitness
+  "get best fitness"
   [population]
   (reduce
     #(if (< (overall-error %1) (overall-error %2)) %1 %2)

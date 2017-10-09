@@ -2,6 +2,7 @@
   (:require [push307.pushgp.utilities :refer :all])
   (:gen-class))
 
+;percentage likelihood of addition or deletion event
 (def event-percentage-add 7)
 (def event-percentage-del 7)
 

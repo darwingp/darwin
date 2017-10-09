@@ -9,22 +9,11 @@
   (:require [push307.plotter :refer :all])
   (:gen-class))
 
-; ; An example individual in the population
-; ; Made of a map containing, at mimimum, a program, the errors for
-; ; the program, and a total error
-; (def example-individual
-;   {:program '(3 5 integer_* "hello" 4 "world" integer_-)
-;    :errors [8 7 6 5 4 3 2 1 0 1]
-;    :total-error 37})
-
-;Individual attributes:
-; :program
-; :errors
-; :total-error
-; :output-behavior (string of actions?)
-
+;parameters
 (def epsilon-percent 0.05)
 (def epsilon-pool-size 10)
+(def literal-range (range 6))
+(def literal-add% 0.15)
 
 ;; TODO: I think there's a bug here,
 ;;       it errors out after printing the first generation...
@@ -36,14 +25,8 @@
   [instructions literals population]
   (new-individual
   (let [v (rand-int 100)]
+    ;percentage weights for various combinations expressed as conditional
     (cond
-;      (< v 50) (uniform-crossover
-;                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent))
-;                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-;      (< v 75) (uniform-addition instructions
-;                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
-;      :else    (uniform-deletion
-;                 (:program (epsilon-lexicase-selection population epsilon-pool-size epsilon-percent)))
       (< v 60) (uniform-crossover
                   (:program (tournament-selection population 30))
                   (:program (tournament-selection population 30)))
@@ -52,12 +35,11 @@
       (< v 80) (uniform-addition instructions
                  (:program (tournament-selection population 30)))
       :else (uniform-mutation
-                    instructions (range 4) 0.15
+                    instructions literal-range literal-add%
                     (:program (tournament-selection population 30)))
 ))))
 
-(def indiv-error
-  (fn [x] (:total-error x)))
+(def indiv-error (fn [x] (:total-error x)))
 
 (defn best-fit
   "takes population and determines best function fitness"
@@ -65,11 +47,13 @@
   (reduce min (map indiv-error population)))
 
 (defn median
+  "return median"
   [numbers]
   (if (empty? numbers) nil
     (nth numbers (quot (count numbers) 2))))
 
 (defn average
+  "return average"
   [numbers]
     (quot (apply + numbers) (count numbers)))
 
@@ -166,6 +150,7 @@
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)"
   [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
+  ;start graphical system
   (start-plotter)
   (let [all-inputs (take number-inputs ins)
         all-instrs (concat all-inputs instructions)

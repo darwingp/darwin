@@ -54,9 +54,11 @@
     #(get-parent f population))))
 
 (defn lexicase-selection
+  "additional version"
   [population number-to-select]
   (-lexicase-selection population number-to-select =))
 
 (defn epsilon-lexicase-selection
+  "epsilon lexicase"
   [population number-to-select percent]
   (-lexicase-selection population number-to-select (within-epsilon percent)))

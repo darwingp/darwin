@@ -15,7 +15,7 @@
   "Creates a function for measuring the difference between
    a single integer return value of a program and a function f."
   [f]
-  (fn [inputs ret-state] 
+  (fn [inputs ret-state]
     (let [ints (:integer ret-state)]
       (if (empty? ints)
         (reduce *' (repeat 20 (bigint 1000))) ;; Penalty
@@ -27,4 +27,3 @@
 ;; the testcase macro.
 (def all
   (map #(make-testcase [%] (delta-error target-function)) (take 10 (range))))
-
