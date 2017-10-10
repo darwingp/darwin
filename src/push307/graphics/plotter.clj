@@ -1,4 +1,4 @@
-(ns push307.plotter
+(ns push307.graphics.plotter
   (:gen-class))
 
 ; -----------------------------------

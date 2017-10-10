@@ -6,7 +6,7 @@
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
   (:require [push307.pushgp.generation :refer :all])
-  (:require [push307.plotter :refer :all])
+  (:require [push307.graphics.plotter :refer :all])
   (:gen-class))
 
 ;parameters

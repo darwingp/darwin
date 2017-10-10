@@ -2,7 +2,6 @@
   (:require [push307.pushgp :refer :all])
   (:require [push307.pushgp.testcases :as testcases])
   (:require [push307.push.instructions :as instructions])
-  (:require [push307.plotter :refer :all])
   (:gen-class))
 
 (defn -main
