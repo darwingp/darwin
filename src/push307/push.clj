@@ -24,6 +24,7 @@
         (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
         (fn? v) (v popped) ;; v is a function
         (symbol? v) ((ns-resolve 'push307.push.instructions v) popped) ;; v is a symbol pointing to a function
+        (or (list? v) (vector? v)) (push-many-to-stack popped :exec (reverse v))
         :else (println (str "unexpected value: " v))))))
 
 (defn interpret-push-program

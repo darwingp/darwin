@@ -29,7 +29,6 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [ ] Push interpreter nested
 - [ ] Plush Genome
 
 ### Jack (virtual machine out)
