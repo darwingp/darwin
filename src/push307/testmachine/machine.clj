@@ -1,8 +1,11 @@
-(ns push307.testmachine.machine (:gen-class))
+(ns push307.testmachine.machine 
+  ;(:require [push307.graphics.environment :refer :all])
+(:gen-class))
 
 (def start-loc {:x 0 :y 0 :angle 0 :speed 0 :crash 0})                      ;x y angle speed
 (def target-loc '(200 50))
 (def vehicle-width 5)  ;not used as an exact radius
+(def draw-to-window? false)
 
 ;Note: Obstacle list is formatted in the following way:
 ;(x y width length)
@@ -48,12 +51,18 @@
           new-y (+ y (* speed (Math/sin angle)))
           ]
     (if (move-possible? new-x new-y obs)
+      (let [new-state
       { :x new-x
         :y new-y 
         :angle angle
         :speed speed 
         :crash crashes
-       }
+       }] 
+        ;if graphical viewing enabled, draw to state first
+        (if draw-to-window?
+          new-state
+          ;(draw-vehicle new-state)  ;draw state (this should return state after)
+          new-state))
       (assoc location :crash (+ crashes 1))))))
 
 (def change-attrib
