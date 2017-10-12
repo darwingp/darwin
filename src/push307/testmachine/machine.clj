@@ -1,8 +1,7 @@
 (ns push307.testmachine.machine (:gen-class))
 
-(def start-loc '(0 0 0))   ;x y angle
+(def start-loc '(0 0 0 0))   ;x y angle speed
 (def target-loc '(200 50))
-(def move-length 1)
 (def vehicle-width 5)  ;not used as an exact radius
 
 ;Note: Obstacle list is formatted in the following way:
@@ -42,21 +41,28 @@
   (fn [location obs]
     (let [x (first location) 
           y (second location) 
+          speed (nth location 3)
           angle (Math/toRadians (nth location 2))
-          new-x (+ x (* move-length (Math/cos angle)))
-          new-y (+ y (* move-length (Math/sin angle)))
+          new-x (+ x (* speed (Math/cos angle)))
+          new-y (+ y (* speed (Math/sin angle)))
           ]
     (if (move-possible? new-x new-y obs)
       (list
         new-x
         new-y
-        angle)
+        angle
+        speed)
       location ))))
 
 (defn change-angle
   "takes instruction, if angle-based, modifies angle val"
   [loc instr]
-    (concat (take 2 loc) [(second instr)]))
+    (concat (take 2 loc) [(second instr)] [(nth loc 3)]))
+
+(defn change-speed
+  "takes instruction, if angle-based, modifies angle val"
+  [loc instr]
+    (concat (take 3 loc) [(second instr)]))
 
 (def distance
   "calculate distance between points"
@@ -71,10 +77,11 @@
   (fn [loc instr]
     (cond
       (= (first instr) "angle") (move (change-angle loc instr) obstacles)
+      (= (first instr) "speed") (move (change-speed loc instr) obstacles)
       :else (move loc obstacles)
     )))
 
-(defn test-instructions
+(defn test-instructions-list
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
@@ -84,3 +91,15 @@
     ;  :num-crash 0
     ;  :instr-rem (count instructionlist)}
 ))
+
+(def testfile "pathfiles/testpath.txt")
+
+(defn test-instructions-file
+  "loads instructions from file and executes list function"
+  [location obs-list]
+  ;this is a file wrapper for test-instructions-list
+  (test-instructions-list
+  (map (fn [lst] (list (first lst) (Integer. (second lst))))
+  (map (fn [line] (clojure.string/split line #" "))
+  (clojure.string/split-lines (slurp location)))) obs-list))
+
