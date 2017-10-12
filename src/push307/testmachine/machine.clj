@@ -5,6 +5,8 @@
 (def start-loc {:x 0 :y 0 :angle 0 :speed 0 :crash 0})                      ;x y angle speed
 (def target-loc '(200 50))
 (def vehicle-width 5)  ;not used as an exact radius
+(def window-max-x 500)
+(def window-max-y 450)
 (def draw-to-window? false)
 
 ;Note: Obstacle list is formatted in the following way:
@@ -21,14 +23,23 @@
         obs-uly (second obstacle)
         obs-lrx (+ obs-ulx width)
         obs-lry (+ obs-uly height)]
+    (or
+    (or 
+       (or 
+           (> (+ x vehicle-width) window-max-x) 
+           (> (+ y vehicle-width) window-max-y))
+       (or
+           (< (- x vehicle-width) 0)
+           (< (- y vehicle-width) 0)
+        ))
     (and
        (and 
            (> (+ x vehicle-width) obs-ulx) 
            (> (+ y vehicle-width) obs-uly))
        (and
            (< (- x vehicle-width) obs-lrx)
-           (< (- y vehicle-width) obs-lry))
-)))
+           (< (- y vehicle-width) obs-lry))))
+))
 
 (defn move-possible? 
   "takes potential location and all obstacles and
@@ -77,7 +88,7 @@
 (defn new-move
   "take obstacle-list, vehicle loc, new move, returns new loc based on move/obstacles and angle"
   [obstacles]
-  ;lambda takes pair: current-loc (x y angle) and instruction
+  ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
     (cond
       (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
