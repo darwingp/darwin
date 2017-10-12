@@ -1,6 +1,6 @@
 # push307
 
-Evolves a program to build another program that moves a car through a given maze. This was 
+Evolves a program to build another program that moves a car through a given maze. This was
 implemented for Hamilton College's CS 307: Genetic Programming class. This is the work of Jack Hay and Nate Symer.
 
 ## Usage
@@ -48,3 +48,10 @@ Virtual machine
 
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
+
+### Machine specifications
+
+File Specifications:
+```angle 0```  "angle" change and integer value in degrees
+```speed 10``` "speed" and integer value (relative to size of area)
+```-``` Dash represents no change to heading, vehicle will move one increment by current recorded speed and angle

@@ -89,12 +89,18 @@
 
 (def testfile "pathfiles/testpath.txt")
 
+(def gen-instruction
+  (fn [lst] (list 
+             (first lst) 
+             (if (= "-" (first lst)) "-"
+             (Integer. (second lst))))))
+
 (defn test-instructions-file
   "loads instructions from file and executes list function"
   [location obs-list]
   ;this is a file wrapper for test-instructions-list
   (test-instructions-list
-  (map (fn [lst] (list (first lst) (Integer. (second lst))))
+  (map gen-instruction
   (map (fn [line] (clojure.string/split line #" "))
   (clojure.string/split-lines (slurp location)))) obs-list))
 
