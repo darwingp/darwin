@@ -92,7 +92,7 @@
 (def gen-instruction
   (fn [lst] (list 
              (first lst) 
-             (if (= "-" (first lst)) "-"
+             (if (= "-" (first lst)) "-"  ;if arg is no change to heading (-)
              (Integer. (second lst))))))
 
 (defn test-instructions-file

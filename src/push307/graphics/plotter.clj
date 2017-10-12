@@ -35,7 +35,7 @@
 (def horiz-rule-color (Color. 57 88 94))
 (def line-color-1 (Color. 255 112 13))
 (def line-color-2 (Color. 255 170 0))
-(def line-color-3 (Color. 232 129 0))
+(def line-color-3 (Color. 243 206 7))
 (def line-color-4 (Color. 232 62 0))
 (def all-line-colors (list line-color-1 line-color-2 line-color-3 line-color-4))
 
