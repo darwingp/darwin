@@ -1,6 +1,6 @@
 (ns push307.testmachine.machine (:gen-class))
 
-(def start-loc '(0 0 0 0))   ;x y angle speed
+(def start-loc {:x 0 :y 0 :angle 0 :speed 0 :crash 0})                      ;x y angle speed
 (def target-loc '(200 50))
 (def vehicle-width 5)  ;not used as an exact radius
 
@@ -39,30 +39,25 @@
 (def move
   "move based on angle and x,y"
   (fn [location obs]
-    (let [x (first location) 
-          y (second location) 
-          speed (nth location 3)
-          angle (Math/toRadians (nth location 2))
+    (let [x (:x location) 
+          y (:y location) 
+          speed (:speed location)
+          angle (Math/toRadians (:angle location))
+          crashes (:crash location)
           new-x (+ x (* speed (Math/cos angle)))
           new-y (+ y (* speed (Math/sin angle)))
           ]
     (if (move-possible? new-x new-y obs)
-      (list
-        new-x
-        new-y
-        angle
-        speed)
-      location ))))
+      { :x new-x
+        :y new-y 
+        :angle angle
+        :speed speed 
+        :crash crashes
+       }
+      (assoc location :crash (+ crashes 1))))))
 
-(defn change-angle
-  "takes instruction, if angle-based, modifies angle val"
-  [loc instr]
-    (concat (take 2 loc) [(second instr)] [(nth loc 3)]))
-
-(defn change-speed
-  "takes instruction, if angle-based, modifies angle val"
-  [loc instr]
-    (concat (take 3 loc) [(second instr)]))
+(def change-attrib
+  (fn [loc-map attrib val] (assoc loc-map attrib val)))
 
 (def distance
   "calculate distance between points"
@@ -76,8 +71,8 @@
   ;lambda takes pair: current-loc (x y angle) and instruction
   (fn [loc instr]
     (cond
-      (= (first instr) "angle") (move (change-angle loc instr) obstacles)
-      (= (first instr) "speed") (move (change-speed loc instr) obstacles)
+      (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
+      (= (first instr) "speed") (move (change-attrib loc :speed (second instr)) obstacles)
       :else (move loc obstacles)
     )))
 
@@ -86,7 +81,7 @@
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
     (let [final-loc (reduce (new-move obstaclelist) start-loc instructionlist)]
-      (take 2 final-loc)
+      final-loc
     ; {:dist-to-target (distance (first final-loc) (second final-loc) (first target-loc) (second target-loc))
     ;  :num-crash 0
     ;  :instr-rem (count instructionlist)}
