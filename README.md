@@ -52,6 +52,6 @@ Virtual machine
 ### Machine specifications
 
 File Specifications:
-```angle 0```  "angle" change and integer value in degrees
-```speed 10``` "speed" and integer value (relative to size of area)
-```-``` Dash represents no change to heading, vehicle will move one increment by current recorded speed and angle
+- ```angle 0```  "angle" change and integer value in degrees
+- ```speed 10``` "speed" and integer value (relative to size of area)
+- ```-``` Dash represents no change to heading, vehicle will move one increment by current recorded speed and angle
