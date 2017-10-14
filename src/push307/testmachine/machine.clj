@@ -1,19 +1,20 @@
-(ns push307.testmachine.machine 
+(ns push307.testmachine.machine
   ;(:require [push307.graphics.environment :refer :all])
 (:gen-class))
 
-(def start-loc {:x 0 :y 0 :angle 0 :speed 0 :crash 0})                      ;x y angle speed
+(def start-loc {:x 0 :y 0 :angle 0 :crash 0})           ;x y angle crash total
 (def target-loc '(200 50))
 (def vehicle-width 5)  ;not used as an exact radius
 (def window-max-x 500)
 (def window-max-y 450)
 (def draw-to-window? false)
+(def vehicle-speed 5)
 
 ;Note: Obstacle list is formatted in the following way:
 ;(x y width length)
 ;where x,y is top left
 
-(defn intersects? 
+(defn intersects?
   "takes point and obstacle and checks for interesection"
   [x y obstacle]
   (let [
@@ -24,51 +25,49 @@
         obs-lrx (+ obs-ulx width)
         obs-lry (+ obs-uly height)]
     (or
-    (or 
-       (or 
-           (> (+ x vehicle-width) window-max-x) 
+    (or
+       (or
+           (> (+ x vehicle-width) window-max-x)
            (> (+ y vehicle-width) window-max-y))
        (or
            (< (- x vehicle-width) 0)
            (< (- y vehicle-width) 0)
         ))
     (and
-       (and 
-           (> (+ x vehicle-width) obs-ulx) 
+       (and
+           (> (+ x vehicle-width) obs-ulx)
            (> (+ y vehicle-width) obs-uly))
        (and
            (< (- x vehicle-width) obs-lrx)
            (< (- y vehicle-width) obs-lry))))
 ))
 
-(defn move-possible? 
+(defn move-possible?
   "takes potential location and all obstacles and
   checks for intersections"
   [x y obs-lst]
   (loop [rem-obs obs-lst]
     (if (= rem-obs '()) true
-        (if (intersects? x y (first rem-obs)) false 
+        (if (intersects? x y (first rem-obs)) false
             (recur (rest rem-obs))))))
 
 (def move
   "move based on angle and x,y"
   (fn [location obs]
-    (let [x (:x location) 
-          y (:y location) 
-          speed (:speed location)
+    (let [x (:x location)
+          y (:y location)
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
-          new-x (+ x (* speed (Math/cos angle)))
-          new-y (+ y (* speed (Math/sin angle)))
+          new-x (+ x (* vehicle-speed (Math/cos angle)))
+          new-y (+ y (* vehicle-speed (Math/sin angle)))
           ]
     (if (move-possible? new-x new-y obs)
       (let [new-state
       { :x new-x
-        :y new-y 
+        :y new-y
         :angle angle
-        :speed speed 
         :crash crashes
-       }] 
+       }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
           new-state
@@ -92,7 +91,6 @@
   (fn [loc instr]
     (cond
       (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
-      (= (first instr) "speed") (move (change-attrib loc :speed (second instr)) obstacles)
       :else (move loc obstacles)
     )))
 
@@ -110,8 +108,8 @@
 (def testfile "pathfiles/testpath.txt")
 
 (def gen-instruction
-  (fn [lst] (list 
-             (first lst) 
+  (fn [lst] (list
+             (first lst)
              (if (= "-" (first lst)) "-"  ;if arg is no change to heading (-)
              (Integer. (second lst))))))
 
@@ -123,4 +121,3 @@
   (map gen-instruction
   (map (fn [line] (clojure.string/split line #" "))
   (clojure.string/split-lines (slurp location)))) obs-list))
-
