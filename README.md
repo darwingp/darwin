@@ -30,6 +30,9 @@ Virtual machine
 ### Nate (up to virtual machine)
 
 - [ ] Plush Genome
+- [x] Paralellize running tests
+- [ ] Mock out random numbers for testing purposes
+   - https://github.com/trystan/random-seed
 
 ### Jack (virtual machine out)
 

@@ -27,7 +27,8 @@
    :errors set to the errors encountered running tests on the
    individual. Then sums that and sets it to :total-error."
   [individual tests]
-  (let [errors (map #(% (:program individual)) tests)]
+  (let [prog (:program individual)
+        errors (pmap #(% prog) tests)]
     (assoc (assoc individual :errors errors) :total-error (reduce +' errors))))
 
 (defn new-individual
