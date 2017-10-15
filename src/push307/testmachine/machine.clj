@@ -1,29 +1,30 @@
 (ns push307.testmachine.machine
-  ;(:require [push307.graphics.environment :refer :all])
+  (:require [push307.graphics.environment :refer :all])
 (:gen-class))
 
+
+;starting attributes
 (def start-loc {:x 0 :y 0 :angle 0 :crash 0})           ;x y angle crash total
-(def target-loc '(200 50))
+(def target-loc '(200 50))  ;location of target
 (def vehicle-width 5)  ;not used as an exact radius
-(def window-max-x 500)
+(def window-max-x 500) ;based on graphical window bounds
 (def window-max-y 450)
-(def draw-to-window? false)
-(def vehicle-speed 5)
+(def draw-to-window? false)  ;plug graphical system into machine
+(def vehicle-speed 5)  ;default tick speed
 
 ;Note: Obstacle list is formatted in the following way:
-;(x y width length)
+; {:x 0 :y 0 :width 5 :height 5}
 ;where x,y is top left
 
 (defn intersects?
   "takes point and obstacle and checks for interesection"
   [x y obstacle]
   (let [
-        width (nth obstacle 2)
-        height (nth obstacle 3)
-        obs-ulx (first obstacle)
-        obs-uly (second obstacle)
-        obs-lrx (+ obs-ulx width)
-        obs-lry (+ obs-uly height)]
+        obs-ulx (:x obstacle)
+        obs-uly (:y obstacle)
+        obs-lrx (+ obs-ulx (:width obstacle))
+        obs-lry (+ obs-uly (:height obstacle))]
+    ;detect collision with objects and bounds
     (or
     (or
        (or
@@ -43,15 +44,17 @@
 
 (defn move-possible?
   "takes potential location and all obstacles and
-  checks for intersections"
+  checks for intersections, returning true if the
+  vehicle can move without a collision"
   [x y obs-lst]
   (loop [rem-obs obs-lst]
     (if (= rem-obs '()) true
+        ;check if the vehicle intersects with the current object
         (if (intersects? x y (first rem-obs)) false
             (recur (rest rem-obs))))))
 
 (def move
-  "move based on angle and x,y"
+  "move based on angle and x,y and no collision present"
   (fn [location obs]
     (let [x (:x location)
           y (:y location)
@@ -69,8 +72,7 @@
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
-          new-state
-          ;(draw-vehicle new-state)  ;draw state (this should return state after)
+          (draw-vehicle new-state vehicle-width)  ;draw state (returns vehicle state)
           new-state))
       (assoc location :crash (+ crashes 1))))))
 
@@ -99,20 +101,28 @@
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
+    (if draw-to-window?
     (let [final-loc (reduce (new-move obstaclelist) start-loc instructionlist)]
-      final-loc
-    ; {:dist-to-target (distance (first final-loc) (second final-loc) (first target-loc) (second target-loc))
-    ;  :num-crash 0
-    ;  :instr-rem (count instructionlist)}
-))
+     {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
+      :end-loc final-loc
+      :num-crash (:crash final-loc)
+      :instr-total (count instructionlist)}))
 
+;testing
+(def test-objects
+  '({:x 10 :y 10 :width 5 :height 5}
+    {:x 50 :y 50 :width 10 :height 15}
+    {:x 10 :y 5 :width 20 :height 30}))
+
+;file for testing system
 (def testfile "pathfiles/testpath.txt")
 
 (def gen-instruction
   ;create an instruction based on string input from file
   (fn [lst] (list
              (first lst)
-             (if (= "-" (first lst)) "-"  ;if arg is no change to heading (-)
+             ;if arg is no change to heading (-)
+             (if (= "-" (first lst)) "-"
              (Integer. (second lst))))))
 
 (defn test-instructions-file
@@ -121,5 +131,6 @@
   ;this is a file wrapper for test-instructions-list
   (test-instructions-list
   (map gen-instruction
+    ;split line by space
     (map (fn [line] (clojure.string/split line #" "))
     (clojure.string/split-lines (slurp location)))) obs-list))

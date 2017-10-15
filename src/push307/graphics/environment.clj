@@ -22,9 +22,24 @@
 
 (defn draw-vehicle
   "takes machine state, draws vehicle, returns state"
-  [vehicle-state]
+  [vehicle-state width]
+  ;state example: {:x 0 :y 0 :angle 0 :crash 0}
+  (let [gr (.getGraphics panel)]
+    (.setColor gr vehicle-color)
+    (.fillRect gr (:x vehicle-state) (:y vehicle-state) width width))
   vehicle-state
   )
+
+(defn draw-obstacles
+    "takes machine obstacles state list,
+    draws each obstacle from map, returns state"
+    [obs-state-lst]
+    ;list contains obstacle maps: :x :y :width :height
+    (let [gr (.getGraphics panel)]  ;get graphics object
+      (.setColor gr obstacle-color)
+      (map (fn [obs]
+        ;draw each obstacle, return obstacle list from map
+        (.fillRect gr (:x obs) (:y obs) (:width obs) (:height obs)) obs) obs-state-lst)))
 
 (defn init-sub-window
   "create a new sub window in the jframe"
