@@ -1,0 +1,1000 @@
+-
+angle 148
+-
+angle 165
+-
+angle 132
+angle 47
+angle 81
+-
+-
+-
+-
+angle 119
+angle 166
+-
+-
+-
+angle 141
+angle 36
+-
+-
+-
+-
+angle 175
+-
+angle 141
+angle 147
+angle 179
+-
+angle 154
+angle 108
+-
+angle 6
+-
+angle 143
+-
+-
+-
+angle 8
+angle 11
+-
+-
+angle 76
+angle 173
+-
+-
+-
+angle 47
+-
+-
+-
+angle 24
+-
+angle 17
+-
+angle 143
+-
+-
+-
+-
+-
+-
+angle 144
+-
+angle 101
+-
+-
+-
+angle 176
+angle 26
+angle 26
+angle 105
+angle 103
+-
+-
+angle 25
+angle 116
+-
+-
+angle 49
+-
+-
+-
+-
+-
+-
+-
+-
+angle 114
+-
+angle 153
+-
+-
+angle 106
+angle 169
+-
+angle 118
+-
+-
+-
+-
+-
+-
+-
+angle 154
+angle 165
+-
+-
+angle 102
+-
+angle 24
+-
+-
+angle 114
+angle 141
+angle 132
+-
+-
+-
+-
+-
+angle 177
+angle 37
+angle 84
+-
+angle 12
+-
+-
+-
+-
+-
+-
+angle 141
+angle 37
+angle 58
+-
+-
+-
+-
+angle 139
+-
+angle 22
+angle 127
+-
+-
+angle 121
+-
+-
+-
+angle 65
+angle 176
+-
+-
+-
+-
+angle 92
+-
+-
+-
+-
+-
+-
+angle 15
+-
+-
+angle 74
+-
+-
+angle 33
+-
+-
+angle 169
+-
+angle 40
+-
+angle 62
+-
+-
+-
+angle 150
+-
+-
+-
+angle 56
+-
+angle 166
+-
+angle 123
+angle 48
+-
+angle 120
+-
+-
+angle 85
+-
+-
+-
+angle 23
+angle 103
+-
+angle 122
+-
+angle 46
+-
+angle 132
+-
+angle 68
+angle 31
+angle 174
+angle 80
+angle 153
+-
+-
+-
+-
+-
+angle 1
+angle 142
+-
+-
+-
+-
+-
+-
+-
+angle 175
+-
+-
+angle 39
+-
+-
+-
+-
+-
+-
+angle 37
+-
+angle 5
+angle 35
+-
+-
+angle 91
+-
+-
+-
+angle 14
+-
+-
+angle 117
+angle 16
+-
+-
+-
+-
+-
+-
+-
+angle 132
+angle 35
+-
+angle 88
+angle 52
+-
+-
+-
+-
+-
+-
+-
+-
+angle 105
+angle 130
+angle 18
+-
+-
+-
+-
+-
+-
+-
+-
+angle 165
+angle 42
+-
+-
+angle 22
+-
+-
+angle 32
+-
+-
+angle 1
+-
+-
+-
+angle 163
+angle 92
+-
+-
+-
+-
+-
+angle 83
+-
+-
+angle 153
+-
+-
+-
+angle 78
+-
+-
+-
+-
+-
+-
+angle 116
+-
+-
+-
+-
+-
+angle 135
+-
+-
+-
+-
+angle 127
+angle 165
+-
+-
+angle 47
+-
+-
+angle 79
+-
+-
+-
+angle 17
+-
+angle 63
+-
+-
+angle 33
+-
+-
+angle 149
+angle 172
+-
+angle 53
+-
+angle 122
+-
+-
+-
+angle 122
+angle 99
+-
+-
+angle 48
+-
+angle 39
+-
+-
+-
+-
+-
+angle 173
+-
+-
+-
+-
+-
+angle 123
+angle 98
+angle 73
+angle 117
+-
+-
+-
+-
+angle 9
+-
+-
+angle 122
+angle 151
+-
+-
+angle 108
+angle 97
+angle 111
+-
+-
+angle 110
+angle 61
+-
+-
+-
+-
+-
+angle 159
+-
+-
+angle 19
+-
+angle 115
+-
+angle 107
+angle 168
+-
+-
+angle 158
+-
+angle 171
+-
+angle 89
+-
+-
+-
+angle 49
+angle 105
+-
+angle 44
+angle 131
+-
+-
+-
+-
+-
+-
+-
+-
+angle 168
+-
+-
+angle 12
+angle 97
+angle 55
+-
+angle 33
+-
+angle 142
+angle 119
+angle 91
+-
+angle 25
+angle 40
+-
+angle 156
+-
+angle 44
+angle 163
+-
+angle 19
+angle 149
+-
+-
+angle 79
+-
+-
+-
+-
+-
+-
+angle 89
+-
+angle 5
+-
+-
+-
+-
+-
+angle 153
+-
+-
+-
+-
+-
+-
+-
+-
+angle 50
+-
+-
+-
+-
+-
+angle 26
+-
+-
+-
+-
+angle 9
+angle 129
+-
+-
+-
+-
+-
+-
+angle 10
+-
+-
+-
+angle 117
+-
+angle 72
+angle 108
+angle 19
+-
+-
+-
+-
+-
+angle 5
+-
+angle 109
+angle 42
+angle 27
+-
+-
+-
+angle 30
+-
+-
+-
+-
+-
+-
+-
+angle 130
+-
+-
+-
+angle 21
+-
+-
+angle 76
+-
+-
+-
+angle 144
+-
+-
+-
+angle 167
+-
+angle 140
+-
+-
+-
+-
+angle 19
+-
+-
+-
+angle 32
+angle 122
+-
+angle 46
+-
+-
+-
+angle 94
+angle 169
+angle 162
+-
+-
+-
+angle 5
+-
+-
+-
+-
+-
+-
+-
+-
+-
+angle 175
+-
+-
+-
+-
+-
+-
+angle 170
+-
+-
+-
+-
+-
+angle 29
+angle 141
+-
+-
+-
+-
+-
+angle 120
+-
+angle 94
+-
+-
+angle 65
+-
+-
+angle 17
+angle 143
+-
+-
+-
+-
+angle 45
+-
+angle 161
+angle 114
+-
+angle 174
+-
+-
+-
+-
+angle 156
+-
+angle 31
+angle 106
+angle 29
+-
+-
+-
+-
+angle 161
+-
+-
+-
+angle 72
+-
+-
+-
+-
+-
+-
+angle 17
+-
+angle 126
+-
+-
+angle 6
+-
+angle 33
+angle 33
+-
+-
+-
+angle 131
+-
+-
+angle 33
+angle 179
+-
+angle 120
+angle 114
+angle 33
+-
+-
+-
+-
+angle 122
+-
+angle 4
+-
+-
+-
+-
+-
+-
+angle 90
+-
+angle 151
+-
+-
+angle 0
+angle 133
+-
+angle 74
+-
+-
+angle 136
+-
+-
+-
+-
+angle 28
+-
+-
+angle 67
+-
+-
+-
+-
+angle 170
+-
+angle 26
+angle 87
+-
+-
+angle 35
+-
+-
+angle 178
+-
+angle 160
+angle 122
+-
+angle 85
+-
+angle 148
+angle 76
+-
+angle 143
+-
+-
+angle 25
+-
+-
+angle 43
+-
+angle 46
+-
+-
+angle 76
+-
+-
+-
+angle 28
+-
+angle 30
+angle 77
+-
+-
+angle 90
+angle 23
+-
+angle 44
+-
+angle 142
+-
+angle 3
+-
+-
+angle 0
+-
+-
+angle 103
+-
+-
+angle 98
+-
+-
+-
+-
+angle 54
+-
+-
+angle 40
+-
+-
+-
+angle 64
+-
+-
+angle 106
+angle 145
+-
+-
+angle 109
+angle 91
+angle 23
+angle 101
+-
+angle 34
+-
+-
+angle 19
+angle 79
+-
+angle 101
+-
+-
+-
+-
+angle 177
+angle 103
+angle 83
+angle 85
+angle 72
+angle 10
+-
+-
+angle 57
+angle 81
+angle 48
+-
+angle 176
+-
+-
+-
+-
+-
+-
+-
+angle 134
+angle 145
+-
+-
+angle 126
+angle 74
+angle 68
+-
+-
+-
+angle 7
+-
+-
+-
+-
+-
+-
+angle 77
+-
+angle 30
+angle 11
+-
+-
+-
+-
+angle 167
+angle 111
+-
+-
+-
+-
+angle 97
+-
+angle 59
+-
+-
+angle 119
+angle 61
+angle 140
+-
+-
+-
+-
+angle 79
+angle 74
+-
+angle 120
+-
+-
+-
+-
+-
+-
+angle 19
+angle 87
+angle 38
+-
+-
+-
+-
+-
+-
+-
+angle 57
+-
+-
+-
+angle 59
+-
+angle 1
+-
+-
+-
+-
+-
+-
+angle 65
+angle 134
+angle 15
+-
+-
+-
+-
+angle 170
+-
+-
+-
+-
+angle 116
+angle 75
+-
+-
+angle 44
+-
+-
+-
+-
+-
+-
+-
+angle 175
+angle 24
+-
+angle 65
+-
+-
+angle 93
+-
+-
+angle 160
+-
+-
+-
+-
+-
+-
+-
+-
+-
+angle 54
+angle 85
+angle 120
+-
+-
+-
+angle 45
+angle 44
+-
+-
+-
+-
+angle 22
+-
+-
+-
+-
+-
+-
+angle 109
+angle 114
+-
+angle 0
+-
+angle 16
+-
+-
+-
+angle 113
+-
+-
+-
+angle 33
+-
+-
+-
+-
+-
+-
+angle 99
+angle 57
+-
+angle 134
+-
+angle 144
+angle 6
+angle 124
+angle 80
+-
+-
+-
+-
+-
+angle 150
+angle 7
+-
+-
+-
+-
+-
+-
+angle 174
+-
+angle 105
+angle 159
+-
+-
+-
+angle 92
