@@ -10,7 +10,7 @@
 (def window-buffer 10)
 
 ;Java window components
-(def frame (JFrame. "GP Plotter"))
+(def frame (JFrame. "GP Path Visualization"))
 (def panel (JPanel.))
 (.setPreferredSize panel (Dimension. frame-width frame-height))
 
@@ -28,7 +28,7 @@
     (.setColor gr vehicle-color)
     (.fillRect gr (:x vehicle-state) (:y vehicle-state) width width))
   vehicle-state
-  )
+)
 
 (defn draw-obstacles
     "takes machine obstacles state list,
