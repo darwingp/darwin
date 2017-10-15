@@ -76,7 +76,7 @@
   [pop gen]
   { :points-fit  (best-fit pop)
  ;;   :points-behavior (behavior-diversity pop)
-    :average-error (average (map overall-error pop))
+    :average-fitness (best-fit pop)
     :best-size (count (:program (best-overall-fitness pop)))
     :generation gen })
 
@@ -88,7 +88,7 @@
     ; plot data points
     (add-pt current-state :points-fit line-color-1)
   ;  (add-pt current-state :points-behavior line-color-2)
-  ;  (add-pt current-state :average-error line-color-3)
+    (add-pt current-state :average-fitness line-color-3)
     (add-pt current-state :best-size line-color-4)
 
     ; print to console

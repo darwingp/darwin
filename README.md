@@ -38,8 +38,9 @@ Virtual machine
 
 - [ ] Measure behavior diversity - VM
 - [ ] UI
-- [ ] UI - Tendlines for fitnesses
-- [ ] Start working on VM
+- [ ] UI - Clean up special cases for average (refactor)
+- [x] UI - Trendlines for fitnesses
+- [x] Start working on VM
 
 ### Ongoing
 

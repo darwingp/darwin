@@ -51,7 +51,7 @@
 (def max-vals (atom {}))
 (swap! max-vals assoc :points-fit 700)
 (swap! max-vals assoc :points-behavior 700)
-(swap! max-vals assoc :average-error 700)
+(swap! max-vals assoc :average-fitness 700)
 (swap! max-vals assoc :best-size 700)
 
 ;note: using this map requires deref
@@ -60,7 +60,7 @@
 (swap! previous-values assoc :generation 0)
 (swap! previous-values assoc :points-fit 700)
 (swap! previous-values assoc :points-behavior 700)
-(swap! previous-values assoc :average-error 700)
+(swap! previous-values assoc :average-fitness 700)  ;current total
 (swap! previous-values assoc :best-size 700)
 
 ;set panel size
@@ -95,7 +95,7 @@
 ;; state looks like this:
 ;; { :points-fit 3
 ;;   :points-behavior 4
-;;   :average-error 5
+;;   :average-fitness 5
 ;;   :lowest-size  3
 ;;   :generation 3)
 
@@ -107,16 +107,25 @@
                                   (swap! max-vals assoc data-type (data-type state))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
+    ;TODO (Jack): clean up shitty average fitness conditional
           current-pt (
                       (normalize-to-graph w-zero (data-type (deref max-vals)))
-                      (list gen (data-type state)))
+                      (if (= data-type :average-fitness)
+                        (list gen
+                          (/ (+ (data-type state) (data-type (deref previous-values))) (+ gen 2)))
+                        (list gen (data-type state))))
           previous-pt (
                        (normalize-to-graph w-zero (data-type (deref max-vals)))
-                       (list (:generation (deref previous-values)) (data-type (deref previous-values))))]
+                       (if (= data-type :average-fitness)
+                        (list (:generation (deref previous-values))
+                        (/ (data-type (deref previous-values)) (+ gen 1)))
+                        (list (:generation (deref previous-values)) (data-type (deref previous-values)))))]
 
         ((line-from-points (.getGraphics panel) color) current-pt previous-pt)
         ;set previous values
-        (swap! previous-values assoc data-type (data-type state))
+        (if (= data-type :average-fitness)
+          (swap! previous-values assoc data-type (+ (data-type state) (data-type (deref previous-values))))
+          (swap! previous-values assoc data-type (data-type state)))
         (swap! previous-values assoc :generation gen)
         ))
 
