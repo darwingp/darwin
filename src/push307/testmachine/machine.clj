@@ -4,12 +4,12 @@
 
 
 ;starting attributes
-(def start-loc {:x 0 :y 0 :angle 0 :crash 0})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0})           ;x y angle crash total
 (def target-loc '(200 50))  ;location of target
-(def vehicle-width 5)  ;not used as an exact radius
+(def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 500) ;based on graphical window bounds
 (def window-max-y 450)
-(def draw-to-window? false)  ;plug graphical system into machine
+(def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 5)  ;default tick speed
 
 ;Note: Obstacle list is formatted in the following way:
@@ -101,8 +101,8 @@
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
-    (if draw-to-window?
-    (let [final-loc (reduce (new-move obstaclelist) start-loc instructionlist)]
+    (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
+          final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
       :end-loc final-loc
       :num-crash (:crash final-loc)
@@ -110,9 +110,10 @@
 
 ;testing
 (def test-objects
-  '({:x 10 :y 10 :width 5 :height 5}
-    {:x 50 :y 50 :width 10 :height 15}
-    {:x 10 :y 5 :width 20 :height 30}))
+  '({:x 45 :y 75 :width 50 :height 50}
+    {:x 45 :y 0 :width 10 :height 100}
+    {:x 150 :y 150 :width 10 :height 15}
+    {:x 246 :y 153 :width 20 :height 30}))
 
 ;file for testing system
 (def testfile "pathfiles/testpath.txt")
@@ -125,12 +126,17 @@
              (if (= "-" (first lst)) "-"
              (Integer. (second lst))))))
 
+
 (defn test-instructions-file
   "loads instructions from file and executes list function"
   [location obs-list]
   ;this is a file wrapper for test-instructions-list
+  (if draw-to-window? (start-environment))
   (test-instructions-list
   (map gen-instruction
     ;split line by space
     (map (fn [line] (clojure.string/split line #" "))
     (clojure.string/split-lines (slurp location)))) obs-list))
+
+
+
