@@ -39,8 +39,7 @@
            (> (+ y vehicle-width) obs-uly))
        (and
            (< (- x vehicle-width) obs-lrx)
-           (< (- y vehicle-width) obs-lry))))
-))
+           (< (- y vehicle-width) obs-lry))))))
 
 (defn move-possible?
   "takes potential location and all obstacles and
@@ -76,7 +75,9 @@
       (assoc location :crash (+ crashes 1))))))
 
 (def change-attrib
-  (fn [loc-map attrib val] (assoc loc-map attrib val)))
+  ;change a state attribute
+  (fn [loc-map attrib val]
+    (assoc loc-map attrib val)))
 
 (def distance
   "calculate distance between points"
@@ -108,6 +109,7 @@
 (def testfile "pathfiles/testpath.txt")
 
 (def gen-instruction
+  ;create an instruction based on string input from file
   (fn [lst] (list
              (first lst)
              (if (= "-" (first lst)) "-"  ;if arg is no change to heading (-)
@@ -119,5 +121,5 @@
   ;this is a file wrapper for test-instructions-list
   (test-instructions-list
   (map gen-instruction
-  (map (fn [line] (clojure.string/split line #" "))
-  (clojure.string/split-lines (slurp location)))) obs-list))
+    (map (fn [line] (clojure.string/split line #" "))
+    (clojure.string/split-lines (slurp location)))) obs-list))
