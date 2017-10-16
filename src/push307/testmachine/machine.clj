@@ -110,8 +110,8 @@
 
 
 ;file for testing system
-(def testfile "pathfiles/test1000.txt")
-(def testobsfile "obsfiles/test1.txt")
+(def testfile "data/pathfiles/test1000.txt")
+(def testobsfile "data/obsfiles/test1.txt")
 
 (def gen-instruction
   ;create an instruction based on string input from file
@@ -131,6 +131,6 @@
   (map gen-instruction
     ;split line by space, read instructions
     (map (fn [line] (clojure.string/split line #" "))
-    (clojure.string/split-lines (slurp location-file)))) 
+    (clojure.string/split-lines (slurp location-file))))
     ;read obstacles from file
     (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
