@@ -22,11 +22,12 @@
 
 (defn draw-vehicle
   "takes machine state, draws vehicle, returns state"
-  [vehicle-state width]
+  [vehicle-state old-x old-y width]
   ;state example: {:x 0 :y 0 :angle 0 :crash 0}
   (let [gr (.getGraphics panel)]
     (.setColor gr vehicle-color)
-    (.fillRect gr (:x vehicle-state) (:y vehicle-state) width width))
+    (.fillRect gr (:x vehicle-state) (:y vehicle-state) width width)
+    (.drawLine gr (:x vehicle-state) (:y vehicle-state) old-x old-y))
   vehicle-state
 )
 

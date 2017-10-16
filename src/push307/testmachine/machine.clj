@@ -10,7 +10,7 @@
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
-(def vehicle-speed 5)  ;default tick speed
+(def vehicle-speed 10)  ;default tick speed
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -72,7 +72,7 @@
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
-          (draw-vehicle new-state vehicle-width)  ;draw state (returns vehicle state)
+          (draw-vehicle new-state x y vehicle-width)  ;draw state (returns vehicle state)
           new-state))
       (assoc location :crash (+ crashes 1))))))
 
