@@ -163,6 +163,5 @@
                  max-initial-program-size))
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
         trace (fn [idx v] (report v (inc idx)) v)
-        solution-or-empty #(or (population-has-solution %) (findl (fn [i] (empty? (:program i))) %))
         result (findl population-has-solution (map-indexed trace tested-gens))]
     (if (nil? result) nil :SUCCESS)))

@@ -11,6 +11,8 @@
   [x]
   (+' (+' (reduce *' (repeat 3 x)) x) 3))
 
+(def penalty (reduce *' (repeat 20 (bigint 1000))))
+
 (defn delta-error
   "Creates a function for measuring the difference between
    a single integer return value of a program and a function f."
@@ -18,7 +20,7 @@
   (fn [inputs ret-state]
     (let [ints (:integer ret-state)]
       (if (empty? ints)
-        (reduce *' (repeat 20 (bigint 1000))) ;; Penalty
+        penalty
         (abs (- (apply f inputs) (first ints)))))))
 
 ;;;;;;;;;;

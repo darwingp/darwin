@@ -14,8 +14,7 @@
    Push state with in1 etc set in increasing order, eg [in1 in2 in3]."
   [inputs error-fn]
   (let [state (assoc empty-push-state :input (mk-inputs inputs))]
-    (fn [program]
-      (error-fn inputs (interpret-push-program program state)))))
+    #(error-fn inputs (interpret-push-program % state))))
 
 (defmacro testcase
   "Defines a testcase."
@@ -28,7 +27,7 @@
    individual. Then sums that and sets it to :total-error."
   [individual tests]
   (let [prog (:program individual)
-        errors (pmap #(% prog) tests)]
+        errors (pmap #(% prog) tests)] ;; Does pmap affect randomness?
     (assoc (assoc individual :errors errors) :total-error (reduce +' errors))))
 
 (defn new-individual
@@ -36,10 +35,7 @@
   [program]
   { :program program :errors '() :total-error 0 })
 
-(defn random-choice
-  "Selects an element in a collection by random"
-  [coll]
-  (nth coll (rand-int (count coll))))
+(def random-choice rand-nth)
 
 ;; any time a test is mentioned, it's the idx in the individual.
 
