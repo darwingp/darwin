@@ -29,8 +29,12 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [ ] Plush Genome
-- [x] Paralellize running tests
+- [ ] Adapt GP to use Plush genomes instead of push programs
+   - [ ] Generation operators
+   - [ ] Mutation operators
+   - [ ] Selection operators
+   - [ ] Crossover operators
+- [ ] Genetic Hotspots through Age epigenetic marker
 - [ ] Mock out random numbers for testing purposes
    - https://github.com/trystan/random-seed
 
@@ -39,8 +43,6 @@ Virtual machine
 - [ ] Measure behavior diversity - VM
 - [ ] UI
 - [ ] UI - Clean up special cases for average (refactor)
-- [x] UI - Trendlines for fitnesses
-- [x] Start working on VM
 
 ### Ongoing
 
