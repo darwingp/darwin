@@ -15,8 +15,7 @@
 (def literal-range (range 6))
 (def literal-add% 0.15)
 
-;; TODO: I think there's a bug here,
-;;       it errors out after printing the first generation...
+;; TODO: literal% and mutation operators
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
@@ -32,7 +31,7 @@
                   (:program (tournament-selection population 30)))
       (< v 70) (uniform-deletion
                  (:program (tournament-selection population 30)))
-      (< v 80) (uniform-addition instructions
+      (< v 80) (uniform-addition instructions literals
                  (:program (tournament-selection population 30)))
       :else (uniform-mutation
                     instructions literal-range literal-add%

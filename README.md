@@ -30,11 +30,13 @@ Virtual machine
 ### Nate (up to virtual machine)
 
 - [ ] Adapt GP to use Plush genomes instead of push programs
-   - [ ] Generation operators
-   - [ ] Mutation operators
-   - [ ] Selection operators
-   - [ ] Crossover operators
-- [ ] Genetic Hotspots through Age epigenetic marker
+   - [ ] Generation operators - requires some reimplementation (1hr)
+   - [ ] Mutation operators - requires some reimplementation (1hr)
+   - [ ] Selection operators - requires a little reimplementation (30mins)
+   - [x] Crossover operators
+- [ ] Genetic Hotspots through Age epigenetic marker - like ALPS
+- [ ] Replace calls to random-choice with rand-nth for clarity
+- [ ] Make terminology and variable naming better
 - [ ] Mock out random numbers for testing purposes
    - https://github.com/trystan/random-seed
 

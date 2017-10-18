@@ -2,7 +2,7 @@
   (:gen-class))
 
 (defn uniform-crossover
-  "Crosses over two programs (note: not individuals) using uniform crossover.
+  "Crosses over two programs or genomes (note: not individuals) using uniform crossover.
    Returns child program."
   [a b]
   (let [min-len (min (count a) (count b))
@@ -26,7 +26,7 @@
   )))
 
 (defn alternation-crossover
-  "Crosses over two programs (note: not individuals) using alternation crossover
+  "Crosses over two programs or genomes (note: not individuals) using alternation crossover
   takes alternation rate and alignment-deviation"
   ;alternation
   [prog-a prog-b alternation-rate alignment-deviation]

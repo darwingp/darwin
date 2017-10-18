@@ -7,23 +7,28 @@
 (def event-percentage-del 7)
 
 (defn uniform-deletion
-  "Randomly deletes instructions from program at some rate. Returns child program."
+  "Randomly deletes instructions/genes from a program/genome at some rate.
+   Returns child program/genome."
   [prog]
   (filter
     (fn [_] (not (true-percent? event-percentage-del))) ;; Don't delete 95% of the time
     prog))
 
+;; TODO: how make new genes from instructions and literals?
+
+;; TODO: make this use a percent-literal like uniform-mutation
 (defn uniform-addition
-  "Randomly adds new instructions before every instruction
-   (and at the end of the program) with some probability.
-   Returns child program."
-  [instructions program]
-  (reduce
-    #(if (true-percent? event-percentage-add) ;; do an addition 5% of the time
-      (concat %1 (list (random-choice instructions) %2))
-      (concat %1 (list %2)))
-    (list)
-    program))
+  "Randomly adds new instructions/genes to an input program/genome
+   before every instruction (and at the end) with some probability.
+   Returns child program/genome."
+  [instructions literals program]
+  (let [instrs-n-lits (concat instructions literals)]
+    (reduce
+      #(if (true-percent? event-percentage-add) ;; do an addition 5% of the time
+        (concat %1 (list (rand-nth instrs-n-lits) %2))
+        (concat %1 (list %2)))
+      (list)
+      program)))
 
 (defn uniform-mutation
   "Has an n percent chance of replacing each instruction in a program with a
@@ -32,7 +37,7 @@
   (map
     #(if (true-percent? event-percentage-add) ; do a mutation 5% of the time
       (if (< (rand) percent-literal)
-       (random-choice literals)
-       (random-choice instructions))
+       (rand-nth literals)
+       (rand-nth instructions))
        %)
     program))
