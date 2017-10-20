@@ -3,6 +3,15 @@
   (:require [push307.push :refer :all])
   (:gen-class))
 
+(defn binary-rand-nth
+  "Returns a random member of collection 'a` 'bias-percent` of the
+  time or a random member of collection 'b` the rest of the time.
+  'bias-percent` is a float from 0.0 to 1.0"
+  [bias-percent a b]
+  (if (< (rand) bias-percent)
+    (rand-nth a)
+    (rand-nth b)))
+
 (defn true-percent?
   "Returns true n percent of the time."
   [n]

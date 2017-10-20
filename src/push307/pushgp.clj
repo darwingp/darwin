@@ -10,10 +10,11 @@
   (:gen-class))
 
 ;parameters
-(def epsilon-percent 0.05)
-(def epsilon-pool-size 10)
-(def literal-range (range 6))
-(def literal-add% 0.15)
+;; TODO: these need to be moved into the GP parameters in core.clj
+;; JACK: why did you use this? Why not just use the literals?
+;(def literal-range (range 6))
+(def literal-add% 0.15) ; JACK: shouldn't this just be :initial-percent-literals
+                        ;       from the GP parameters?
 
 ;; TODO: literal% and mutation operators
 (defn select-and-vary
@@ -34,7 +35,10 @@
       (< v 80) (uniform-addition instructions literals
                  (:program (tournament-selection population 30)))
       :else (uniform-mutation
-              instructions literal-range literal-add%
+              instructions
+;              literal-range
+              literals
+              literal-add%
               (:program (tournament-selection population 30)))
 ))))
 
