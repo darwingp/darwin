@@ -5,7 +5,7 @@
   (:require [push307.pushgp.crossover :refer :all])
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
-  (:require [push307.pushgp.generation :refer :all])
+  (:require [push307.push.generation :refer :all])
   (:require [push307.graphics.plotter :refer :all])
   (:gen-class))
 
@@ -27,23 +27,21 @@
     ;percentage weights for various combinations expressed as conditional
     (cond
       (< v 60) (uniform-crossover
-                  (:program (tournament-selection population 30))
-                  (:program (tournament-selection population 30)))
+                 (:program (tournament-selection population 30))
+                 (:program (tournament-selection population 30)))
       (< v 70) (uniform-deletion
                  (:program (tournament-selection population 30)))
       (< v 80) (uniform-addition instructions literals
                  (:program (tournament-selection population 30)))
       :else (uniform-mutation
-                    instructions literal-range literal-add%
-                    (:program (tournament-selection population 30)))
+              instructions literal-range literal-add%
+              (:program (tournament-selection population 30)))
 ))))
-
-(def indiv-error (fn [x] (:total-error x)))
 
 (defn best-fit
   "takes population and determines best function fitness"
   [population]
-  (reduce min (map indiv-error population)))
+  (reduce min (map overall-error population)))
 
 (defn median
   "return median"
@@ -114,7 +112,9 @@
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
-  [population-size instrs literals max-initial-program-size]
+  [population-size instrs literals percent-literals
+   max-initial-program-size
+   min-initial-program-size]
   (iterate
     (fn [population]
       (repeatedly
@@ -126,14 +126,16 @@
         (generate-random-program
           instrs
           literals
-          max-initial-program-size)))))
+          percent-literals
+          max-initial-program-size
+          min-initial-program-size)))))
 
-(defn findl
+(defn find-list
   "Finds the first element in l for which p is true"
   [p l]
   (first (drop-while #(not (p %)) l)))
 
-(defn push-gp
+(defn run-gp
   "Main GP loop. Initializes the population, and then repeatedly
   generates and evaluates new populations. Stops and returns :SUCCESS
   if it finds an individual with 0 error, or if it exceeds the maximum
@@ -147,20 +149,28 @@
    - instructions (a list of instructions)
    - literals (a list of literals)
    - number-inputs (the number of inputs the program will take)
-   - max-initial-program-size (max size of randomly generated programs)"
-  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size]}]
-  ;start graphical system
+   - max-initial-program-size (max size of randomly generated programs)
+   - min-initial-program-size (minimum size of randomly generated programs)
+   - initial-percent-literals (how much of randomly generated programs should be literals, a float from 0.0 to 1.0)"
+  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals]}]
   (start-plotter)
-  (let [all-inputs (take number-inputs ins)
-        all-instrs (concat all-inputs instructions)
+  (let [all-inputs (take number-inputs ins) ; generate in1, in2, in3, ...
         gens (take
                max-generations
                (make-generations
                  population-size
-                 all-instrs
-                 literals
-                 max-initial-program-size))
+                 (concat all-inputs instructions)
+                 literals ;; THINK ON: should inputs be considered literals
+                          ;; or instructions?
+                 initial-percent-literals
+                 max-initial-program-size
+                 min-initial-program-size))
         tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
-        trace (fn [idx v] (report v (inc idx)) v)
-        result (findl population-has-solution (map-indexed trace tested-gens))]
+        result (find-list
+                 population-has-solution
+                 (map-indexed
+                   #(do
+                     (report %2 (inc %1))
+                     %2)
+                   tested-gens))]
     (if (nil? result) nil :SUCCESS)))
