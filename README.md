@@ -1,16 +1,20 @@
 # push307
 
-Evolves a program to build another program that moves a car through a given maze. This was
-implemented for Hamilton College's CS 307: Genetic Programming class. This is the work of Jack Hay and Nate Symer.
+Versatile GP system that supports the evolution of both Push programs and Plush genomes. Specifically
+designed to solve a symbolic regression problem and a pathfinding problem. This was implemented for
+Hamilton College's CPSCI 307 (Genetic Programming) class as taught by professor Thomas Helmuth.
+This is the work of Jack Hay and Nate Symer.
 
 ## Usage
 
-There are two ways to run the main PushGP function:
+There are two ways to run the main GP function:
 
 1. Load `core.clj` into the interpreter, and then run `(-main)`.
 2. From the command line, run `lein run`.
 
 ## Idea for Expansion
+
+New GP system: Plush, Behavioral diversity, and Gene-level ALPS (age based genetic hotspots)
 
 Car driver
   - Avoid obstacles
@@ -32,24 +36,29 @@ Virtual machine
 - [ ] Adapt GP to use Plush genomes instead of push programs
    - [x] Generation operators
    - [x] Mutation operators
-   - [ ] Selection operators - requires a little reimplementation (30mins)
+   - [x] Selection operators
    - [x] Crossover operators
+   - [ ] Use these changes in pushgp.clj
 - [ ] Genetic Hotspots through Age epigenetic marker - like ALPS
-- [ ] Replace calls to random-choice with rand-nth for clarity
-- [ ] Make terminology and variable naming better
+- [x] Replace calls to random-choice with rand-nth for clarity
+- [ ] Improve terminology and variable names
+  - [ ] Things like error vs fitness and :total-error vs overall-error
 - [ ] Mock out random numbers for testing purposes
    - https://github.com/trystan/random-seed
 
 ### Jack (virtual machine out)
 
-- [ ] Measure behavior diversity - VM
+- [ ] Virtual Machine
+- [ ] Move hardcoded percentages and GP parameters to core.clj
+  - [ ] Hardcoded params in pushgp.clj
+  - [ ] Look through other files too
+- [ ] Measure behavior diversity
+  - [ ] Figure out how to calculate this based on output from the VM
+  - [ ] Implement it!
 - [ ] UI
-- [ ] UI - Clean up special cases for average (refactor)
-
-### Ongoing
-
-- [ ] Virtual machine
-- [ ] Make decisions on things like error/fitness
+  - [ ] Clean up special cases for average (refactor)
+  - [ ] Adapt for differing screen sizes
+  - [ ] Implement drawing in terms of frames, not modifying UI state.
 - [ ] More Push instructions - these need to manipulate a stack of VM instructions
 
 ### Other

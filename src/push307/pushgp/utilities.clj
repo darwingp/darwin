@@ -49,8 +49,6 @@
   [v]
   { :instruction v :close (rand-int 10) })
 
-(def random-choice rand-nth)
-
 ;; any time a test is mentioned, it's the idx in the individual.
 
 (defn error-on-test
@@ -80,4 +78,4 @@
 (defn number-tests
   "Returns the number of tests for a population."
   [pop]
-  (count (:errors (random-choice pop))))
+  (count (:errors (rand-nth pop))))
