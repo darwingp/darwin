@@ -16,6 +16,10 @@
 (def literal-add% 0.15) ; JACK: shouldn't this just be :initial-percent-literals
                         ;       from the GP parameters?
 
+(def event-percentage-add 7)
+(def event-percentage-mutate 7)
+(def event-percentage-del 7)
+
 ;; TODO: literal% and mutation operators
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
@@ -31,14 +35,19 @@
                  (:program (tournament-selection population 30))
                  (:program (tournament-selection population 30)))
       (< v 70) (uniform-deletion
+                 event-percentage-del
                  (:program (tournament-selection population 30)))
-      (< v 80) (uniform-addition instructions literals
+      (< v 80) (uniform-addition
+                 instructions
+                 literals
+                 literal-add%
+                 event-percentage-add
                  (:program (tournament-selection population 30)))
       :else (uniform-mutation
               instructions
-;              literal-range
-              literals
+              literals ; literal-range
               literal-add%
+              event-percentage-mutate
               (:program (tournament-selection population 30)))
 ))))
 

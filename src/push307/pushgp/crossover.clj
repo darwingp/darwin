@@ -22,8 +22,7 @@
     (Math/round
     (* alignment
      (* (Math/sqrt (* -2 (Math/log u)))
-        (Math/cos (* 2 Math/PI v))))
-  )))
+        (Math/cos (* 2 Math/PI v)))))))
 
 (defn alternation-crossover
   "Crosses over two programs or genomes (note: not individuals) using alternation crossover
@@ -38,5 +37,4 @@
       (do
         (if (< (rand) alternation-rate)
           (recur (+ index (add-noise alignment-deviation)) (cons (nth pa (Math/abs index)) child) pb pa)
-           (recur (+ index 1) (cons (nth pa (Math/abs index)) child) pa pb)
-    )))))
+          (recur (+ index 1) (cons (nth pa (Math/abs index)) child) pa pb))))))

@@ -30,8 +30,8 @@ Virtual machine
 ### Nate (up to virtual machine)
 
 - [ ] Adapt GP to use Plush genomes instead of push programs
-   - [ ] Generation operators - requires some reimplementation (1hr)
-   - [ ] Mutation operators - requires some reimplementation (1hr)
+   - [x] Generation operators
+   - [x] Mutation operators
    - [ ] Selection operators - requires a little reimplementation (30mins)
    - [x] Crossover operators
 - [ ] Genetic Hotspots through Age epigenetic marker - like ALPS
