@@ -38,7 +38,9 @@ Virtual machine
    - [x] Mutation operators
    - [x] Selection operators
    - [x] Crossover operators
-   - [ ] Use these changes in pushgp.clj
+   - [ ] Run tests on genomic individuals
+   - [ ] Make genetic operators all work on individuals so that
+         a core.clj option can switch between genomes and programs
 - [ ] Genetic Hotspots through Age epigenetic marker - like ALPS
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [ ] Improve terminology and variable names
