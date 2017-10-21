@@ -13,9 +13,11 @@
 ;; TODO: these need to be moved into the GP parameters in core.clj
 ;; JACK: why did you use this? Why not just use the literals?
 ;(def literal-range (range 6))
+
 (def literal-add% 0.15) ; JACK: shouldn't this just be :initial-percent-literals
                         ;       from the GP parameters?
 
+;; TODO: move into run-gp parameters
 (def event-percentage-add 7)
 (def event-percentage-mutate 7)
 (def event-percentage-del 7)
@@ -142,11 +144,6 @@
           percent-literals
           max-initial-program-size
           min-initial-program-size)))))
-
-(defn find-list
-  "Finds the first element in l for which p is true"
-  [p l]
-  (first (drop-while #(not (p %)) l)))
 
 (defn run-gp
   "Main GP loop. Initializes the population, and then repeatedly

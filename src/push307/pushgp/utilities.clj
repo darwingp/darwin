@@ -3,6 +3,11 @@
   (:require [push307.push :refer :all])
   (:gen-class))
 
+(defn find-list
+  "Finds the first element in l for which p is true"
+  [p l]
+  (first (drop-while #(not (p %)) l)))
+
 (defn binary-rand-nth
   "Returns a random member of collection 'a` 'bias-percent` of the
   time or a random member of collection 'b` the rest of the time.
