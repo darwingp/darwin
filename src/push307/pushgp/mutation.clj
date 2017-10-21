@@ -20,7 +20,7 @@
       (concat %1 (list (binary-rand-nth percent-literal literals instructions) %2))
       (concat %1 (list %2)))
     (list)
-    program)))
+    program))
 
 (defn uniform-addition-genome
   "Same as uniform-addition, but works on a plush genome instead of a push program."
