@@ -90,37 +90,37 @@
     :best-size (count (:program (best-overall-fitness pop)))
     :generation gen })
 
+(defn print-many-ln
+  "Prints args to stdout in a user-friendly way."
+  [& args]
+  (println (apply str (map print-str args))))
+
 (defn report
-  "Reports information on each generation."
-  [population generation]
-   (let [current-state (fill-state population generation)
+  "Reports information on a generation."
+  [population generation-num]
+   (let [current-state (fill-state population generation-num)
          best (best-overall-fitness population)]
-    ; plot data points
+    ;; plot data points
     (add-pt current-state :points-fit line-color-1)
-  ;  (add-pt current-state :points-behavior line-color-2)
+    ; (add-pt current-state :points-behavior line-color-2)
     (add-pt current-state :average-fitness line-color-3)
     (add-pt current-state :best-size line-color-4)
 
-    ; print to console
-    (println "------------------------------------")
-    (println (str "        Report for Generation " generation))
-    (println "------------------------------------")
-    (print "Best program: ")
-    (println (:program best))
-    (print "Best program errors: ")
-    (println (:errors best))
-    (print "Best program size: ")
-    (println (count (:program best)))
-    (print "Best total fitness: " )
-    (println (double (:total-error best)))
-    (print "Best 20 errors: ")
-    (println (best-n-errors population 20))))
+    ;; print stats to the console
+    (print-many-ln "------------------------------------")
+    (print-many-ln "        Report for Generation " generation-num)
+    (print-many-ln "------------------------------------")
+    (print-many-ln "Best individual: " (:program best))
+    (print-many-ln " -> errors: " (:errors best))
+    (print-many-ln " -> total error: " (:total-error best))
+    (print-many-ln " -> size: " (count (:program best)))
+    (print-many-ln "Best 20 errors: " (best-n-errors population 20))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
    False otherwise."
   [population]
-  (not (empty? (filter zero? (map :total-error population)))))
+  (not (nil? (find-list zero? (map :total-error population)))))
 
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
