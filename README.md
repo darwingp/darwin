@@ -14,7 +14,7 @@ There are two ways to run the main GP function:
 
 ## Idea for Expansion
 
-New GP system: Plush, Behavioral diversity, and Gene-level ALPS (age based genetic hotspots)
+New GP system: Plush, Behavioral diversity, and Gene-level ALPS (gene-age based genetic hotspots)
 
 Car driver
   - Avoid obstacles
@@ -33,6 +33,11 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
+- [ ] Generalize select-and-vary
+  - [ ] run-gp parameter for selection
+        (a function that takes a population and returns an individual)
+  - [ ] run-gp parameter for crossover
+        (a function that takes two individuals and returns a new individual) 
 - [ ] Adapt GP to use Plush genomes instead of push programs
    - [x] Generation operators
    - [x] Mutation operators
@@ -40,13 +45,11 @@ Virtual machine
    - [x] Crossover operators
    - [ ] Run tests on genomic individuals
    - [ ] Make genetic operators all work on individuals so that
-         a core.clj option can switch between genomes and programs
-- [ ] Genetic Hotspots through Age epigenetic marker - like ALPS
+         a run-gp option can switch between genomes and programs
+- [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [ ] Improve terminology and variable names
   - [ ] Things like error vs fitness and :total-error vs overall-error
-- [ ] Mock out random numbers for testing purposes
-   - https://github.com/trystan/random-seed
 
 ### Jack (virtual machine out)
 
@@ -67,6 +70,8 @@ Virtual machine
 
 - [ ] Implement CI pipeline strategy
 - [ ] Trace system for maintaining diversity
+- [ ] Mock out random numbers for testing purposes
+   - https://github.com/trystan/random-seed
 
 ### Machine specifications
 
