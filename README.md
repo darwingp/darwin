@@ -49,9 +49,10 @@ Virtual machine
     :errors '()    ; A list of numeric values, where a value at index n corresponds to
                    ; the error on the nth test case.
   }
+"genome" -> A list of genes
 
-"population" -> A set of individuals
-"generation" -> At any given state of the GP algorithm, the set of individuals
+"population" -> A list of individuals
+"generation" -> A list; At any given state of the GP algorithm, the set of individuals
                 who are ontologically related to the initial population and
                 have similar lineage, as well as any programs introduced into that set.
 
@@ -70,10 +71,7 @@ Virtual machine
    - [x] Selection operators
    - [x] Crossover operators
    - [ ] Better 
-   - [ ] Improve genome translation
-         - [ ] Have :open add paren before instruction
-         - [ ] Rewrite open-close-sequence-to-list to ignore extra closing parens and
-               fill in 
+   - [ ] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [ ] Make genetic operators genome-aware by making them take individuals rather than programs
 - [ ] Genetic Hotspots through :age epigenetic marker - like ALPS

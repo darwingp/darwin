@@ -27,6 +27,12 @@
                   ;; which we keep if the number of read things is >1
                   (if (= (count l) 1) (first l) l)))))
 
+;; TODO: new algorithm for translation:
+;;       1. Add parens directly to program as needed
+;;       2. Keep track of the number of open parens
+;;       3. Translate in reverse to enable auto-parens for things like exec_if
+;;             call this "arity"
+
 (defn translate-plush-genome-to-push-program
   "Takes as input a Plush genome as either a list or a vector.
    and translates it to the correct Push program with balanced parens. The
