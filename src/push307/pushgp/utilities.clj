@@ -1,6 +1,7 @@
 (ns push307.pushgp.utilities
   (:require [push307.push.utilities :refer :all])
   (:require [push307.push :refer :all])
+  (:require [push307.plush.translate :refer :all])
   (:gen-class))
 
 (defn find-list
@@ -22,6 +23,17 @@
   [n]
   (<= (inc (rand-int 100)) n))
 
+(defn prepare-individual
+  "Prepares an individual to be tested/ran. Takes an individual
+   and returns a copy of it that's ready to be ran. This involves
+   checking for the presence of a genome and setting :program accordingly."
+  [ind]
+  (-> ind
+    (assoc :errors '())
+    (assoc :total-error 0)
+    (when (not (nil? (:genome ind)))
+      (assoc :program (translate-plush-genome-to-push-program (:genome ind))))))
+
 (defn make-testcase
   "Tests are functions that take a program and return an error.
    This function takes inputs which are used to construct an initial
@@ -41,8 +53,10 @@
    individual. Then sums that and sets it to :total-error."
   [individual tests]
   (let [prog (:program individual)
-        errors (pmap #(% prog) tests)] ;; Does pmap affect randomness?
-    (assoc (assoc individual :errors errors) :total-error (reduce +' errors))))
+        errors (pmap #(% prog) tests)]
+    (-> individual
+      (assoc :errors errors)
+      (assoc :total-error (reduce +' errors)))))
 
 (defn new-individual
   "Creates a blank individual from a push program in list form."
@@ -68,16 +82,11 @@
     #(if (< (error-on-test %1 test-idx) (error-on-test %2 test-idx)) %1 %2)
     population))
 
-(defn overall-error
-  "return total error for individual"
-  [individual]
-  (:total-error individual))
-
 (defn best-overall-fitness
-  "get best fitness"
+  "Returns the member of the population with the the lowest total error."
   [population]
   (reduce
-    #(if (< (overall-error %1) (overall-error %2)) %1 %2)
+    #(if (< (:total-error %1) (:total-error %2)) %1 %2)
     population))
 
 (defn number-tests

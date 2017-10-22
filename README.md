@@ -29,6 +29,32 @@ Virtual machine
  - metrics (how many instrs used, distance, finished or not, # crashes, location of crashes)
    - These metrics could translate into behavioral diversity
 
+## Terminology
+
+"testcase" -> A function that takes a Push program and returns a numberical error value.
+              These are usually created/declared through the testcase macro.
+
+"gene" -> A hash map containing a key :instruction which denotes the value of the gene
+          and other keys representing epigenetic markers. Some epigenetic markers include:
+  - `:silent` -> if set to true, the gene is not expressed.
+  - `:open`  -> the number of open parens to insert after the gene 
+  - `:close` -> the number of close parens to insert after the gene
+  - `:no-op` -> No-ops the gene. The gene still affects genome translation.
+
+"individual" -> A hashmap containing the following keys:
+  {
+    :program '()   ; A list of instructions and literals
+    :genome '()    ; A list of @gene@s
+    :total-error 0 ; A numeric value equal to the sum of all errors
+    :errors '()    ; A list of numeric values, where a value at index n corresponds to
+                   ; the error on the nth test case.
+  }
+
+"population" -> A set of individuals
+"generation" -> At any given state of the GP algorithm, the set of individuals
+                who are ontologically related to the initial population and
+                have similar lineage, as well as any programs introduced into that set.
+
 ## TODO
 
 ### Nate (up to virtual machine)
@@ -43,17 +69,25 @@ Virtual machine
    - [x] Mutation operators
    - [x] Selection operators
    - [x] Crossover operators
-   - [ ] Run tests on genomic individuals
-   - [ ] Make genetic operators all work on individuals so that
-         a run-gp option can switch between genomes and programs
+   - [ ] Better 
+   - [ ] Improve genome translation
+         - [ ] Have :open add paren before instruction
+         - [ ] Rewrite open-close-sequence-to-list to ignore extra closing parens and
+               fill in 
+   - [x] Run testcases on genomic individuals
+   - [ ] Make genetic operators genome-aware by making them take individuals rather than programs
 - [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
+    - [ ] This genetic marker is untouched by translation; instead it's
+          used solely by genetic operators.
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [ ] Improve terminology and variable names
-  - [ ] Things like error vs fitness and :total-error vs overall-error
+  - [x] Things like error vs fitness and :total-error vs overall-error
+  - [x] Document format for individials, genes, etc.
 
 ### Jack (virtual machine out)
 
 - [ ] Virtual Machine
+  - [ ] Virtual machine instructions
 - [ ] Move hardcoded percentages and GP parameters to core.clj
   - [ ] Hardcoded params in pushgp.clj
   - [ ] Look through other files too
@@ -64,7 +98,10 @@ Virtual machine
   - [ ] Clean up special cases for average (refactor)
   - [ ] Adapt for differing screen sizes
   - [ ] Implement drawing in terms of frames, not modifying UI state.
-- [ ] More Push instructions - these need to manipulate a stack of VM instructions
+- [ ] Push instructions - these need to manipulate a stack of VM instructions
+- [ ] Push exec_ instructions
+
+NOTE*** After all TODO items are complete, we need to check each other's work.
 
 ### Other
 

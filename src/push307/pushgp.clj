@@ -56,7 +56,7 @@
 (defn best-fit
   "takes population and determines best function fitness"
   [population]
-  (reduce min (map overall-error population)))
+  (reduce min (map :total-error population)))
 
 (defn median
   "return median"
@@ -72,7 +72,7 @@
 (defn best-n-errors
   "returns lowest n errors in population"
   [pop n]
-  (take n (sort (map overall-error pop)))
+  (take n (sort (map :total-error pop)))
 )
 
 (defn lowest-size
@@ -127,7 +127,10 @@
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
-  [population-size instrs literals percent-literals
+  [population-size
+   instrs
+   literals
+   percent-literals
    max-initial-program-size
    min-initial-program-size]
   (iterate
@@ -175,7 +178,8 @@
                  initial-percent-literals
                  max-initial-program-size
                  min-initial-program-size))
-        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
+        prepared-gens (map #(map prepare-individual %) gens)
+        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) prepared-gens)
         result (find-list
                  population-has-solution
                  (map-indexed
