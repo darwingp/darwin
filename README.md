@@ -60,20 +60,19 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [ ] Generalize select-and-vary
-  - [ ] run-gp parameter for selection
-        (a function that takes a population and returns an individual)
-  - [ ] run-gp parameter for crossover
-        (a function that takes two individuals and returns a new individual) 
 - [ ] Adapt GP to use Plush genomes instead of push programs
    - [x] Generation operators
    - [x] Mutation operators
    - [x] Selection operators
    - [x] Crossover operators
-   - [ ] Better 
    - [ ] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [ ] Make genetic operators genome-aware by making them take individuals rather than programs
+- [ ] Generalize select-and-vary
+  - [ ] run-gp parameter for selection
+        (a function that takes a population and returns an individual)
+  - [ ] run-gp parameter for crossover
+        (a function that takes two individuals and returns a new individual) 
 - [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
     - [ ] This genetic marker is untouched by translation; instead it's
           used solely by genetic operators.
