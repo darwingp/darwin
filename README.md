@@ -37,9 +37,9 @@ Virtual machine
 "gene" -> A hash map containing a key :instruction which denotes the value of the gene
           and other keys representing epigenetic markers. Some epigenetic markers include:
   - `:silent` -> if set to true, the gene is not expressed.
-  - `:open`  -> the number of open parens to insert after the gene 
   - `:close` -> the number of close parens to insert after the gene
   - `:no-op` -> No-ops the gene. The gene still affects genome translation.
+  - `:arity` -> The arity of a push instruction. Affects parenthesization.
 
 "individual" -> A hashmap containing the following keys:
   {
@@ -67,7 +67,7 @@ Virtual machine
    - [x] Crossover operators
    - [ ] Rewrite translation
    - [x] Run testcases on genomic individuals
-   - [ ] Make genetic operators genome-aware by making them take individuals rather than programs
+   - [x] Make genetic operators genome-aware by making them take individuals rather than programs
 - [ ] Generalize select-and-vary
   - [ ] run-gp parameter for selection
         (a function that takes a population and returns an individual)
@@ -77,7 +77,7 @@ Virtual machine
     - [ ] This genetic marker is untouched by translation; instead it's
           used solely by genetic operators.
 - [x] Replace calls to random-choice with rand-nth for clarity
-- [ ] Improve terminology and variable names
+- [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
   - [x] Document format for individials, genes, etc.
 
