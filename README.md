@@ -60,12 +60,12 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [ ] Adapt GP to use Plush genomes instead of push programs
+- [x] Adapt GP to use Plush genomes instead of push programs
    - [x] Generation operators
    - [x] Mutation operators
    - [x] Selection operators
    - [x] Crossover operators
-   - [ ] Rewrite translation
+   - [x] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
 - [ ] Generalize select-and-vary
