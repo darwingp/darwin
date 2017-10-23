@@ -1,4 +1,4 @@
-# darwin
+# Darwin
 
 Versatile GP system that supports the evolution of both Push programs and Plush genomes. Specifically
 designed to solve a symbolic regression problem and a pathfinding problem. This was implemented for
@@ -68,6 +68,7 @@ Virtual machine
    - [x] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
+- [ ] Fix size decimation
 - [ ] Generalize select-and-vary
   - [ ] run-gp parameter for selection
         (a function that takes a population and returns an individual)
