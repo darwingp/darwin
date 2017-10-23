@@ -28,10 +28,15 @@
                   (if (= (count l) 1) (first l) l)))))
 
 (defn recursive-reverse
-  "Reverses all elements in the input with "
+  "Reverses all elements in 'coll` and reverses all sub-collections in 'coll`."
   [coll]
   (reverse (map #(if (seq? %) (recursive-reverse %) %) coll)))
 
+;; TODO: the order of this function is backwards.
+;;       Genomes are in the same order as push programs
+;; CITE https://erp12.github.io/push-redux/pages/intro_to_push/
+;; CITE https://push-language.hampshire.edu/t/plush-genomes/279
+;; DESC ordering of push programs & plush genomes
 (defn translate-plush-genome-to-push-program
   "Takes as input a Plush genome and translates it to the correct Push program with
    balanced parens. As the linear Plush genome is traversed, each instruction that requires
@@ -49,15 +54,19 @@
    Instruction maps that have :silence set to true will be ignored entirely."
   [genome]
   (loop [prog [] ; The Push program incrementally being built
-         gn (apply list (reverse genome)) ; The linear Plush genome, where items will be popped off the front. Each item is a map containing at least the key :instruction, and unless the program is flat, also :close
+         gn (reverse genome) ; The linear Plush genome, where items will be popped off the front. Each item
+                             ; is a map containing at least the key :instruction, and unless the program is flat, also :close
          num-parens-here 0 ; The number of parens that still need to be added at this location.
-         paren-stack '()] ; Whenever an instruction requires parens grouping, it will push either :close or :close-open on this stack. This will indicate what to insert in the program the next time a paren is indicated by the :close key in the instruction map.
+         paren-stack '()] ; Whenever an instruction requires parens grouping, it will push either :close or
+                          ; :close-open on this stack. This will indicate what to insert in the program the
+                          ; next time a paren is indicated by the :close key in the instruction map.
     (cond
       ; Check if need to add close parens here
       (< 0 num-parens-here) (recur (cond
                                      (= (first paren-stack) :close) (conj prog :close)
                                      (= (first paren-stack) :close-open) (conj (conj prog :close) :open)
-                                     :else prog) ; If paren-stack is empty, we won't put any parens in even though the :close epigenetic marker indicated to do so
+                                     :else prog) ; If paren-stack is empty, we won't put any parens in
+                                                 ; even though the :close epigenetic marker indicated to do so
                                    gn
                                    (dec num-parens-here)
                                    (rest paren-stack))
@@ -91,6 +100,6 @@
                        (conj prog instr)
                        (conj (conj prog instr) :open))
                      (rest gn)
-                     (get (first gn) :close 0) ; The number of close parens to put after this instruction;
+                     (get (first gn) :close 0) ; The number of close parens to put after this instruction
                      new-paren-stack)))))
 
