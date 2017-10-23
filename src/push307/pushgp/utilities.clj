@@ -23,16 +23,19 @@
   [n]
   (<= (inc (rand-int 100)) n))
 
+; The default individual
+(def default-individual { :errors '()
+                          :total-error 0
+                          :program '() })
+
 (defn prepare-individual
-  "Prepares an individual to be tested/ran. Takes an individual
-   and returns a copy of it that's ready to be ran. This involves
-   checking for the presence of a genome and setting :program accordingly."
+  "Prepares an individual for running/testing. Takes an individual
+   and returns a copy of it that's ready for use. This involves
+   checking for the presence of a :genome and setting :program accordingly."
   [ind]
-  (-> ind
-    (assoc :errors '())
-    (assoc :total-error 0)
-    (when (not (nil? (:genome ind)))
-      (assoc :program (translate-plush-genome-to-push-program (:genome ind))))))
+  (if (not (nil? (:genome ind)))
+    (merge ind default-individual { :program (translate-plush-genome-to-push-program (:genome ind)) })
+    (merge ind default-individual)))
 
 (defn make-testcase
   "Tests are functions that take a program and return an error.
@@ -53,15 +56,15 @@
    individual. Then sums that and sets it to :total-error."
   [individual tests]
   (let [prog (:program individual)
-        errors (pmap #(% prog) tests)]
-    (-> individual
-      (assoc :errors errors)
-      (assoc :total-error (reduce +' errors)))))
+        errors (pmap #(% prog) tests)
+        result (merge individual {:errors errors
+                       :total-error (reduce +' errors) })]
+        result))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
   [v]
-  { :instruction v :close (rand-int 10) })
+  { :instruction v })
 
 ;; any time a test is mentioned, it's the idx in the individual.
 

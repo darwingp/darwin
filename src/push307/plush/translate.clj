@@ -15,7 +15,6 @@
         (empty? sequence) ()
         :else (let [opens (count (filter #(= :open %) sequence))
                     closes (count (filter #(= :close %) sequence))]
-                (println (str sequence))
                 (assert (= opens closes)
                         (str "open-close sequence must have equal numbers of :open and :close; this one does not:\n" sequence))
 
@@ -30,7 +29,7 @@
 (defn recursive-reverse
   "Reverses all elements in 'coll` and reverses all sub-collections in 'coll`."
   [coll]
-  (reverse (map #(if (seq? %) (recursive-reverse %) %) coll)))
+  (reverse (map #(if (and (seq? %) (not (string? %))) (recursive-reverse %) %) coll)))
 
 ;; TODO: the order of this function is backwards.
 ;;       Genomes are in the same order as push programs

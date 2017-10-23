@@ -6,6 +6,7 @@
   (:require [push307.pushgp.selection :refer :all])
   (:require [push307.pushgp.mutation :refer :all])
   (:require [push307.push.generation :refer :all])
+  (:require [push307.plush.generation :refer :all])
   (:require [push307.graphics.plotter :refer :all])
   (:gen-class))
 
@@ -32,7 +33,8 @@
   (let [v (rand-int 100)
         getter (if genomic :genome :program)]
     ;percentage weights for various combinations expressed as conditional
-    { getter
+    (prepare-individual
+    {getter
       (cond
         (< v 60) (uniform-crossover
                    (getter (tournament-selection population 30))
@@ -53,7 +55,7 @@
                 event-percentage-mutate
                 (getter (tournament-selection population 30)))
         )
-     }))
+     })))
 
 (defn best-fit
   "takes population and determines best function fitness"
@@ -143,13 +145,12 @@
         #(select-and-vary genomic instrs literals population)))
     (repeatedly
       population-size
-      #(assoc {} (if genomic :genome :program)
-        ((if genomic generate-random-genome generate-random-program)
+       #((if genomic generate-random-genome generate-random-program)
           instrs
           literals
           percent-literals
           max-initial-program-size
-          min-initial-program-size)))))
+          min-initial-program-size))))
 
 (defn run-gp
   "Main GP loop. Initializes the population, and then repeatedly
@@ -182,8 +183,7 @@
                  initial-percent-literals
                  max-initial-program-size
                  min-initial-program-size))
-        prepared-gens (map #(map prepare-individual %) gens)
-        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) prepared-gens)
+        tested-gens (map #(map (fn [x] (run-tests (prepare-individual x) testcases)) %) gens)
         result (find-list
                  population-has-solution
                  (map-indexed
