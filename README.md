@@ -60,7 +60,7 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [x] Adapt GP to use Plush genomes instead of push programs
+- [x] Adapt GP to use Plush genomes in addition to push programs
    - [x] Generation operators
    - [x] Mutation operators
    - [x] Selection operators
