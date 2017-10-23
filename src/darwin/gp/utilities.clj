@@ -1,7 +1,7 @@
-(ns push307.pushgp.utilities
-  (:require [push307.push.utilities :refer :all])
-  (:require [push307.push :refer :all])
-  (:require [push307.plush.translate :refer :all])
+(ns darwin.gp.utilities
+  (:require [darwin.push.utilities :refer :all])
+  (:require [darwin.push :refer :all])
+  (:require [darwin.plush.translate :refer :all])
   (:gen-class))
 
 (defn find-list
@@ -56,10 +56,9 @@
    individual. Then sums that and sets it to :total-error."
   [individual tests]
   (let [prog (:program individual)
-        errors (pmap #(% prog) tests)
-        result (merge individual {:errors errors
-                       :total-error (reduce +' errors) })]
-        result))
+        errors (map #(% prog) tests)]
+        (merge individual {:errors errors
+                                  :total-error (reduce +' errors) })))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."

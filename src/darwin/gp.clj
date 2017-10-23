@@ -1,13 +1,13 @@
-(ns push307.pushgp
-  (:require [push307.push.instructions :refer [ins]])
-  (:require [push307.push.utilities :refer :all])
-  (:require [push307.pushgp.utilities :refer :all])
-  (:require [push307.pushgp.crossover :refer :all])
-  (:require [push307.pushgp.selection :refer :all])
-  (:require [push307.pushgp.mutation :refer :all])
-  (:require [push307.push.generation :refer :all])
-  (:require [push307.plush.generation :refer :all])
-  (:require [push307.graphics.plotter :refer :all])
+(ns darwin.gp
+  (:require [darwin.push.instructions :refer [ins]])
+  (:require [darwin.push.utilities :refer :all])
+  (:require [darwin.gp.utilities :refer :all])
+  (:require [darwin.gp.crossover :refer :all])
+  (:require [darwin.gp.selection :refer :all])
+  (:require [darwin.gp.mutation :refer :all])
+  (:require [darwin.push.generation :refer :all])
+  (:require [darwin.plush.generation :refer :all])
+  (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
 ;parameters

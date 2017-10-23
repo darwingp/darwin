@@ -1,7 +1,7 @@
-(ns push307.core
-  (:require [push307.pushgp :refer :all])
-  (:require [push307.pushgp.testcases :as testcases])
-  (:require [push307.push.instructions :as instructions])
+(ns darwin.core
+  (:require [darwin.gp :refer :all])
+  (:require [darwin.gp.testcases :as testcases])
+  (:require [darwin.push.instructions :as instructions])
   (:gen-class))
 
 (defn -main

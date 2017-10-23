@@ -1,5 +1,5 @@
-(ns push307.pushgp-tests
+(ns darwin.gp-tests
   (:require [clojure.test :refer :all]
-            [push307.pushgp :as pushgp]))
+            [darwin.gp :as pushgp]))
 
 

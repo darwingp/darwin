@@ -1,6 +1,6 @@
-(ns push307.cross-test
+(ns darwin.cross-test
   (:require [clojure.test :refer :all])
-  (:require [push307.pushgp.crossover :as crossover]))
+  (:require [darwin.gp.crossover :as crossover]))
 
 ;(require '[clojure.test.check.generators :as gen]) ; (Note: this is not working)
 (def test-a (range 20))

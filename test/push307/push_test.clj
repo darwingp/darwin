@@ -1,7 +1,7 @@
-(ns push307.push-test
+(ns darwin.push-test
   (:require [clojure.test :refer :all])
-  (:require [push307.push.instructions :refer :all])
-  (:require [push307.push :as push]))
+  (:require [darwin.push.instructions :refer :all])
+  (:require [darwin.push :as push]))
 
 (deftest test-ordered-instructions
   (testing "(2 1 integer_- 1 integer_-)"

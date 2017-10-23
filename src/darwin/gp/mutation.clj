@@ -1,5 +1,5 @@
-(ns push307.pushgp.mutation
-  (:require [push307.pushgp.utilities :refer :all])
+(ns darwin.gp.mutation
+  (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
 (defn uniform-deletion

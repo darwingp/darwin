@@ -1,5 +1,5 @@
-(ns push307.push.generation
-  (:require [push307.pushgp.utilities :as utils])
+(ns darwin.push.generation
+  (:require [darwin.gp.utilities :as utils])
   (:gen-class))
 
 (defn generate-random-program

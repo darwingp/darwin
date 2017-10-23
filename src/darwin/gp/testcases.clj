@@ -1,5 +1,5 @@
-(ns push307.pushgp.testcases
-  (:require [push307.pushgp.utilities :refer :all])
+(ns darwin.gp.testcases
+  (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
 ;; Linear Regression Testcases

@@ -1,4 +1,4 @@
-# push307
+# darwin
 
 Versatile GP system that supports the evolution of both Push programs and Plush genomes. Specifically
 designed to solve a symbolic regression problem and a pathfinding problem. This was implemented for
@@ -86,7 +86,7 @@ Virtual machine
 - [ ] Virtual Machine
   - [ ] Virtual machine instructions
 - [ ] Move hardcoded percentages and GP parameters to core.clj
-  - [ ] Hardcoded params in pushgp.clj
+  - [ ] Hardcoded params in gp.clj
   - [ ] Look through other files too
 - [ ] Measure behavior diversity
   - [ ] Figure out how to calculate this based on output from the VM

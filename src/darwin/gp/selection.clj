@@ -1,5 +1,5 @@
-(ns push307.pushgp.selection
-  (:require [push307.pushgp.utilities :refer :all])
+(ns darwin.gp.selection
+  (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
 ;; FIXME: Something isn't quite right here

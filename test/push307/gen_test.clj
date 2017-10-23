@@ -1,6 +1,6 @@
-(ns push307.gen-test
+(ns darwin.gen-test
   (:require [clojure.test :refer :all])
-  (:require [push307.pushgp.generation :as generation]))
+  (:require [darwin.gp.generation :as generation]))
 
 ;(require '[clojure.test.check.generators :as gen])
 

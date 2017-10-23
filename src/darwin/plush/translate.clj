@@ -1,4 +1,4 @@
-(ns push307.plush.translate
+(ns darwin.plush.translate
   (:require [clojure.string :as string])
   (:gen-class))
 
@@ -26,16 +26,11 @@
                   ;; which we keep if the number of read things is >1
                   (if (= (count l) 1) (first l) l)))))
 
-(defn recursive-reverse
-  "Reverses all elements in 'coll` and reverses all sub-collections in 'coll`."
-  [coll]
-  (reverse (map #(if (and (seq? %) (not (string? %))) (recursive-reverse %) %) coll)))
-
-;; TODO: the order of this function is backwards.
-;;       Genomes are in the same order as push programs
+;; ****Genomes are in the same order as push programs****
 ;; CITE https://erp12.github.io/push-redux/pages/intro_to_push/
 ;; CITE https://push-language.hampshire.edu/t/plush-genomes/279
 ;; DESC ordering of push programs & plush genomes
+;; { :instruction noop_open_paren } == { :no-op true :exec-arity 1 }
 (defn translate-plush-genome-to-push-program
   "Takes as input a Plush genome and translates it to the correct Push program with
    balanced parens. As the linear Plush genome is traversed, each instruction that requires
@@ -53,7 +48,7 @@
    Instruction maps that have :silence set to true will be ignored entirely."
   [genome]
   (loop [prog [] ; The Push program incrementally being built
-         gn (reverse genome) ; The linear Plush genome, where items will be popped off the front. Each item
+         gn genome ; The linear Plush genome, where items will be popped off the front. Each item
                              ; is a map containing at least the key :instruction, and unless the program is flat, also :close
          num-parens-here 0 ; The number of parens that still need to be added at this location.
          paren-stack '()] ; Whenever an instruction requires parens grouping, it will push either :close or
@@ -78,7 +73,7 @@
                                               paren-stack)
 
       ; Check if done
-      (empty? gn) (recursive-reverse (open-close-sequence-to-list (apply list (filter #(not (nil? %)) prog))))
+      (empty? gn) (open-close-sequence-to-list (apply list (filter #(not (nil? %)) prog)))
       
       ; Check for silenced instruction
       (get (first gn) :silent false) (recur prog
@@ -87,18 +82,20 @@
                                             paren-stack)
 
       ; Otherwise, ready for next instruction
-      :else (let [number-paren-groups (get (first gn) :arity 0)
+      :else (let [number-paren-groups (get (first gn) :exec-arity 0)
                   is-noop (get (first gn) :no-op false)
                   instr (if is-noop nil (:instruction (first gn)))
+                  new-prog (conj prog instr)
+                  new-num-parens-here (get (first gn) :close 0) ; The number of close parens to put after this instruction
                   new-paren-stack (if (>= 0 number-paren-groups)
                                     paren-stack
                                     (concat (repeat (dec number-paren-groups) :close-open)
                                             '(:close)
                                             paren-stack))]
               (recur (if (>= 0 number-paren-groups)
-                       (conj prog instr)
-                       (conj (conj prog instr) :open))
+                       new-prog
+                       (conj new-prog :open))
                      (rest gn)
-                     (get (first gn) :close 0) ; The number of close parens to put after this instruction
+                     new-num-parens-here
                      new-paren-stack)))))
 
