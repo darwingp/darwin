@@ -69,6 +69,7 @@ Virtual machine
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
 - [ ] Fix size decimation
+  - [ ] Probably a conflation of min-size vs max-size.
 - [ ] Generalize select-and-vary
   - [ ] run-gp parameter for selection
         (a function that takes a population and returns an individual)
