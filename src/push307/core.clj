@@ -7,7 +7,8 @@
 (defn -main
   "Runs push-gp, giving it a map of arguments."
   [& args]
-  (run-gp {:instructions instructions/all
+  (run-gp {:genomic true
+           :instructions instructions/all
            :literals '(1 2 3 4)
            :testcases testcases/all
            :number-inputs 1

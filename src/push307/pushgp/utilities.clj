@@ -58,11 +58,6 @@
       (assoc :errors errors)
       (assoc :total-error (reduce +' errors)))))
 
-(defn new-individual
-  "Creates a blank individual from a push program in list form."
-  [program]
-  { :program program :errors '() :total-error 0 })
-
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
   [v]
