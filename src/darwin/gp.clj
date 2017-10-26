@@ -1,12 +1,13 @@
-(ns push307.pushgp
-  (:require [push307.push.instructions :refer [ins]])
-  (:require [push307.push.utilities :refer :all])
-  (:require [push307.pushgp.utilities :refer :all])
-  (:require [push307.pushgp.crossover :refer :all])
-  (:require [push307.pushgp.selection :refer :all])
-  (:require [push307.pushgp.mutation :refer :all])
-  (:require [push307.push.generation :refer :all])
-  (:require [push307.graphics.plotter :refer :all])
+(ns darwin.gp
+  (:require [darwin.push.instructions :refer [ins]])
+  (:require [darwin.push.utilities :refer :all])
+  (:require [darwin.gp.utilities :refer :all])
+  (:require [darwin.gp.crossover :refer :all])
+  (:require [darwin.gp.selection :refer :all])
+  (:require [darwin.gp.mutation :refer :all])
+  (:require [darwin.push.generation :refer :all])
+  (:require [darwin.plush.generation :refer :all])
+  (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
 ;parameters
@@ -28,35 +29,38 @@
   a child individual (note: not program). Chooses which genetic operator
   to use probabilistically. Gives 50% chance to crossover,
   25% to uniform-addition, and 25% to uniform-deletion."
-  [instructions literals population]
-  (new-individual
-  (let [v (rand-int 100)]
+  [genomic instructions literals population]
+  (let [v (rand-int 100)
+        getter (if genomic :genome :program)]
     ;percentage weights for various combinations expressed as conditional
-    (cond
-      (< v 60) (uniform-crossover
-                 (:program (tournament-selection population 30))
-                 (:program (tournament-selection population 30)))
-      (< v 70) (uniform-deletion
-                 event-percentage-del
-                 (:program (tournament-selection population 30)))
-      (< v 80) (uniform-addition
-                 instructions
-                 literals
-                 literal-add%
-                 event-percentage-add
-                 (:program (tournament-selection population 30)))
-      :else (uniform-mutation
-              instructions
-              literals ; literal-range
-              literal-add%
-              event-percentage-mutate
-              (:program (tournament-selection population 30)))
-))))
+    (prepare-individual
+    {getter
+      (cond
+        (< v 60) (uniform-crossover
+                   (getter (tournament-selection population 30))
+                   (getter (tournament-selection population 30)))
+        (< v 70) (uniform-deletion
+                   event-percentage-del
+                   (getter (tournament-selection population 30)))
+        (< v 80) (uniform-addition
+                   instructions
+                   literals
+                   literal-add%
+                   event-percentage-add
+                   (getter (tournament-selection population 30)))
+        :else (uniform-mutation
+                instructions
+                literals ; literal-range
+                literal-add%
+                event-percentage-mutate
+                (getter (tournament-selection population 30)))
+        )
+     })))
 
 (defn best-fit
   "takes population and determines best function fitness"
   [population]
-  (reduce min (map overall-error population)))
+  (reduce min (map :total-error population)))
 
 (defn median
   "return median"
@@ -72,7 +76,7 @@
 (defn best-n-errors
   "returns lowest n errors in population"
   [pop n]
-  (take n (sort (map overall-error pop)))
+  (take n (sort (map :total-error pop)))
 )
 
 (defn lowest-size
@@ -127,23 +131,26 @@
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
-  [population-size instrs literals percent-literals
+  [genomic
+   population-size
+   instrs
+   literals
+   percent-literals
    max-initial-program-size
    min-initial-program-size]
   (iterate
     (fn [population]
       (repeatedly
         population-size
-        #(select-and-vary instrs literals population)))
+        #(select-and-vary genomic instrs literals population)))
     (repeatedly
       population-size
-      #(new-individual
-        (generate-random-program
+       #((if genomic generate-random-genome generate-random-program)
           instrs
           literals
           percent-literals
           max-initial-program-size
-          min-initial-program-size)))))
+          min-initial-program-size))))
 
 (defn run-gp
   "Main GP loop. Initializes the population, and then repeatedly
@@ -162,12 +169,13 @@
    - max-initial-program-size (max size of randomly generated programs)
    - min-initial-program-size (minimum size of randomly generated programs)
    - initial-percent-literals (how much of randomly generated programs should be literals, a float from 0.0 to 1.0)"
-  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals]}]
+  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals genomic]}]
   (start-plotter)
   (let [all-inputs (take number-inputs ins) ; generate in1, in2, in3, ...
         gens (take
                max-generations
                (make-generations
+                 genomic
                  population-size
                  (concat all-inputs instructions)
                  literals ;; THINK ON: should inputs be considered literals
@@ -175,7 +183,7 @@
                  initial-percent-literals
                  max-initial-program-size
                  min-initial-program-size))
-        tested-gens (map #(map (fn [x] (run-tests x testcases)) %) gens)
+        tested-gens (map #(map (fn [x] (run-tests (prepare-individual x) testcases)) %) gens)
         result (find-list
                  population-has-solution
                  (map-indexed

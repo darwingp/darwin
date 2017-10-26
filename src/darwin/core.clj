@@ -1,13 +1,14 @@
-(ns push307.core
-  (:require [push307.pushgp :refer :all])
-  (:require [push307.pushgp.testcases :as testcases])
-  (:require [push307.push.instructions :as instructions])
+(ns darwin.core
+  (:require [darwin.gp :refer :all])
+  (:require [darwin.gp.testcases :as testcases])
+  (:require [darwin.push.instructions :as instructions])
   (:gen-class))
 
 (defn -main
   "Runs push-gp, giving it a map of arguments."
   [& args]
-  (run-gp {:instructions instructions/all
+  (run-gp {:genomic true
+           :instructions instructions/all
            :literals '(1 2 3 4)
            :testcases testcases/all
            :number-inputs 1

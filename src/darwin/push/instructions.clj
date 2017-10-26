@@ -1,5 +1,5 @@
-(ns push307.push.instructions
-  (:require [push307.push.utilities :refer :all])
+(ns darwin.push.instructions
+  (:require [darwin.push.utilities :refer :all])
   (:gen-class))
 
 ;; CITE: http://faculty.hampshire.edu/lspector/push3-description.html#Type
@@ -21,7 +21,7 @@
 ;; effect of defining the necessary function for it to work.
 (def ins (map (fn [i]
   (let [sym (symbol (str "in" i))]
-    (intern 'push307.push.instructions sym (make-input-instruction i))
+    (intern 'darwin.push.instructions sym (make-input-instruction i))
     sym))
  (map inc (range))))
 

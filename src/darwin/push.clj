@@ -1,6 +1,6 @@
-(ns push307.push
-  (:require [push307.push.instructions :refer :all])
-  (:require [push307.push.utilities :refer :all])
+(ns darwin.push
+  (:require [darwin.push.instructions :refer :all])
+  (:require [darwin.push.utilities :refer :all])
   (:gen-class))
 
 (def empty-push-state
@@ -23,7 +23,7 @@
       (cond
         (not (nil? stack)) (push-to-stack popped stack v) ;; see stack-for docstring
         (fn? v) (v popped) ;; v is a function
-        (symbol? v) ((ns-resolve 'push307.push.instructions v) popped) ;; v is a symbol pointing to a function
+        (symbol? v) ((ns-resolve 'darwin.push.instructions v) popped) ;; v is a symbol pointing to a function
         (or (list? v) (vector? v)) (push-many-to-stack popped :exec (reverse v))
         :else (println (str "unexpected value: " v))))))
 

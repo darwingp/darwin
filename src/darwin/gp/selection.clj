@@ -1,5 +1,5 @@
-(ns push307.pushgp.selection
-  (:require [push307.pushgp.utilities :refer :all])
+(ns darwin.gp.selection
+  (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
 ;; FIXME: Something isn't quite right here
@@ -29,8 +29,8 @@
   [ep-percent]
   (fn
     [x elite]
-    (let [x-err (float (overall-error x))
-          elite-err (float (overall-error elite))
+    (let [x-err (float (:total-error x))
+          elite-err (float (:total-error elite))
           delta (- 1.0 (/ elite-err x-err))]
       (<= delta ep-percent))))
 

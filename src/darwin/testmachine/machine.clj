@@ -1,5 +1,5 @@
-(ns push307.testmachine.machine
-  (:require [push307.graphics.environment :refer :all])
+(ns darwin.testmachine.machine
+  (:require [darwin.graphics.environment :refer :all])
 (:gen-class))
 
 

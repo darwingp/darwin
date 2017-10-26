@@ -1,4 +1,4 @@
-(ns push307.graphics.environment
+(ns darwin.graphics.environment
   (:gen-class))
 
 (import '(java.awt Color Dimension Graphics Point))

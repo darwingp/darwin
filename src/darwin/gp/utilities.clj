@@ -1,6 +1,7 @@
-(ns push307.pushgp.utilities
-  (:require [push307.push.utilities :refer :all])
-  (:require [push307.push :refer :all])
+(ns darwin.gp.utilities
+  (:require [darwin.push.utilities :refer :all])
+  (:require [darwin.push :refer :all])
+  (:require [darwin.plush.translate :refer :all])
   (:gen-class))
 
 (defn find-list
@@ -22,6 +23,20 @@
   [n]
   (<= (inc (rand-int 100)) n))
 
+; The default individual
+(def default-individual { :errors '()
+                          :total-error 0
+                          :program '() })
+
+(defn prepare-individual
+  "Prepares an individual for running/testing. Takes an individual
+   and returns a copy of it that's ready for use. This involves
+   checking for the presence of a :genome and setting :program accordingly."
+  [ind]
+  (if (not (nil? (:genome ind)))
+    (merge ind default-individual { :program (translate-plush-genome-to-push-program (:genome ind)) })
+    (merge ind default-individual)))
+
 (defn make-testcase
   "Tests are functions that take a program and return an error.
    This function takes inputs which are used to construct an initial
@@ -41,18 +56,14 @@
    individual. Then sums that and sets it to :total-error."
   [individual tests]
   (let [prog (:program individual)
-        errors (pmap #(% prog) tests)] ;; Does pmap affect randomness?
-    (assoc (assoc individual :errors errors) :total-error (reduce +' errors))))
-
-(defn new-individual
-  "Creates a blank individual from a push program in list form."
-  [program]
-  { :program program :errors '() :total-error 0 })
+        errors (map #(% prog) tests)]
+        (merge individual {:errors errors
+                                  :total-error (reduce +' errors) })))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
   [v]
-  { :instruction v :close (rand-int 10) })
+  { :instruction v })
 
 ;; any time a test is mentioned, it's the idx in the individual.
 
@@ -68,16 +79,11 @@
     #(if (< (error-on-test %1 test-idx) (error-on-test %2 test-idx)) %1 %2)
     population))
 
-(defn overall-error
-  "return total error for individual"
-  [individual]
-  (:total-error individual))
-
 (defn best-overall-fitness
-  "get best fitness"
+  "Returns the member of the population with the the lowest total error."
   [population]
   (reduce
-    #(if (< (overall-error %1) (overall-error %2)) %1 %2)
+    #(if (< (:total-error %1) (:total-error %2)) %1 %2)
     population))
 
 (defn number-tests

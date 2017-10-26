@@ -1,6 +1,6 @@
-(ns push307.push.utilities-tests
+(ns darwin.push.utilities-tests
   (:require [clojure.test :refer :all]
-            [push307.push.utilities :as utilities]))
+            [darwin.push.utilities :as utilities]))
 
 (deftest test-push-to-stack
   (testing "pushing to the stack"
