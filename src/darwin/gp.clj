@@ -34,28 +34,28 @@
         getter (if genomic :genome :program)]
     ;percentage weights for various combinations expressed as conditional
     (prepare-individual
-    {getter
-      (cond
-        (< v 60) (uniform-crossover
-                   (getter (tournament-selection population 30))
-                   (getter (tournament-selection population 30)))
-        (< v 70) (uniform-deletion
-                   event-percentage-del
-                   (getter (tournament-selection population 30)))
-        (< v 80) (uniform-addition
-                   instructions
-                   literals
-                   literal-add%
-                   event-percentage-add
-                   (getter (tournament-selection population 30)))
-        :else (uniform-mutation
-                instructions
-                literals ; literal-range
-                literal-add%
-                event-percentage-mutate
-                (getter (tournament-selection population 30)))
-        )
-     })))
+      {getter
+        (cond
+          (< v 60) (uniform-crossover
+                     (getter (tournament-selection population 30))
+                     (getter (tournament-selection population 30)))
+          (< v 70) (uniform-deletion
+                     event-percentage-del
+                     (getter (tournament-selection population 30)))
+          (< v 80) (uniform-addition
+                     instructions
+                     literals
+                     literal-add%
+                     event-percentage-add
+                     (getter (tournament-selection population 30)))
+          :else (uniform-mutation
+                  instructions
+                  literals ; literal-range
+                  literal-add%
+                  event-percentage-mutate
+                  (getter (tournament-selection population 30)))
+          )
+       })))
 
 (defn best-fit
   "takes population and determines best function fitness"
