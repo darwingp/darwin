@@ -58,6 +58,12 @@ Virtual machine
 
 ## TODO
 
+### Both
+
+- [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
+    - [ ] This genetic marker is untouched by translation; instead it's
+          used solely by genetic operators.
+
 ### Nate (up to virtual machine)
 
 - [x] Adapt GP to use Plush genomes in addition to push programs
@@ -68,16 +74,12 @@ Virtual machine
    - [x] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
-- [ ] Fix size decimation
-  - [ ] Probably a conflation of min-size vs max-size.
+- [x] Fix size decimation
 - [ ] Generalize select-and-vary
-  - [ ] run-gp parameter for selection
+  - [ ] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
-  - [ ] run-gp parameter for crossover
+  - [ ] run-gp parameter for crossover operator
         (a function that takes two individuals and returns a new individual) 
-- [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
-    - [ ] This genetic marker is untouched by translation; instead it's
-          used solely by genetic operators.
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
