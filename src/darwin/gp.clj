@@ -31,7 +31,9 @@
   25% to uniform-addition, and 25% to uniform-deletion."
   [genomic instructions literals population]
   (let [v (rand-int 100)
-        getter (if genomic :genome :program)]
+        getter (if genomic :genome :program)
+        add-op (if genomic uniform-addition-genome uniform-addition)
+        mut-op (if genomic uniform-mutation-genome uniform-mutation)]
     ;percentage weights for various combinations expressed as conditional
     (prepare-individual
       {getter
@@ -42,13 +44,13 @@
           (< v 70) (uniform-deletion
                      event-percentage-del
                      (getter (tournament-selection population 30)))
-          (< v 80) (uniform-addition-genome
+          (< v 80) (add-op
                      instructions
                      literals
                      literal-add%
                      event-percentage-add
                      (getter (tournament-selection population 30)))
-          :else (uniform-mutation-genome
+          :else (mut-op
                   instructions
                   literals ; literal-range
                   literal-add%
