@@ -31,30 +31,30 @@ Virtual machine
 
 ## Terminology
 
-"testcase" -> A function that takes a Push program and returns a numberical error value.
+*testcase* -> A function that takes a Push program and returns a numberical error value.
               These are usually created/declared through the testcase macro.
 
-"gene" -> A hash map containing a key :instruction which denotes the value of the gene
-          and other keys representing epigenetic markers. Some epigenetic markers include:
+*gene* -> A hash map containing a key :value which denotes the value of the gene after
+          translation and other keys representing epigenetic markers. Some epigenetic markers include:
   - `:silent` -> if set to true, the gene is not expressed.
   - `:close` -> the number of close parens to insert after the gene
   - `:no-op` -> No-ops the gene. The gene still affects genome translation.
   - `:arity` -> The arity of a push instruction. Affects parenthesization.
 
-"individual" -> A hashmap containing the following keys:
-  {
-    :program '()   ; A list of instructions and literals
-    :genome '()    ; A list of @gene@s
-    :total-error 0 ; A numeric value equal to the sum of all errors
-    :errors '()    ; A list of numeric values, where a value at index n corresponds to
-                   ; the error on the nth test case.
-  }
-"genome" -> A list of genes
+*individual* -> A map containing the following keys:
 
-"population" -> A list of individuals
-"generation" -> A list; At any given state of the GP algorithm, the set of individuals
-                who are ontologically related to the initial population and
-                have similar lineage, as well as any programs introduced into that set.
+    {
+      :program '()   ; A list of instructions and literals
+      :genome '()    ; A list of @gene@s
+      :total-error 0 ; A numeric value equal to the sum of all errors
+      :errors '()    ; A list of numeric values, where a value at index n corresponds to
+                     ; the error on the nth test case.
+    }
+
+*genome* -> A list of genes
+
+*population* -> A list of individuals
+*generation* -> A population at a given iteration of evolution.
 
 ## TODO
 
@@ -79,7 +79,8 @@ Virtual machine
   - [ ] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
   - [ ] run-gp parameter for crossover operator
-        (a function that takes two individuals and returns a new individual) 
+        (a function that takes two individuals and returns a new individual)
+  - [ ] generalize the percentages of all operators too
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
