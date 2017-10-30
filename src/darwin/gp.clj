@@ -42,13 +42,13 @@
           (< v 70) (uniform-deletion
                      event-percentage-del
                      (getter (tournament-selection population 30)))
-          (< v 80) (uniform-addition
+          (< v 80) (uniform-addition-genome
                      instructions
                      literals
                      literal-add%
                      event-percentage-add
                      (getter (tournament-selection population 30)))
-          :else (uniform-mutation
+          :else (uniform-mutation-genome
                   instructions
                   literals ; literal-range
                   literal-add%
