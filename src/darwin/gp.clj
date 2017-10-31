@@ -10,52 +10,43 @@
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
-;parameters
-;; TODO: these need to be moved into the GP parameters in core.clj
-;; JACK: why did you use this? Why not just use the literals?
-;(def literal-range (range 6))
-
-(def literal-add% 0.15) ; JACK: shouldn't this just be :initial-percent-literals
-                        ;       from the GP parameters?
-
 ;; TODO: move into run-gp parameters
 (def event-percentage-add 7)
 (def event-percentage-mutate 7)
 (def event-percentage-del 7)
 
-;; TODO: literal% and mutation operators
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
-  to use probabilistically. Gives 50% chance to crossover,
-  25% to uniform-addition, and 25% to uniform-deletion."
-  [genomic instructions literals population]
+  to use probabilistically."
+  [genomic instructions literals percent-literals population]
   (let [v (rand-int 100)
-        getter (if genomic :genome :program)]
-    ;percentage weights for various combinations expressed as conditional
+        getter (if genomic :genome :program)
+        add-op (if genomic uniform-addition-genome uniform-addition)
+        mut-op (if genomic uniform-mutation-genome uniform-mutation)]
     (prepare-individual
-    {getter
-      (cond
-        (< v 60) (uniform-crossover
-                   (getter (tournament-selection population 30))
-                   (getter (tournament-selection population 30)))
-        (< v 70) (uniform-deletion
-                   event-percentage-del
-                   (getter (tournament-selection population 30)))
-        (< v 80) (uniform-addition
-                   instructions
-                   literals
-                   literal-add%
-                   event-percentage-add
-                   (getter (tournament-selection population 30)))
-        :else (uniform-mutation
-                instructions
-                literals ; literal-range
-                literal-add%
-                event-percentage-mutate
-                (getter (tournament-selection population 30)))
-        )
-     })))
+      {getter
+        (cond
+          (< v 60) (uniform-crossover
+                     (getter (tournament-selection population 30))
+                     (getter (tournament-selection population 30)))
+          (< v 70) (uniform-deletion
+                     event-percentage-del
+                     (getter (tournament-selection population 30)))
+          (< v 80) (add-op
+                     instructions
+                     literals
+                     percent-literals
+                     event-percentage-add
+                     (getter (tournament-selection population 30)))
+          :else (mut-op
+                  instructions
+                  literals
+                  percent-literals
+                  event-percentage-mutate
+                  (getter (tournament-selection population 30)))
+          )
+       })))
 
 (defn best-fit
   "takes population and determines best function fitness"
@@ -142,7 +133,7 @@
     (fn [population]
       (repeatedly
         population-size
-        #(select-and-vary genomic instrs literals population)))
+        #(select-and-vary genomic instrs literals percent-literals population)))
     (repeatedly
       population-size
        #((if genomic generate-random-genome generate-random-program)

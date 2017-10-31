@@ -63,7 +63,7 @@
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
   [v]
-  { :instruction v })
+  { :value v })
 
 ;; any time a test is mentioned, it's the idx in the individual.
 

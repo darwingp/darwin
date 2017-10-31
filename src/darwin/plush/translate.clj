@@ -30,7 +30,7 @@
 ;; CITE https://erp12.github.io/push-redux/pages/intro_to_push/
 ;; CITE https://push-language.hampshire.edu/t/plush-genomes/279
 ;; DESC ordering of push programs & plush genomes
-;; { :instruction noop_open_paren } == { :no-op true :exec-arity 1 }
+;; { :value noop_open_paren } == { :no-op true :exec-arity 1 }
 (defn translate-plush-genome-to-push-program
   "Takes as input a Plush genome and translates it to the correct Push program with
    balanced parens. As the linear Plush genome is traversed, each instruction that requires
@@ -49,7 +49,7 @@
   [genome]
   (loop [prog [] ; The Push program incrementally being built
          gn genome ; The linear Plush genome, where items will be popped off the front. Each item
-                             ; is a map containing at least the key :instruction, and unless the program is flat, also :close
+                             ; is a map containing at least the key :value, and unless the program is flat, also :close
          num-parens-here 0 ; The number of parens that still need to be added at this location.
          paren-stack '()] ; Whenever an instruction requires parens grouping, it will push either :close or
                           ; :close-open on this stack. This will indicate what to insert in the program the
@@ -84,7 +84,7 @@
       ; Otherwise, ready for next instruction
       :else (let [number-paren-groups (get (first gn) :exec-arity 0)
                   is-noop (get (first gn) :no-op false)
-                  instr (if is-noop nil (:instruction (first gn)))
+                  instr (if is-noop nil (:value (first gn)))
                   new-prog (conj prog instr)
                   new-num-parens-here (get (first gn) :close 0) ; The number of close parens to put after this instruction
                   new-paren-stack (if (>= 0 number-paren-groups)
