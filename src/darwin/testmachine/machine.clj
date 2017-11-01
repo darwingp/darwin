@@ -4,13 +4,16 @@
 
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0})           ;x y angle crash total
 (def target-loc '(200 50))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
-(def vehicle-speed 10)  ;default tick speed
+(def vehicle-speed 15)  ;default tick speed
+
+;behavior diversity attributes
+(def diversity-frame 10)
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -60,6 +63,7 @@
           y (:y location)
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
+          color (:color location)
           new-x (+ x (* vehicle-speed (Math/cos angle)))
           new-y (+ y (* vehicle-speed (Math/sin angle)))
           ]
@@ -69,6 +73,7 @@
         :y new-y
         :angle angle
         :crash crashes
+        :color color
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
@@ -97,6 +102,12 @@
       :else (move loc obstacles)
     )))
 
+(defn write-instructions-to-file
+  [instr-list filename]
+  ;file needs to exist
+  (spit filename
+  (reduce (fn [total instr] (str total "\n" instr)) instr-list )))
+
 (defn test-instructions-list
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
@@ -110,7 +121,7 @@
 
 
 ;file for testing system
-(def testfile "data/pathfiles/test1000.txt")
+(def testfile "data/pathfiles/test500.txt")
 (def testobsfile "data/obsfiles/test1.txt")
 
 (def gen-instruction
@@ -121,6 +132,12 @@
              (if (= "-" (first lst)) "-"
              (Integer. (second lst))))))
 
+(defn load-instruction-list
+  [location-file]
+    (map gen-instruction
+    ;split line by space, read instructions
+    (map (fn [line] (clojure.string/split line #" "))
+    (clojure.string/split-lines (slurp location-file)))))
 
 (defn test-instructions-file
   "loads instructions from file and executes list function"
@@ -128,9 +145,14 @@
   ;this is a file wrapper for test-instructions-list
   (if draw-to-window? (start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
-  (map gen-instruction
-    ;split line by space, read instructions
-    (map (fn [line] (clojure.string/split line #" "))
-    (clojure.string/split-lines (slurp location-file))))
-    ;read obstacles from file
-    (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
+   (load-instruction-list location-file)
+     (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
+
+
+(defn calculate-behavior-div
+  "this function takes in all the lists of instructions
+  for a generation and determines a behavioral diversity value"
+  [generation-instructions]
+  ;go through each individual (pmap for speed?)
+  ;check frame
+  )

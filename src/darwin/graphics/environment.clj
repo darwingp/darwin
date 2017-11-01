@@ -19,13 +19,17 @@
 
 (def obstacle-color (Color. 220 204 189))
 (def vehicle-color (Color. 250 192 35))
+                      ; (Color. 242 183 5)
+                      ; (Color. 242 159 5)
+                      ; (Color. 217 121 4)
+                      ; (Color. 191 91 4)))
 
 (defn draw-vehicle
   "takes machine state, draws vehicle, returns state"
   [vehicle-state old-x old-y width]
   ;state example: {:x 0 :y 0 :angle 0 :crash 0}
   (let [gr (.getGraphics panel)]
-    (.setColor gr vehicle-color)
+    (.setColor gr vehicle-color) ;(:color vehicle-state)
     (.fillRect gr (:x vehicle-state) (:y vehicle-state) width width)
     (.drawLine gr (:x vehicle-state) (:y vehicle-state) old-x old-y))
   vehicle-state
