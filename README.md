@@ -75,12 +75,12 @@ Virtual machine
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
 - [x] Fix size decimation
-- [ ] Generalize select-and-vary
-  - [ ] run-gp parameter for selection operator
+- [x] Generalize select-and-vary
+  - [x] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
-  - [ ] run-gp parameter for crossover operator
+  - [x] run-gp parameter for crossover operator
         (a function that takes two individuals and returns a new individual)
-  - [ ] generalize the percentages of all operators too
+  - [x] generalize the percentages of all operators too
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error

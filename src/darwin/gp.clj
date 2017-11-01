@@ -2,51 +2,59 @@
   (:require [darwin.push.instructions :refer [ins]])
   (:require [darwin.push.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
-  (:require [darwin.gp.crossover :refer :all])
-  (:require [darwin.gp.selection :refer :all])
   (:require [darwin.gp.mutation :refer :all])
   (:require [darwin.push.generation :refer :all])
   (:require [darwin.plush.generation :refer :all])
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
-;; TODO: move into run-gp parameters
-(def event-percentage-add 7)
-(def event-percentage-mutate 7)
-(def event-percentage-del 7)
-
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
-  to use probabilistically."
-  [genomic instructions literals percent-literals population]
-  (let [v (rand-int 100)
-        getter (if genomic :genome :program)
+  to use probabilistically. The selection operator, crossover operator, operator
+  probabilities and event percentages are determined from provided configuration."
+  [genomic instructions literals percent-literals population config]
+  (let [getter (if genomic :genome :program)
+        selection-f (:selection config)
+        select #(getter (selection-f population)) ;; Returns a program/genome
+        crossover (:crossover config) ;; Takes two programs/genomes and returns one program/genome
+
+        ;; {Genome/Program}-appropriate mutation operators
         add-op (if genomic uniform-addition-genome uniform-addition)
-        mut-op (if genomic uniform-mutation-genome uniform-mutation)]
-    (prepare-individual
-      {getter
-        (cond
-          (< v 60) (uniform-crossover
-                     (getter (tournament-selection population 30))
-                     (getter (tournament-selection population 30)))
-          (< v 70) (uniform-deletion
-                     event-percentage-del
-                     (getter (tournament-selection population 30)))
-          (< v 80) (add-op
-                     instructions
-                     literals
-                     percent-literals
-                     event-percentage-add
-                     (getter (tournament-selection population 30)))
-          :else (mut-op
-                  instructions
-                  literals
-                  percent-literals
-                  event-percentage-mutate
-                  (getter (tournament-selection population 30)))
-          )
-       })))
+        mut-op (if genomic uniform-mutation-genome uniform-mutation)
+
+        ;; :mutation, :deletion, :addition, or :crossover
+        ;; Defaults to :mutation.
+        op (loop [v-remaining (rand-int 100)
+                  percs (:percentages config)]
+             (if (empty? percs)
+               :mutation
+               (let [perc (nth (first percs) 0)
+                     op-kw (nth (first percs) 1)]
+                 (if (< v-remaining perc) ;; FIXME: is this correct?
+                   op-kw
+                   (recur (- v-remaining perc) (rest percs))))))]
+    {getter
+     (cond
+        (= op :crossover) (crossover
+                            (select)
+                            (select))
+        (= op :deletion) (uniform-deletion
+                          (:deletion-percent config)
+                          (select))
+        (= op :addition) (add-op
+                          instructions
+                          literals
+                          percent-literals
+                          (:addition-percent config)
+                          (select))
+        :else            (mut-op
+                           instructions
+                           literals
+                           percent-literals
+                           (:mutation-percent config)
+                           (select)))
+     }))
 
 (defn best-fit
   "takes population and determines best function fitness"
@@ -56,7 +64,8 @@
 (defn median
   "return median"
   [numbers]
-  (if (empty? numbers) nil
+  (if (empty? numbers)
+    nil
     (nth numbers (quot (count numbers) 2))))
 
 (defn average
@@ -67,8 +76,7 @@
 (defn best-n-errors
   "returns lowest n errors in population"
   [pop n]
-  (take n (sort (map :total-error pop)))
-)
+  (take n (sort (map :total-error pop))))
 
 (defn lowest-size
   "Returns the length of the shortest program in a population of indivudals"
@@ -128,39 +136,57 @@
    literals
    percent-literals
    max-initial-program-size
-   min-initial-program-size]
-  (iterate
-    (fn [population]
-      (repeatedly
-        population-size
-        #(select-and-vary genomic instrs literals percent-literals population)))
-    (repeatedly
-      population-size
-       #((if genomic generate-random-genome generate-random-program)
-          instrs
-          literals
-          percent-literals
-          max-initial-program-size
-          min-initial-program-size))))
+   min-initial-program-size
+   testcases
+   evolution-config]
+  (let [wrap #(run-tests (prepare-individual %) testcases)]
+    (iterate
+     (fn [population]
+       (repeatedly
+         population-size
+         #(wrap
+           (select-and-vary
+             genomic
+             instrs
+             literals
+             percent-literals
+             population
+             evolution-config))))
+     (repeatedly
+       population-size
+        #(wrap
+          ((if genomic generate-random-genome generate-random-program)
+            instrs
+            literals
+            percent-literals
+            max-initial-program-size
+            min-initial-program-size))))))
 
 (defn run-gp
-  "Main GP loop. Initializes the population, and then repeatedly
+  "Initializes a population, and then repeatedly
   generates and evaluates new populations. Stops and returns :SUCCESS
   if it finds an individual with 0 error, or if it exceeds the maximum
   generations it returns nil. Print reports each generation.
   --
   Takes one argument: a map containing the core parameters to
   push-gp. The map's keys should include:
-   - population-size
-   - max-generations
+   - population-size (an integer)
+   - max-generations (an integer)
    - testcases (a list of test cases)
    - instructions (a list of instructions)
    - literals (a list of literals)
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)
    - min-initial-program-size (minimum size of randomly generated programs)
-   - initial-percent-literals (how much of randomly generated programs should be literals, a float from 0.0 to 1.0)"
-  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals genomic]}]
+   - initial-percent-literals (how much of randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
+   - evolution-config (a map)
+     - selection (fn that takes a population and returns an individual)
+     - crossover (fn that takes two programs/genomes and returns a program/genome)
+     - percentages (list of tuples w/ an integer % in position 0 and a keyword in position 1)
+     - deletion-percent (an integer from 0 to 100)
+     - addition-percent (an integer from 0 to 100)
+     - mutation-percent (an integer from 0 to 100)"
+  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config]}]
   (start-plotter)
   (let [all-inputs (take number-inputs ins) ; generate in1, in2, in3, ...
         gens (take
@@ -173,13 +199,14 @@
                           ;; or instructions?
                  initial-percent-literals
                  max-initial-program-size
-                 min-initial-program-size))
-        tested-gens (map #(map (fn [x] (run-tests (prepare-individual x) testcases)) %) gens)
-        result (find-list
-                 population-has-solution
-                 (map-indexed
-                   #(do
-                     (report %2 (inc %1))
-                     %2)
-                   tested-gens))]
-    (if (nil? result) nil :SUCCESS)))
+                 min-initial-program-size
+                 testcases
+                 evolution-config))
+        solution (find-list
+                   population-has-solution
+                   (map-indexed
+                     #(do
+                       (report %2 (inc %1))
+                       %2)
+                     gens))]
+    (if (nil? solution) nil :SUCCESS)))
