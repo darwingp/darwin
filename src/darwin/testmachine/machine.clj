@@ -11,9 +11,6 @@
 (def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 15)  ;default tick speed
 
-;behavior diversity attributes
-(def diversity-frame 10)
-
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
 ;where x,y is top left
@@ -146,7 +143,9 @@
 (defn calculate-behavior-div
   "this function takes in all the lists of instructions
   for a generation and determines a behavioral diversity value"
-  [generation-instructions]
-  ;go through each individual (pmap for speed?)
-  ;check frame
-  )
+  [generation-instructions diversity-frame]
+  ;note: generation-instructions should be a list of
+  ;instruction lists for all individuals in generation
+  (map (fn [ind]
+    (map))
+    generation-instructions))
