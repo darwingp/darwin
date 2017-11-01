@@ -97,10 +97,7 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    (cond
-      (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
-      :else (move loc obstacles)
-    )))
+    (move (change-attrib loc :angle (second instr)) obstacles)))
 
 (defn write-instructions-to-file
   [instr-list filename]
@@ -128,9 +125,7 @@
   ;create an instruction based on string input from file
   (fn [lst] (list
              (first lst)
-             ;if arg is no change to heading (-)
-             (if (= "-" (first lst)) "-"
-             (Integer. (second lst))))))
+             (Integer. (second lst)))))
 
 (defn load-instruction-list
   [location-file]
