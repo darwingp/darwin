@@ -81,6 +81,9 @@ Virtual machine
   - [x] run-gp parameter for crossover operator
         (a function that takes two individuals and returns a new individual)
   - [x] generalize the percentages of all operators too
+- [ ] Figure out how to calculate error of the generated instructions
+  - How can one run provide multiple error values?
+    - currently one run per error value
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
@@ -89,10 +92,8 @@ Virtual machine
 ### Jack (virtual machine out)
 
 - [ ] Virtual Machine
-  - [ ] Virtual machine instructions
-- [ ] Move hardcoded percentages and GP parameters to core.clj
-  - [ ] Hardcoded params in gp.clj
-  - [ ] Look through other files too
+  - [x] Virtual machine instructions
+  - [ ] Replace noop with zero rotate
 - [ ] Measure behavior diversity
   - [ ] Figure out how to calculate this based on output from the VM
   - [ ] Implement it!
@@ -101,9 +102,25 @@ Virtual machine
   - [ ] Adapt for differing screen sizes
   - [ ] Implement drawing in terms of frames, not modifying UI state.
 - [ ] Push instructions - these need to manipulate a stack of VM instructions
-- [ ] Push exec_ instructions
 
 NOTE*** After all TODO items are complete, we need to check each other's work.
+
+### Instructions to Implement
+
+- integer-dup
+- integer-frombool
+
+- boolean-and
+- boolean-or
+
+- exec-if
+- exec-dotimes
+- exec-dup
+
+- SK(I) combinator calculus instructions for all stacks?
+
+"move" stack
+- move-rotate -> pushes 
 
 ### Other
 
