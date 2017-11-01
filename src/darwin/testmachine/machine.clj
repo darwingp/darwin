@@ -2,7 +2,6 @@
   (:require [darwin.graphics.environment :refer :all])
 (:gen-class))
 
-
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0})           ;x y angle crash total
 (def target-loc '(200 50))  ;location of target

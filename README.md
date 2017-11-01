@@ -87,13 +87,13 @@ Virtual machine
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
-  - [x] Document format for individials, genes, etc.
+  - [x] Document format for individuals, genes, etc.
 
 ### Jack (virtual machine out)
 
-- [ ] Virtual Machine
+- [x] Virtual Machine
   - [x] Virtual machine instructions
-  - [ ] Replace noop with zero rotate
+  - [x] Replace noop with zero rotate
 - [ ] Measure behavior diversity
   - [ ] Figure out how to calculate this based on output from the VM
   - [ ] Implement it!
@@ -120,7 +120,7 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 - SK(I) combinator calculus instructions for all stacks?
 
 "move" stack
-- move-rotate -> pushes 
+- move-rotate -> pushes
 
 ### Other
 
@@ -131,6 +131,5 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 
 ### Machine specifications
 
-File Specifications:
-- ```angle 0```  "angle" change and integer value in degrees
-- ```-``` Dash represents no change to heading, vehicle will move one increment by current recorded speed and angle
+File/list Specification:
+- ```angle n```  "angle" change and integer value in degrees 0 - ~180 (calculated with standard distribution)
