@@ -31,7 +31,7 @@
            (> (+ y vehicle-width) window-max-y))
        (or
            (< (- x vehicle-width) 0)
-           (< (- y vehicle-width) 0)
+           (< (- y ) 0)
         ))
     (and
        (and
@@ -146,6 +146,12 @@
   [generation-instructions diversity-frame]
   ;note: generation-instructions should be a list of
   ;instruction lists for all individuals in generation
-  (map (fn [ind]
-    (map))
-    generation-instructions))
+  ;note: this is going to be inefficient
+  (let [all-frames
+        ;mapcat to flatten results by 1 level (partition is list of lists)
+        (mapcat
+         ;get all partitions for each individual (step 1 for ALL)
+         (fn [ind] (partition diversity-frame 1 ind))
+         generation-instructions)]
+    ;check total against distinct
+    (- (count all-frames) (count (distinct all-frames)))))

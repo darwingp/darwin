@@ -14,7 +14,7 @@
   {:genomic true
    :instructions instructions
    :literals '(1 2 3 4)
-   :inputses (map list (range 10))
+   :inputses (map list (range 10)) ;TODO: this needs to change
    :program-arity 1
    :testcases "data/obsfiles/test1.txt"
    :max-generations 500
