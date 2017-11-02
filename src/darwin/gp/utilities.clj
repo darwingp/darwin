@@ -26,7 +26,8 @@
 ; The default individual
 (def default-individual { :errors '()
                           :total-error 0
-                          :program '() })
+                          :program '()
+                          :exit-states '()})
 
 (defn prepare-individual
   "Prepares an individual for running/testing. Takes an individual
@@ -37,28 +38,30 @@
     (merge ind default-individual { :program (translate-plush-genome-to-push-program (:genome ind)) })
     (merge ind default-individual)))
 
-(defn make-testcase
-  "Tests are functions that take a program and return an error.
-   This function takes inputs which are used to construct an initial
-   Push state with in1 etc set in increasing order, eg [in1 in2 in3]."
-  [inputs error-fn]
-  (let [state (assoc empty-push-state :input (mk-inputs inputs))]
-    #(error-fn inputs (interpret-push-program % state))))
+(defn run-individual
+  "Runs an individual with a list of inputs, storing the final Push
+   state from the run in the individual's :exit-states list."
+  [inputs individual]
+  (let [start-state (assoc empty-push-state :input (mk-inputs inputs))
+        exit-state (interpret-push-program (:program individual) start-state)
+        new-exit-states (cons exit-state (:exit-states individual))]
+    (assoc individual :exit-states new-exit-states)))
 
-(defmacro testcase
-  "Defines a testcase."
-  [name inputs error-fn]
-  (list 'def name (list 'make-testcase inputs error-fn)))
+(defn test-individual
+  "Performs each test in tests on each of the individual's exit states."
+  [tests individual]
+  (let [errors (flatten (map #(map % (:exit-states individual)) tests))]
+    (merge individual {:errors errors
+                       :total-error (reduce +' errors)})))
 
-(defn run-tests
-  "Runs each of an individual's tests, Returning an individual with
-   :errors set to the errors encountered running tests on the
-   individual. Then sums that and sets it to :total-error."
-  [individual tests]
-  (let [prog (:program individual)
-        errors (map #(% prog) tests)]
-        (merge individual {:errors errors
-                                  :total-error (reduce +' errors) })))
+(defn run-and-test-individual
+  "Run the individual for each inputs (note: see README terminology) in 
+   inputses (a list of inputs (note: see terminology)) -> eg '((1 2 3) (4 5 6))
+   Then performs each test on the final Push states that resulted from the
+   evaluation of individual's program on each inputs."
+  [inputses tests individual]
+  (let [ran (reduce #(run-individual %2 %1) individual inputses)]
+    (test-individual tests ran)))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."

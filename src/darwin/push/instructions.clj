@@ -36,9 +36,3 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-(def all
-  '(integer_+
-    integer_-
-    integer_*
-    integer_%))
-

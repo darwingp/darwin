@@ -31,8 +31,10 @@ Virtual machine
 
 ## Terminology
 
-*testcase* -> A function that takes a Push program and returns a numberical error value.
-              These are usually created/declared through the testcase macro.
+*testcase* -> A function that takes a final Push state and returns a numerical error value.
+
+*inputs* -> A list of input values to be used to create the :input attribute on an individual.
+	    Order matters.
 
 *gene* -> A hash map containing a key :value which denotes the value of the gene after
           translation and other keys representing epigenetic markers. Some epigenetic markers include:
@@ -49,6 +51,7 @@ Virtual machine
       :total-error 0 ; A numeric value equal to the sum of all errors
       :errors '()    ; A list of numeric values, where a value at index n corresponds to
                      ; the error on the nth test case.
+      :exit-state    ; the Push state reached by running the individual's program.
     }
 
 *genome* -> A list of genes

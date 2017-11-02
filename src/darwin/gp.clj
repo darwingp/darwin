@@ -137,9 +137,10 @@
    percent-literals
    max-initial-program-size
    min-initial-program-size
+   inputses
    testcases
    evolution-config]
-  (let [wrap #(run-tests (prepare-individual %) testcases)]
+  (let [wrap #(run-and-test-individual inputses testcases (prepare-individual %))]
     (iterate
      (fn [population]
        (repeatedly
@@ -173,6 +174,8 @@
    - population-size (an integer)
    - max-generations (an integer)
    - testcases (a list of test cases)
+   - inputses (a list of inputses (see README terminolog: inputs))
+   - program-arity (the number of inputs your evolved program takes)
    - instructions (a list of instructions)
    - literals (a list of literals)
    - number-inputs (the number of inputs the program will take)
@@ -186,9 +189,9 @@
      - deletion-percent (an integer from 0 to 100)
      - addition-percent (an integer from 0 to 100)
      - mutation-percent (an integer from 0 to 100)"
-  [{:keys [population-size max-generations testcases error-function instructions number-inputs literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config]}]
+  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config]}]
   (start-plotter)
-  (let [all-inputs (take number-inputs ins) ; generate in1, in2, in3, ...
+  (let [all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
         gens (take
                max-generations
                (make-generations
@@ -200,6 +203,7 @@
                  initial-percent-literals
                  max-initial-program-size
                  min-initial-program-size
+                 inputses
                  testcases
                  evolution-config))
         solution (find-list
