@@ -36,8 +36,6 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-<<<<<<< HEAD
-=======
 ;TODO: figure out good distribution of 0-180 with more zeros/low #s than higher #s
 (defn angle-noise
   "returns gaussian noise for angle move instruction generation"
@@ -53,10 +51,3 @@
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
 (definstr new_angle [] :move (fn [] (str "angle " (rand-int 180))))
-
-(def all
-  '(integer_+
-    integer_-
-    integer_*
-    integer_%))
->>>>>>> 64db7750bc614fcbddd8ff1166a5853fcb7c3f3c

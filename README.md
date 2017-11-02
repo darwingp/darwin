@@ -105,8 +105,10 @@ Virtual machine
 - [ ] UI
   - [ ] Clean up special cases for average (refactor)
   - [ ] Adapt for differing screen sizes
+    - [ ] Scrollable graph?
   - [ ] Implement drawing in terms of frames, not modifying UI state.
 - [ ] Push instructions - these need to manipulate a stack of VM instructions
+- [ ] Define module under darwin.problems.<here> for the driver problem.
 
 NOTE*** After all TODO items are complete, we need to check each other's work.
 
