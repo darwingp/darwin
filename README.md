@@ -21,7 +21,7 @@ Car driver
   - Continue after crashes
   - Generate a program that builds up instructions in the movement stack
   - Instructions are fed into a "virtual machine"
-  - the evolved program (an autodriver) is fit to a specific map
+  - the evolved program (a driver) is fit to a specific map
 
 Virtual machine
  - takes a map & starting car position
@@ -51,7 +51,7 @@ Virtual machine
       :total-error 0 ; A numeric value equal to the sum of all errors
       :errors '()    ; A list of numeric values, where a value at index n corresponds to
                      ; the error on the nth test case.
-      :exit-state    ; the Push state reached by running the individual's program.
+      :exit-states   ; the Push states reached by running the individual's :program on a series of inputses
     }
 
 *genome* -> A list of genes
@@ -66,6 +66,7 @@ Virtual machine
 - [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
     - [ ] This genetic marker is untouched by translation; instead it's
           used solely by genetic operators.
+- [ ] Polyploidy
 
 ### Nate (up to virtual machine)
 
@@ -84,19 +85,20 @@ Virtual machine
   - [x] run-gp parameter for crossover operator
         (a function that takes two individuals and returns a new individual)
   - [x] generalize the percentages of all operators too
-- [ ] Figure out how to calculate error of the generated instructions
+- [x] Figure out how to calculate error of the generated instructions
   - How can one run provide multiple error values?
     - currently one run per error value
+- [ ] Introduce percents for crossover/selection operators
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error
-  - [x] Document format for individials, genes, etc.
+  - [x] Document format for individuals, genes, etc.
 
 ### Jack (virtual machine out)
 
-- [ ] Virtual Machine
+- [x] Virtual Machine
   - [x] Virtual machine instructions
-  - [ ] Replace noop with zero rotate
+  - [x] Replace noop with zero rotate
 - [ ] Measure behavior diversity
   - [ ] Figure out how to calculate this based on output from the VM
   - [ ] Implement it!
@@ -123,7 +125,7 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 - SK(I) combinator calculus instructions for all stacks?
 
 "move" stack
-- move-rotate -> pushes 
+- move-rotate -> pushes
 
 ### Other
 
@@ -134,6 +136,5 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 
 ### Machine specifications
 
-File Specifications:
-- ```angle 0```  "angle" change and integer value in degrees
-- ```-``` Dash represents no change to heading, vehicle will move one increment by current recorded speed and angle
+File/list Specification:
+- ```angle n```  "angle" change and integer value in degrees 0 - ~180 (calculated with standard distribution)

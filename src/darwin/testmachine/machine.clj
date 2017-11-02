@@ -2,7 +2,6 @@
   (:require [darwin.graphics.environment :refer :all])
 (:gen-class))
 
-
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0})           ;x y angle crash total
 (def target-loc '(200 50))  ;location of target
@@ -11,9 +10,6 @@
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 15)  ;default tick speed
-
-;behavior diversity attributes
-(def diversity-frame 10)
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -97,10 +93,7 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    (cond
-      (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
-      :else (move loc obstacles)
-    )))
+    (move (change-attrib loc :angle (second instr)) obstacles)))
 
 (defn write-instructions-to-file
   [instr-list filename]
@@ -128,9 +121,7 @@
   ;create an instruction based on string input from file
   (fn [lst] (list
              (first lst)
-             ;if arg is no change to heading (-)
-             (if (= "-" (first lst)) "-"
-             (Integer. (second lst))))))
+             (Integer. (second lst)))))
 
 (defn load-instruction-list
   [location-file]
@@ -152,7 +143,9 @@
 (defn calculate-behavior-div
   "this function takes in all the lists of instructions
   for a generation and determines a behavioral diversity value"
-  [generation-instructions]
-  ;go through each individual (pmap for speed?)
-  ;check frame
-  )
+  [generation-instructions diversity-frame]
+  ;note: generation-instructions should be a list of
+  ;instruction lists for all individuals in generation
+  (map (fn [ind]
+    (map))
+    generation-instructions))
