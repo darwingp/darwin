@@ -8,6 +8,8 @@
   '(new_move
     new_angle))
 
+;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
+; into the machine and run against an individual.  This generates an error map.)
 (def configuration
   {:genomic true
    :instructions instructions
