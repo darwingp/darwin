@@ -78,7 +78,7 @@ Virtual machine
    - [x] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
-- [x] Fix size decimation
+- [ ] Only prepare, run, and test the individuals as necessary.
 - [x] Generalize select-and-vary
   - [x] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
