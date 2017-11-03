@@ -100,9 +100,10 @@ Virtual machine
 - [x] Virtual Machine
   - [x] Virtual machine instructions
   - [x] Replace noop with zero rotate
-- [ ] Measure behavior diversity
-  - [ ] Figure out how to calculate this based on output from the VM
-  - [ ] Implement it!
+  - [ ] Load obstacles from file
+- [x] Measure behavior diversity
+  - [x] Figure out how to calculate this based on output from the VM
+  - [x] Implement it!
 - [ ] UI
   - [ ] Clean up special cases for average (refactor)
   - [ ] Adapt for differing screen sizes
