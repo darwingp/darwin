@@ -13,10 +13,10 @@
 (def configuration
   {:genomic true
    :instructions instructions
-   :literals '(1 2 3 4)
+   :literals '(1 2 3 4) ;; TODO: changeme?
    :inputses (map list (range 10)) ;TODO: this needs to change
    :program-arity 1
-   :testcases "data/obsfiles/test1.txt"
+   :testcases "data/obsfiles/test1.txt" ;; This should be a list of functions which take a final push state and returns a fitness.
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.2

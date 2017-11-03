@@ -6,8 +6,6 @@
 
 (def penalty (reduce *' (repeat 20 (bigint 1000))))
 
-(defn abs [n] (max n (- n)))
-
 (defn target-function
   "The target function: f(x) = x^3 + x + 3"
   [x]
@@ -22,7 +20,7 @@
         x (first (vals (into (sorted-map) (:input ret-state))))]
     (if (empty? ints)
       penalty
-      (abs (- (target-function x) (first ints))))))
+      (Math/abs (- (target-function x) (first ints))))))
 
 (def instructions
   '(integer_+
@@ -34,7 +32,7 @@
   {:genomic true
    :instructions instructions
    :literals '(1 2 3 4)
-   :inputses (map list (range 10))
+   :inputses (map list (map #(+ 2 %) (range 10)))
    :program-arity 1
    :testcases (list delta-error)
    :max-generations 500
@@ -42,7 +40,7 @@
    :initial-percent-literals 0.2
    :max-initial-program-size 50
    :min-initial-program-size 10
-   :evolution-config {:selection #(selection/tournament-selection % 30)
+   :evolution-config {:selection #(selection/epsilon-lexicase-selection % 30 1)
                       :crossover crossover/uniform-crossover
                       :percentages '([60 :crossover]
                                      [10 :deletion]

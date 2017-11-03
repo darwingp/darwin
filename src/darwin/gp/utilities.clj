@@ -88,8 +88,3 @@
   (reduce
     #(if (< (:total-error %1) (:total-error %2)) %1 %2)
     population))
-
-(defn number-tests
-  "Returns the number of tests for a population."
-  [pop]
-  (count (:errors (rand-nth pop))))
