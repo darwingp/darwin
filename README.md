@@ -104,6 +104,7 @@ Virtual machine
 - [x] Measure behavior diversity
   - [x] Figure out how to calculate this based on output from the VM
   - [x] Implement it!
+  - [ ] Angle noise distribution
 - [ ] UI
   - [ ] Clean up special cases for average (refactor)
   - [ ] Adapt for differing screen sizes
