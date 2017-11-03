@@ -42,10 +42,8 @@
   "Runs an individual with a list of inputs, storing the final Push
    state from the run in the individual's :exit-states list."
   [inputs individual]
-  (let [start-state (assoc empty-push-state :input (mk-inputs inputs))
-        exit-state (interpret-push-program (:program individual) start-state)
-        new-exit-states (cons exit-state (:exit-states individual))]
-    (assoc individual :exit-states new-exit-states)))
+  (let [start-state (assoc empty-push-state :input (mk-inputs inputs))]
+    (interpret-push-program (:program individual) start-state)))
 
 (defn test-individual
   "Performs each test in tests on each of the individual's exit states."
@@ -60,7 +58,8 @@
    Then performs each test on the final Push states that resulted from the
    evaluation of individual's program on each inputs."
   [inputses tests individual]
-  (let [ran (reduce #(run-individual %2 %1) individual inputses)]
+  (let [test-results (map #(run-individual % individual) inputses)
+        ran (assoc individual :exit-states test-results)]
     (test-individual tests ran)))
 
 (defn gene-wrap
@@ -88,3 +87,8 @@
   (reduce
     #(if (< (:total-error %1) (:total-error %2)) %1 %2)
     population))
+
+(defn prepeatedly
+  "Like repeatedly, but parallel."
+  [n fn]
+  (apply pcalls (repeat n fn)))

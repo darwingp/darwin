@@ -143,7 +143,7 @@
   (let [wrap #(run-and-test-individual inputses testcases (prepare-individual %))]
     (iterate
      (fn [population]
-       (repeatedly
+       (prepeatedly
          population-size
          #(wrap
            (select-and-vary
@@ -153,7 +153,7 @@
              percent-literals
              population
              evolution-config))))
-     (repeatedly
+     (prepeatedly
        population-size
         #(wrap
           ((if genomic generate-random-genome generate-random-program)
