@@ -99,6 +99,7 @@ Virtual machine
 - [x] Virtual Machine
   - [x] Virtual machine instructions
   - [x] Replace noop with zero rotate
+  - [ ] Load obstacles from file
 - [x] Measure behavior diversity
   - [x] Figure out how to calculate this based on output from the VM
   - [x] Implement it!

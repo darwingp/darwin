@@ -44,7 +44,7 @@
   [alignment]
   (let [u (rand) v (rand)]
     (Math/round
-    (* alignment
+    (* 180
      (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v)))))))
 
