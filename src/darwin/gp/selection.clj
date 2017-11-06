@@ -2,6 +2,22 @@
   (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
+(def novelty-archive (atom '()))
+(def add-novel (fn [machine-out] (swap! novelty-archive conj machine-out)))
+
+(defn novelty-selection
+  "select novel individual by comparing all individuals ending locations against the ending locations
+  in the archive"
+  [population]
+  (let [population-locations (map (fn [indiv] (:final-loc indiv)))
+        plus-archive (conj population-locations (deref novelty-archive))
+        average-x (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive)
+        average-y (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive)]
+        (reduce
+          (fn [loc]
+            (if)) '(0 0) population-locations)
+  ))
+
 (defn get-parent
   "Gets a parent for 'lexicase-selection` from 'population`.
    Errors are compared using 'comparator` instead of merely equality."

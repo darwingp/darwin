@@ -110,7 +110,7 @@
     (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
-      :end-loc final-loc
+      :end-loc '((:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
       :instr-total (count instructionlist)}))
 

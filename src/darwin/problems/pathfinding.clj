@@ -8,6 +8,11 @@
   '(new_move
     new_angle))
 
+(defn run-machine
+  "takes individual, runs machine on individual"
+  [indiv]
+  )
+
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
 (def configuration
