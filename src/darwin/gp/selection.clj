@@ -10,12 +10,13 @@
   in the archive"
   [population]
   (let [population-locations (map (fn [indiv] (:final-loc indiv)))
-        plus-archive (conj population-locations (deref novelty-archive))
+        plus-archive (concat population-locations (deref novelty-archive))
         average-x (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive)
         average-y (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive)
         distance (fn [pt]
           (let [xdif (- average-x (first pt)) ydif (- average-y (second pt))]
           (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))]
+        ;find longest distance from average (includes archived anomolies)
         (reduce
           (fn [longest-indiv next-indiv]
             (if (> (distance (:final-loc longest-indiv))
