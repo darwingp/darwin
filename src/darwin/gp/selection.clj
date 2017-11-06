@@ -3,7 +3,7 @@
   (:gen-class))
 
 (def novelty-archive (atom '()))
-(def add-novel (fn [machine-out] (swap! novelty-archive conj machine-out)))
+(def add-novel (fn [machine-out] (do (swap! novelty-archive conj machine-out) machine-out)))
 
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
@@ -17,11 +17,12 @@
           (let [xdif (- average-x (first pt)) ydif (- average-y (second pt))]
           (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))]
         ;find longest distance from average (includes archived anomolies)
+        (add-novel
         (reduce
           (fn [longest-indiv next-indiv]
             (if (> (distance (:final-loc longest-indiv))
                    (distance (:final-loc next-indiv))) longest-indiv next-indiv))
-          (first population-locations) population-locations)))
+          (first population-locations) population-locations))))
 
 (defn get-parent
   "Gets a parent for 'lexicase-selection` from 'population`.
