@@ -101,6 +101,8 @@
   (spit filename
   (reduce (fn [total instr] (str total "\n" instr)) instr-list )))
 
+;MAIN TESTING ENTRY PT.
+; ------- Takes list of lists of moves for all indivs in gen and obs list -------
 (defn test-instructions-list
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
@@ -108,30 +110,31 @@
     (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
-      :end-loc final-loc
+      :end-loc '((:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
       :instr-total (count instructionlist)}))
-
 
 ;file for testing system
 (def testfile "data/pathfiles/test500.txt")
 (def testobsfile "data/obsfiles/test1.txt")
 
-(def gen-instruction
-  ;create an instruction based on string input from file
-  (fn [lst] (list
-             (first lst)
-             (Integer. (second lst)))))
-
+;FILE OPERATIONS
+;---------------
 (defn load-instruction-list
+  "load instructions from file"
   [location-file]
-    (map gen-instruction
+    (map (fn [lst] (list (first lst) (Integer. (second lst))))
     ;split line by space, read instructions
     (map (fn [line] (clojure.string/split line #" "))
     (clojure.string/split-lines (slurp location-file)))))
 
+(defn load-obstacle-list
+  "load obstacles from file"
+  [obs-file]
+  (map #(read-string %) (clojure.string/split-lines (slurp obs-file))))
+
 (defn test-instructions-file
-  "loads instructions from file and executes list function"
+  "loads instructions from file and obstacles from a file and executes list function"
   [location-file obs-file]
   ;this is a file wrapper for test-instructions-list
   (if draw-to-window? (start-environment))
@@ -139,7 +142,8 @@
    (load-instruction-list location-file)
      (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
 
-
+;POPULATION DIVERSITY
+;--------------------
 (defn calculate-behavior-div
   "this function takes in all the lists of instructions
   for a generation and determines a behavioral diversity value"
