@@ -84,7 +84,7 @@ Virtual machine
 - [x] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
 - [x] Transforms on individuals
 - [ ] Implement percentages for crossover and selection operators
-- [ ] Figure out where to run the machine - in tests or in transform
+- [x] Figure out where to run the machine - in tests or in transform
 - [x] Generalize select-and-vary
   - [x] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
@@ -116,7 +116,8 @@ Virtual machine
   - [ ] Implement drawing in terms of frames, not modifying UI state.
 - [ ] Push instructions - these need to manipulate a stack of VM instructions
 - [ ] Novelty, archive
-- [ ] Define module under darwin.problems.<here> for the driver problem.
+- [ ] Define module under darwin.problems.pathfinding for the driver problem.
+  - [ ] Move driver VM to submodules of darwin.problems.pathfinding
 
 NOTE*** After all TODO items are complete, we need to check each other's work.
 
