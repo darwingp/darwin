@@ -83,14 +83,13 @@
                          :best-size (count (:program best))
                          :generation generation-num
                          }]
-    
+
      ;; plot data points
      (add-pt current-state :points-fit line-color-1)
      (add-pt current-state :points-behavior line-color-2)
-     (add-pt current-state :points-behavior line-color-2)
      (add-pt current-state :average-fitness line-color-3)
      (add-pt current-state :best-size line-color-4)
-    
+
      ;; print stats to the console
      (print-many-ln "------------------------------------")
      (print-many-ln "        Report for Generation " generation-num)

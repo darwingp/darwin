@@ -2,7 +2,7 @@
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.gp.crossover :as crossover])
-  (:require [darwin.testmachine.machine :as testing])
+  (:require [darwin.problems.pathfindingtests.machine :as testing])
   (:gen-class))
 
 (def instructions

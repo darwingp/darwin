@@ -1,4 +1,4 @@
-(ns darwin.testmachine.machine
+(ns darwin.problems.pathfindingtests.machine
   (:require [darwin.graphics.environment :refer :all])
 (:gen-class))
 

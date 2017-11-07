@@ -50,11 +50,11 @@
 
 (defn noise-test
   [total]
-  (let [test (repeatedly total (fn [] (Math/abs (angle-noise 90)))) ]
+  (let [test (repeatedly total (fn [] (angle-noise 45))) ]
     (do
     (println "average: " (/ (reduce + test) (count test)))
     (println (reduce max test)))))
 
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
-(definstr new_angle [] :move (fn [] (str "angle " (angle-noise 90))))
+(definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
