@@ -56,70 +56,51 @@
                            (select)))
      }))
 
-(defn best-fit
-  "takes population and determines best function fitness"
-  [population]
-  (reduce min (map :total-error population)))
-
-(defn median
-  "return median"
-  [numbers]
-  (if (empty? numbers)
-    nil
-    (nth numbers (quot (count numbers) 2))))
-
-(defn average
-  "return average"
-  [numbers]
-    (quot (apply + numbers) (count numbers)))
-
 (defn best-n-errors
-  "returns lowest n errors in population"
+  "Given a population and some number n, returns the
+   lowest n errors in population"
   [pop n]
   (take n (sort (map :total-error pop))))
 
-(defn lowest-size
-  "Returns the length of the shortest program in a population of indivudals"
-  [population]
-  ;returns value 0-100
-  (apply min
-    (map count
-      (map :program population))))
-
-(defn fill-state
-  "takes population and creates list of values"
-  [pop gen]
-  { :points-fit  (best-fit pop)
- ;;   :points-behavior (behavior-diversity pop)
-    :average-fitness (best-fit pop)
-    :best-size (count (:program (best-overall-fitness pop)))
-    :generation gen })
-
 (defn print-many-ln
-  "Prints args to stdout in a user-friendly way."
+  "Prints args to stdout in a coder-friendly way."
   [& args]
   (println (apply str (map print-str args))))
 
 (defn report
   "Reports information on a generation."
-  [population generation-num]
-   (let [current-state (fill-state population generation-num)
-         best (best-overall-fitness population)]
-    ;; plot data points
-    (add-pt current-state :points-fit line-color-1)
-    ; (add-pt current-state :points-behavior line-color-2)
-    (add-pt current-state :average-fitness line-color-3)
-    (add-pt current-state :best-size line-color-4)
-
-    ;; print stats to the console
-    (print-many-ln "------------------------------------")
-    (print-many-ln "        Report for Generation " generation-num)
-    (print-many-ln "------------------------------------")
-    (print-many-ln "Best individual: " (:program best))
-    (print-many-ln " -> errors: " (:errors best))
-    (print-many-ln " -> total error: " (:total-error best))
-    (print-many-ln " -> size: " (count (:program best)))
-    (print-many-ln "Best 20 errors: " (best-n-errors population 20))))
+  [population generation-num behavioral-diversity-func]
+    (let [best (best-overall-fitness population)
+          ;; TODO: not report -1 for behavioral diversity if it's
+          ;;       not implemented.
+          behavioral-diversity (if (nil? behavioral-diversity-func)
+                                 -1
+                                 (behavioral-diversity-func population))
+          current-state {
+                         :points-fit (:total-error best)
+                         :points-behavior behavioral-diversity
+                         :average-fitness (:total-error best)
+                         :best-size (count (:program best))
+                         :generation generation-num
+                         }]
+    
+     ;; plot data points
+     (add-pt current-state :points-fit line-color-1)
+     (add-pt current-state :points-behavior line-color-2)
+     (add-pt current-state :points-behavior line-color-2)
+     (add-pt current-state :average-fitness line-color-3)
+     (add-pt current-state :best-size line-color-4)
+    
+     ;; print stats to the console
+     (print-many-ln "------------------------------------")
+     (print-many-ln "        Report for Generation " generation-num)
+     (print-many-ln "------------------------------------")
+     (print-many-ln "Best individual: " (:program best))
+     (print-many-ln " -> errors: " (:errors best))
+     (print-many-ln " -> total error: " (:total-error best))
+     (print-many-ln " -> size: " (count (:program best)))
+     (print-many-ln "Best 20 errors: " (best-n-errors population 20))
+     (print-many-ln "Behavioral Diversity: " behavioral-diversity)))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
@@ -140,7 +121,12 @@
    inputses
    testcases
    evolution-config]
-  (let [wrap #(run-and-test-individual inputses testcases (prepare-individual %))]
+  (let [wrap #(run-and-test-individual
+                inputses
+                (:individual-transform evolution-config)
+                testcases
+                (prepare-individual %))
+        generate (if genomic generate-random-genome generate-random-program)]
     (iterate
      (fn [population]
        (prepeatedly
@@ -156,7 +142,7 @@
      (prepeatedly
        population-size
         #(wrap
-          ((if genomic generate-random-genome generate-random-program)
+          (generate
             instrs
             literals
             percent-literals
@@ -188,8 +174,10 @@
      - percentages (list of tuples w/ an integer % in position 0 and a keyword in position 1)
      - deletion-percent (an integer from 0 to 100)
      - addition-percent (an integer from 0 to 100)
-     - mutation-percent (an integer from 0 to 100)"
-  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config]}]
+     - mutation-percent (an integer from 0 to 100)
+     - individual-transform (a function that takes an individual and returns an individual. Applied before select-and-vary)
+   - behavioral-diversity (a function to calculate behavioral diversity given a population)"
+  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform]}]
   (start-plotter)
   (let [all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
         gens (take
@@ -210,7 +198,7 @@
                    population-has-solution
                    (map-indexed
                      #(do
-                       (report %2 (inc %1))
+                       (report %2 (inc %1) behavioral-diversity)
                        %2)
                      gens))]
     (if (nil? solution) nil :SUCCESS)))

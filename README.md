@@ -54,6 +54,9 @@ Virtual machine
       :exit-states   ; the Push states reached by running the individual's :program on a series of inputses
     }
 
+		All of these keys are available to crossover/selection operators and are guaranteed before
+                select-and-vary in darwin.gp is called.
+
 *genome* -> A list of genes
 
 *population* -> A list of individuals
@@ -78,8 +81,10 @@ Virtual machine
    - [x] Rewrite translation
    - [x] Run testcases on genomic individuals
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
-- [ ] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
+- [x] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
+- [x] Transforms on individuals
 - [ ] Implement percentages for crossover and selection operators
+- [ ] Figure out where to run the machine - in tests or in transform
 - [x] Generalize select-and-vary
   - [x] run-gp parameter for selection operator
         (a function that takes a population and returns an individual)
@@ -89,7 +94,6 @@ Virtual machine
 - [x] Figure out how to calculate error of the generated instructions
   - How can one run provide multiple error values?
     - currently one run per error value
-- [ ] Introduce percents for crossover/selection operators
 - [x] Replace calls to random-choice with rand-nth for clarity
 - [x] Improve terminology and variable names
   - [x] Things like error vs fitness and :total-error vs overall-error

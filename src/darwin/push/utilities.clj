@@ -103,7 +103,10 @@
   "A utility function for making Push instructions. Takes a state, the function
   to apply to the args, the stacks to take the args from, and the stack to return
   the result to. Applies the function to the args (taken from the stacks) and pushes
-  the return value onto return-stack in the resulting state."
+  the return value onto return-stack in the resulting state.
+
+  The first arguments to `function' are the deepest elements in their stack, the
+  last arguments to `function' are closer to the top of their stack."
   [state function arg-stacks return-stack]
   (let [args-pop-result (get-args-from-stacks state arg-stacks)]
     (if (= args-pop-result :not-enough-args)

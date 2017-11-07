@@ -55,12 +55,14 @@
 (defn run-and-test-individual
   "Run the individual for each inputs (note: see README terminology) in 
    inputses (a list of inputs (note: see terminology)) -> eg '((1 2 3) (4 5 6))
-   Then performs each test on the final Push states that resulted from the
+   Then applies xform to the individual if it is a function and non-nil.
+   Finally performs each test on the final Push states that resulted from the
    evaluation of individual's program on each inputs."
-  [inputses tests individual]
-  (let [test-results (map #(run-individual % individual) inputses)
-        ran (assoc individual :exit-states test-results)]
-    (test-individual tests ran)))
+  [inputses xform tests individual]
+  (let [final-states (map #(run-individual % individual) inputses)
+        ran (assoc individual :exit-states final-states)
+        xformed (if (nil? xform) ran (xform ran))]
+    (test-individual tests xformed)))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
