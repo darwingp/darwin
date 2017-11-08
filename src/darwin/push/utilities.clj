@@ -20,21 +20,22 @@
 (defn push-to-stack
   "Pushes item onto stack in state, returning the resulting state."
   [state stack item]
-  (assoc state stack (cons item (stack state))))
+  (assoc state stack (cons item (get state stack '()))))
 
 (defn push-many-to-stack
   "Pushes multiple items to the stack at once. Vectors are copied in order
    to on top of the stack and lists are copied in reverse to on top of the stack."
   [state stack items]
-  (let [newstack (if (vector? items)
-                     (concat items (stack state)) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
-                     (concat (reverse items) (stack state)))] ;; concat vectors onto the top of the stack in order
+  (let [oldstack (get state stack '())
+        newstack (if (vector? items)
+                     (concat items oldstack) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
+                     (concat (reverse items) oldstack))] ;; concat vectors onto the top of the stack in order
     (assoc state stack newstack)))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
   [state stack]
-  (assoc state stack (rest (stack state))))
+  (assoc state stack (rest (get state stack '()))))
 
 (defn pop-n-stack
   "Removes an arbitrary number of elements from the top of the stack,
@@ -49,14 +50,15 @@
 (defn peek-stack
   "Returns top item on a stack. If stack is empty, returns :no-stack-item"
   [state stack]
-  (if (empty? (stack state))
-    :no-stack-item
-    (first (stack state))))
+  (let [s (get state stack '())]
+    (if (empty? s)
+      :no-stack-item
+      (first s))))
 
 (defn empty-stack?
   "Returns true if the stack is empty in state."
   [state stack]
-  (empty? (stack state)))
+  (empty? (get state stack '())))
 
 ;; WRITTEN BY Professor Helmuth
 (defn get-args-from-stacks

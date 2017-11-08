@@ -10,7 +10,7 @@
   (testing "(generate-random-program instructions/all (range 10) (gen/choose 1 100)"
     (is
       (<= (count
-            (generation/generate-random-program instructions/all
+            (generation/generate-random-program '(:a :b :c)
                                                 (range 10)
                                                 0.2
                                                 25
