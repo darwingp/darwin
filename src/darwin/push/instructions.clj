@@ -36,7 +36,6 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-;TODO: figure out good distribution of 0-180 with more zeros/low #s than higher #s
 (defn angle-noise
   "returns gaussian noise for angle move instruction generation"
   ; CITE: https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
@@ -58,3 +57,26 @@
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
 (definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
+
+;advanced push
+;TODO: push twice to integer stack support required for int-dup
+(definstr integer-dup [:integer] :integer
+  (fn [x] x))
+
+(definstr integer-frombool [:boolean] :integer
+  (fn [x] (if x 1 0)))
+
+(definstr boolean-and [:boolean :boolean] :boolean
+  (fn [x y] (and x y)))
+
+(definstr boolean-or [:boolean :boolean] :boolean
+  (fn [x y] (or x y)))
+
+(definstr exec-if [:exec :exec :boolean] :exec
+  (fn [x y b] (if b x y)))
+
+;TODO
+(definstr exec-dotimes [])
+
+;TODO
+(definstr exec-dup [])
