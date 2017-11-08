@@ -74,7 +74,8 @@
 (definstr exec-if [:exec :exec :boolean] :exec
   (fn [x y b] (if b x y)))
 
-;(definstr exec-dotimes [])
+(definstr move-dup [:integer :move] :move
+  (fn [x mv] (repeat x mv)))
 
 (definstr exec-dup [:exec] :exec
   (fn [x] [x x]))

@@ -4,9 +4,11 @@
   (:gen-class))
 
 (def empty-push-state
-  {:exec '()   
+  {:exec '()
    :integer '()
    :string '()
+   :boolean '()
+   :move '()
    :input {}})
 
 (defn interpret-one-step
