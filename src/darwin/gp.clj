@@ -8,6 +8,32 @@
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
+(defn to-integer
+  "Takes literally anything and converts it into an integer"
+  [v]
+  (cond (keyword? v) (to-integer (name v))
+        (string? v) (Integer. v)
+        :else v))
+
+(defn percentaged-or-not
+  "Takes either a collection (list of 2-tuples or a map) or a sigle value.
+   If a collection, the first element of each tuple is a percentage, and the second
+   value is the value associated with the percentage. Returns a random value
+   respecting the percentages. Otherwise, returns the argument."
+   [col default]
+   (if (not (coll? col))
+     col
+     (loop [v-remaining (rand-int 100)
+            percs col]
+       (if (empty? percs)
+         default
+         (let [pair (first percs)
+               perc (to-integer (nth pair 0))
+               v (nth pair 1)]
+           (if (< v-remaining perc) ;; FIXME: is this correct?
+             v
+             (recur (- v-remaining perc) (rest percs))))))))
+
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
   a child individual (note: not program). Chooses which genetic operator
@@ -15,7 +41,7 @@
   probabilities and event percentages are determined from provided configuration."
   [genomic instructions literals percent-literals population config]
   (let [getter (if genomic :genome :program)
-        selection-f (:selection config)
+        selection-f (percentaged-or-not (:selection config) nil)
         select #(getter (selection-f population)) ;; Returns a program/genome
         crossover (:crossover config) ;; Takes two programs/genomes and returns one program/genome
 
@@ -24,16 +50,7 @@
         mut-op (if genomic uniform-mutation-genome uniform-mutation)
 
         ;; :mutation, :deletion, :addition, or :crossover
-        ;; Defaults to :mutation.
-        op (loop [v-remaining (rand-int 100)
-                  percs (:percentages config)]
-             (if (empty? percs)
-               :mutation
-               (let [perc (nth (first percs) 0)
-                     op-kw (nth (first percs) 1)]
-                 (if (< v-remaining perc) ;; FIXME: is this correct?
-                   op-kw
-                   (recur (- v-remaining perc) (rest percs))))))]
+        op (percentaged-or-not (:percentages config) :mutation)]
     {getter
      (cond
         (= op :crossover) (crossover
@@ -107,6 +124,18 @@
   [population]
   (not (nil? (find-list zero? (map :total-error population)))))
 
+(defn evaluate-individual
+  [inputses testcases xform individual]
+  (let [ind (prepare-individual individual)
+        ran (assoc
+              ind
+              :exit-states
+              (map
+                #(run-individual % ind)
+                inputses))
+        xformed (if (nil? xform) ran (xform ran))]
+    (test-individual testcases xformed)))
+
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
@@ -120,16 +149,7 @@
    inputses
    testcases
    evolution-config]
-  (let [wrap #(let [ind (prepare-individual %)
-                    ran (assoc
-                          ind
-                          :exit-states
-                          (map
-                            (fn [inputs] (run-individual inputs ind))
-                            inputses))
-                    xform (:individual-transform evolution-config)
-                    xformed (if (nil? xform) ran (xform ran))]
-                (test-individual testcases xformed))
+  (let [wrap #(evaluate-individual inputses testcases (:individual-transform evolution-config) %)
         generate (if genomic generate-random-genome generate-random-program)]
     (iterate
      (fn [population]
