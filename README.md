@@ -83,7 +83,7 @@ Virtual machine
    - [x] Make genetic operators genome-aware by making them take individuals rather than programs
 - [x] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
 - [x] Transforms on individuals
-- [ ] Implement percentages for crossover and selection operators
+- [x] Implement percentages for crossover and selection operators
 - [x] Figure out where to run the machine - in tests or in transform
 - [x] Generalize select-and-vary
   - [x] run-gp parameter for selection operator
