@@ -58,10 +58,9 @@
 (definstr new_move [] :move (fn [] "angle 0"))
 (definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
 
-;advanced push
-;TODO: push twice to integer stack support required for int-dup
+;advanced push instructions
 (definstr integer-dup [:integer] :integer
-  (fn [x] x))
+  (fn [x] [x x]))
 
 (definstr integer-frombool [:boolean] :integer
   (fn [x] (if x 1 0)))
@@ -75,8 +74,7 @@
 (definstr exec-if [:exec :exec :boolean] :exec
   (fn [x y b] (if b x y)))
 
-;TODO
-(definstr exec-dotimes [])
+;(definstr exec-dotimes [])
 
-;TODO
-(definstr exec-dup [])
+(definstr exec-dup [:exec] :exec
+  (fn [x] [x x]))
