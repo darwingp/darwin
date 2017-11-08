@@ -84,6 +84,7 @@ Virtual machine
 - [x] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
 - [x] Transforms on individuals
 - [ ] Implement percentages for crossover and selection operators
+- [ ] Multiple returns for definstr
 - [x] Figure out where to run the machine - in tests or in transform
 - [x] Generalize select-and-vary
   - [x] run-gp parameter for selection operator

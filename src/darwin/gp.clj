@@ -120,11 +120,16 @@
    inputses
    testcases
    evolution-config]
-  (let [wrap #(run-and-test-individual
-                inputses
-                (:individual-transform evolution-config)
-                testcases
-                (prepare-individual %))
+  (let [wrap #(let [ind (prepare-individual %)
+                    ran (assoc
+                          ind
+                          :exit-states
+                          (map
+                            (fn [inputs] (run-individual inputs ind))
+                            inputses))
+                    xform (:individual-transform evolution-config)
+                    xformed (if (nil? xform) ran (xform ran))]
+                (test-individual testcases xformed))
         generate (if genomic generate-random-genome generate-random-program)]
     (iterate
      (fn [population]
