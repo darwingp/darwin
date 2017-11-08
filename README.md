@@ -108,16 +108,11 @@ Virtual machine
 - [x] Measure behavior diversity
   - [x] Figure out how to calculate this based on output from the VM
   - [x] Implement it!
-  - [ ] Angle noise distribution
-- [ ] UI
-  - [ ] Clean up special cases for average (refactor)
-  - [ ] Adapt for differing screen sizes
-    - [ ] Scrollable graph?
-  - [ ] Implement drawing in terms of frames, not modifying UI state.
+  - [x] Angle noise distribution
 - [ ] Push instructions - these need to manipulate a stack of VM instructions
-- [ ] Novelty, archive
-- [ ] Define module under darwin.problems.pathfinding for the driver problem.
-  - [ ] Move driver VM to submodules of darwin.problems.pathfinding
+- [x] Novelty, archive
+- [x] Define module under darwin.problems.pathfinding for the driver problem.
+  - [x] Move driver VM to submodules of darwin.problems.pathfinding
 
 NOTE*** After all TODO items are complete, we need to check each other's work.
 
