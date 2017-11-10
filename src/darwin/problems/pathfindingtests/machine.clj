@@ -123,10 +123,13 @@
 (defn load-instruction-list
   "load instructions from file"
   [location-file]
-    (map (fn [lst] (list (first lst) (Integer. (second lst))))
-    ;split line by space, read instructions
-    (map (fn [line] (clojure.string/split line #" "))
-    (clojure.string/split-lines (slurp location-file)))))
+  (let [load-lines (map (fn [line] (clojure.string/split line #" "))
+                    (clojure.string/split-lines (slurp location-file)))
+        parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
+        parse-cond (fn [lst] (list (first lst) (read-string (second lst)) (read-string (nth lst 2))))]
+    (map (fn [instr]
+            (if (= (first instr) "angle") (parse-angle instr) (parse-cond instr))) load-times)
+    ))
 
 (defn load-obstacle-list
   "load obstacles from file"
