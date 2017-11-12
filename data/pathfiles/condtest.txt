@@ -1,6 +1,1 @@
-angle 0
-angle 0
-angle 0
-angle 0
-angle 0
-if-obs-range 10 angle 45 angle 0 angle 45
+move-while 5 angle 0 angle 0

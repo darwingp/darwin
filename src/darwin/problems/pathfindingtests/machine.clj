@@ -3,7 +3,7 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0})           ;x y angle crash total
 (def target-loc '(200 50))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
@@ -60,9 +60,9 @@
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
           color (:color location)
+          addmove (+ (:moves-made location) 1)
           new-x (+ x (* vehicle-speed (Math/cos angle)))
-          new-y (+ y (* vehicle-speed (Math/sin angle)))
-          ]
+          new-y (+ y (* vehicle-speed (Math/sin angle)))]
     (if (move-possible? new-x new-y obs)
       (let [new-state
       { :x new-x
@@ -70,6 +70,7 @@
         :angle angle
         :crash crashes
         :color color
+        :moves-made addmove
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
@@ -119,6 +120,14 @@
     (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
           (= (first instr) "set-angle-target")
             (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
+          (=  (first instr) "loop") 
+              (reduce (new-move obstacles) loc 
+                      (take (* (second instr) (count (first (rest (rest instr)))))
+                      (cycle (first (rest (rest instr))))))
+          (= (first instr) "move-while")
+              (reduce (fn [loc instruction] (if (no-obstacles-in-range loc (second instr) obstacles)
+                    ((new-move obstacles) loc instruction) (reduced loc))) 
+                      loc (cycle (first (rest (rest instr)))))
           (= (first instr) "if-obs-range")
               (if (no-obstacles-in-range loc (second instr) obstacles)
                 (reduce (new-move obstacles) loc (first (rest (rest instr)))) loc))))
@@ -137,11 +146,10 @@
   [instructionlist obstaclelist]
     (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
-      (println final-loc)
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
       :end-loc (list (:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
-      :instr-total (count instructionlist)}))
+      :instr-total (:moves-made final-loc)}))
 
 ;file for testing system
 (def testfile "data/pathfiles/condtest.txt")
@@ -160,6 +168,8 @@
     (map (fn [instr]
             (cond (= (first instr) "angle") (parse-angle instr)
                   (= (first instr) "set-angle-target") "set-angle-target"
+                  (= (first instr) "loop") (parse-cond instr)
+                  (= (first instr) "move-while") (parse-cond instr)
                   (= (first instr) "if-obs-range") (parse-cond instr)))  load-lines)))
 
 (defn load-obstacle-list
