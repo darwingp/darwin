@@ -10,6 +10,7 @@
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 15)  ;default tick speed
+(def field-of-view 10) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -18,8 +19,7 @@
 (defn intersects?
   "takes point and obstacle and checks for interesection"
   [x y obstacle]
-  (let [
-        obs-ulx (:x obstacle)
+  (let [obs-ulx (:x obstacle)
         obs-uly (:y obstacle)
         obs-lrx (+ obs-ulx (:width obstacle))
         obs-lry (+ obs-uly (:height obstacle))]
@@ -31,7 +31,7 @@
            (> (+ y vehicle-width) window-max-y))
        (or
            (< (- x vehicle-width) 0)
-           (< (- y ) 0)
+           (< (- y vehicle-width) 0)
         ))
     (and
        (and
@@ -88,12 +88,30 @@
     (let [xdif (- x2 x1) ydif (- y2 y1)]
     (Math/sqrt (+ (* xdif xdif) (* ydif ydif))))))
 
+(defn no-obstacles-in-range
+  "checks if an obstacle is in a specific range from vehicle location"
+  [loc range obs] ;px py range
+  (let [x (:x loc)
+        y (:y loc)
+        range-x1 (+ x (* range (Math/cos (:angle loc))))
+        range-y1 (+ y (* vehicle-speed (Math/sin (:angle loc))))
+        range-x2 (+ x (* range (Math/cos (- (:angle loc) field-of-view))))
+        range-y2 (+ y (* vehicle-speed (Math/sin (- (:angle loc) field-of-view))))
+        range-x3 (+ x (* range (Math/cos (+ (:angle loc) field-of-view))))
+        range-y3 (+ y (* vehicle-speed (Math/sin (+ (:angle loc) field-of-view))))]
+    ;check if the range to an obstacle is less than provided range
+    (and (move-possible? range-x1 range-y1 obs) (move-possible? range-x2 range-y2 obs) 
+             (move-possible? range-x3 range-y3 obs))))
+
 (defn new-move
   "take obstacle-list, vehicle loc, new move, returns new loc based on move/obstacles and angle"
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    (move (change-attrib loc :angle (second instr)) obstacles)))
+    (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
+          (= (first instr) "if-obs-range") 
+              (if (no-obstacles-in-range loc (second instr) obstacles)
+                (reduce (new-move obstacles) loc (first (rest (rest instr)))) loc))))
 
 (defn write-instructions-to-file
   [instr-list filename]
@@ -109,14 +127,15 @@
   [instructionlist obstaclelist]
     (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
+      (println final-loc)
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
-      :end-loc '((:x final-loc) (:y final-loc))
+      :end-loc (list (:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
       :instr-total (count instructionlist)}))
 
 ;file for testing system
-(def testfile "data/pathfiles/test500.txt")
-(def testobsfile "data/obsfiles/test1.txt")
+(def testfile "data/pathfiles/condtest.txt")
+(def testobsfile "data/obsfiles/cleartest.txt")
 
 ;FILE OPERATIONS
 ;---------------
@@ -126,10 +145,11 @@
   (let [load-lines (map (fn [line] (clojure.string/split line #" "))
                     (clojure.string/split-lines (slurp location-file)))
         parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
-        parse-cond (fn [lst] (list (first lst) (read-string (second lst)) (read-string (nth lst 2))))]
+        parse-cond (fn [lst] (list (first lst) (Integer. (second lst)) 
+                                   (map parse-angle (partition 2 (rest (rest lst))))))]
     (map (fn [instr]
-            (if (= (first instr) "angle") (parse-angle instr) (parse-cond instr))) load-times)
-    ))
+            (cond (= (first instr) "angle") (parse-angle instr)
+                  (= (first instr) "if-obs-range") (parse-cond instr)))  load-lines)))
 
 (defn load-obstacle-list
   "load obstacles from file"
