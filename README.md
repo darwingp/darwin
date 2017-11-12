@@ -145,3 +145,4 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 
 File/list Specification:
 - ```angle n```  "angle" change and integer value in degrees 0 - ~180 (calculated with standard distribution)
+- ```if-obs-range <range> angle <angle> angle <angle> ...angle <angle>``` Triangular brackets refer to integers.  This only makes the moves listed on the same line if there is no intersection within the set range (argument 2) based on a field of view (configured degree value) and the vehicle's current angle (gets three pts based on current angle, current angle +/- fov)

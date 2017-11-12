@@ -57,6 +57,8 @@
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
 (definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
+;TODO: this can be any number of moves: if-obs-range <range> angle <angle> angle <angle> ...angle <angle>
+(definstr new_cond_moves [:move :move :move :move] :move (fn [& moves] (str "if-obs-range " (Math/abs (angle-noise 10)) moves)))
 
 ;advanced push instructions
 (definstr integer-dup [:integer] :integer
