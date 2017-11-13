@@ -90,20 +90,13 @@
 
 (defn no-obstacles-in-range
   "checks if an obstacle is in a specific range from vehicle location"
-  [loc range angle obs] ;px py range
+  [loc range obs] ;px py range
   (let [x (:x loc)
         y (:y loc)
-        range-actual-x (+ x (* vehicle-speed (Math/cos angle))) ;note: these are necessary to prevent infinite loop
-        range-actual-y (+ y (* vehicle-speed (Math/sin angle))) ; (if vehicle crashes since its view is less than the tick it won't move)
-        range-x1 (+ x (* range (Math/cos angle)))
-        range-y1 (+ y (* range (Math/sin angle)))
-        range-x2 (+ x (* range (Math/cos (- angle field-of-view))))
-        range-y2 (+ y (* range (Math/sin (- angle field-of-view))))
-        range-x3 (+ x (* range (Math/cos (+ angle field-of-view))))
-        range-y3 (+ y (* range (Math/sin (+ angle field-of-view))))]
+        range2 (/ (max vehicle-speed range) 2)]
     ;check if the range to an obstacle is less than provided range
-    (and (move-possible? range-x1 range-y1 obs) (move-possible? range-x2 range-y2 obs)
-         (move-possible? range-x3 range-y3 obs) (move-possible? range-actual-x range-actual-y obs))))
+    (and (move-possible? (+ x range2) (- y range2) obs) (move-possible? (+ x range2) (+ y range2) obs)
+         (move-possible? (- x range2) (+ y range2) obs) (move-possible? (- x range2) (- y range2) obs))))
 
 (defn get-angle-to-target
   "finds the angle between the vehicle location and the target"
@@ -127,13 +120,11 @@
           (= (first instr) "move-while")
               ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
               (reduce (fn [loc instruction]
-                        ;TODO: get rid of (second instruction for recursive eval)
-                    (if (no-obstacles-in-range loc (second instr) 
-                    (Math/toRadians (second instruction)) obstacles)
+                    (if (no-obstacles-in-range loc (second instr) obstacles)
                     ((new-move obstacles) loc instruction) (reduced loc)))
                       loc (nth instr 2))
           (= (first instr) "if-obs-range")
-              (if (no-obstacles-in-range loc (second instr) (Math/toRadians (:angle loc)) obstacles)
+              (if (no-obstacles-in-range loc (second instr) obstacles)
                 (reduce (new-move obstacles) loc (nth instr 2)) loc))))
 
 (defn write-instructions-to-file
@@ -167,12 +158,12 @@
   [instr]
   (let [parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
         parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
-  (cond (= (first instr) "angle") 
+  (cond (= (first instr) "angle")
            (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
         (= (first instr) "set-angle-target") '(("set-angle-target"))
-        (or 
-         (= (first instr) "loop")  
-         (= (first instr) "move-while")  
+        (or
+         (= (first instr) "loop")
+         (= (first instr) "move-while")
          (= (first instr) "if-obs-range"))
            (list (concat (parse-cond instr) (list (prep-instructions (rest (rest instr)))))))))
 
