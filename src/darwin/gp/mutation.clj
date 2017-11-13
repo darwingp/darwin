@@ -22,16 +22,6 @@
     (list)
     program))
 
-(defn uniform-addition-genome
-  "Same as uniform-addition, but works on a plush genome instead of a push program."
-  [instructions literals percent-literal add-percent genome]
-  (uniform-addition
-    (map gene-wrap instructions)
-    (map gene-wrap literals)
-    percent-literal
-    add-percent
-    genome))
-
 (defn uniform-mutation
   "Has an n percent chance of replacing each instruction in a program with a
    random instruction."
@@ -41,12 +31,3 @@
       (binary-rand-nth percent-literal literals instructions)
        %)
     program))
-
-(defn uniform-mutation-genome
-  "Same as uniform-mutation, but works on a genome."
-  [instructions literals percent-literal mutate-percent genome]
-  (uniform-mutation
-    (map gene-wrap instructions)
-    (map gene-wrap literals)
-    percent-literal
-    mutate-percent genome))

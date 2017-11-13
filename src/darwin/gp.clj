@@ -3,8 +3,6 @@
   (:require [darwin.push.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
   (:require [darwin.gp.mutation :refer :all])
-  (:require [darwin.push.generation :refer :all])
-  (:require [darwin.plush.generation :refer :all])
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
@@ -44,34 +42,27 @@
         selection-f (percentaged-or-not (:selection config) nil)
         select #(getter (selection-f population)) ;; Returns a program/genome
         crossover (:crossover config) ;; Takes two programs/genomes and returns one program/genome
-
-        ;; {Genome/Program}-appropriate mutation operators
-        add-op (if genomic uniform-addition-genome uniform-addition)
-        mut-op (if genomic uniform-mutation-genome uniform-mutation)
-
-        ;; :mutation, :deletion, :addition, or :crossover
-        op (percentaged-or-not (:percentages config) :mutation)]
+        op (percentaged-or-not (:percentages config) :mutation)] ;; :mutation, :deletion, :addition, or :crossover
     {getter
      (cond
         (= op :crossover) (crossover
                             (select)
                             (select))
         (= op :deletion) (uniform-deletion
-                          (:deletion-percent config)
-                          (select))
-        (= op :addition) (add-op
-                          instructions
-                          literals
-                          percent-literals
-                          (:addition-percent config)
-                          (select))
-        :else            (mut-op
+                           (:deletion-percent config)
+                           (select))
+        (= op :addition) (uniform-addition
+                           instructions
+                           literals
+                           percent-literals
+                           (:addition-percent config)
+                           (select))
+        :else            (uniform-mutation
                            instructions
                            literals
                            percent-literals
                            (:mutation-percent config)
-                           (select)))
-     }))
+                           (select)))}))
 
 (defn best-n-errors
   "Given a population and some number n, returns the
@@ -136,11 +127,20 @@
         xformed (if (nil? xform) ran (xform ran))]
     (test-individual testcases xformed)))
 
+(defn generate
+  "Generate a new individual."
+  [genomic instructions literals percent-literals max-size min-size]
+  (let [k (if genomic :genome :program)]
+    {k (repeatedly
+         (+ (Math/round (* (- max-size min-size) (rand))) min-size)
+         #(binary-rand-nth percent-literals literals instructions))}))
+
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
    representing all countable generations."
   [genomic
    population-size
+   instr-arities
    instrs
    literals
    percent-literals
@@ -150,7 +150,8 @@
    testcases
    evolution-config]
   (let [wrap #(evaluate-individual inputses testcases (:individual-transform evolution-config) %)
-        generate (if genomic generate-random-genome generate-random-program)]
+        instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) %) instrs) instrs)
+        lits-universal (if genomic (map #(gene-wrap 0 %) literals) literals)]
     (iterate
      (fn [population]
        (prepeatedly
@@ -158,8 +159,8 @@
          #(wrap
            (select-and-vary
              genomic
-             instrs
-             literals
+             instrs-universal
+             lits-universal
              percent-literals
              population
              evolution-config))))
@@ -167,8 +168,9 @@
        population-size
         #(wrap
           (generate
-            instrs
-            literals
+            genomic
+            instrs-universal
+            lits-universal
             percent-literals
             max-initial-program-size
             min-initial-program-size))))))
@@ -188,6 +190,7 @@
    - program-arity (the number of inputs your evolved program takes)
    - instructions (a list of instructions)
    - literals (a list of literals)
+   - instruction-arities (a hash of symbols to integers, where the symbols refer to instructions)
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)
    - min-initial-program-size (minimum size of randomly generated programs)
@@ -201,7 +204,7 @@
      - mutation-percent (an integer from 0 to 100)
      - individual-transform (a function that takes an individual and returns an individual. Applied before select-and-vary)
    - behavioral-diversity (a function to calculate behavioral diversity given a population)"
-  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform]}]
+  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform instruction-arities]}]
   (start-plotter)
   (let [all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
         gens (take
@@ -209,6 +212,7 @@
                (make-generations
                  genomic
                  population-size
+                 instruction-arities
                  (concat all-inputs instructions)
                  literals ;; THINK ON: should inputs be considered literals
                           ;; or instructions?
