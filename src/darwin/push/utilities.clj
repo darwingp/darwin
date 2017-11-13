@@ -117,7 +117,10 @@
             new-state (:state args-pop-result)]
         (push-return-stack new-state return-stack result)))))
 
-(defn makemultipleinstr
+(defmacro makemultipleinstr
+  "macro for defining an exec stack anonymous function.  This
+  prevents excessive arbitrary-arity function creation by move
+  instruction creators"
   [instack num outputstack operation]
   (list 'fn '[state]
         (list 'make-push-instruction 'state operation
