@@ -10,7 +10,7 @@
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 15)  ;default tick speed
-(def field-of-view (Math/toRadians 10)) ;angle change for checking for obstacles
+(def field-of-view (Math/toRadians 15)) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -31,8 +31,7 @@
            (> (+ y vehicle-width) window-max-y))
        (or
            (< (- x vehicle-width) 0)
-           (< (- y vehicle-width) 0)
-        ))
+           (< (- y vehicle-width) 0)))
     (and
        (and
            (> (+ x vehicle-width) obs-ulx)
@@ -91,19 +90,20 @@
 
 (defn no-obstacles-in-range
   "checks if an obstacle is in a specific range from vehicle location"
-  [loc range obs] ;px py range
+  [loc range angle obs] ;px py range
   (let [x (:x loc)
         y (:y loc)
-        angle (Math/toRadians (:angle loc))
+        range-actual-x (+ x (* vehicle-speed (Math/cos angle))) ;note: these are necessary to prevent infinite loop
+        range-actual-y (+ y (* vehicle-speed (Math/sin angle))) ; (if vehicle crashes since its view is less than the tick it won't move)
         range-x1 (+ x (* range (Math/cos angle)))
-        range-y1 (+ y (* vehicle-speed (Math/sin angle)))
+        range-y1 (+ y (* range (Math/sin angle)))
         range-x2 (+ x (* range (Math/cos (- angle field-of-view))))
-        range-y2 (+ y (* vehicle-speed (Math/sin (- angle field-of-view))))
+        range-y2 (+ y (* range (Math/sin (- angle field-of-view))))
         range-x3 (+ x (* range (Math/cos (+ angle field-of-view))))
-        range-y3 (+ y (* vehicle-speed (Math/sin (+ angle field-of-view))))]
+        range-y3 (+ y (* range (Math/sin (+ angle field-of-view))))]
     ;check if the range to an obstacle is less than provided range
     (and (move-possible? range-x1 range-y1 obs) (move-possible? range-x2 range-y2 obs)
-             (move-possible? range-x3 range-y3 obs))))
+         (move-possible? range-x3 range-y3 obs) (move-possible? range-actual-x range-actual-y obs))))
 
 (defn get-angle-to-target
   "finds the angle between the vehicle location and the target"
@@ -117,20 +117,22 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
+    (print instr)
     (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
           (= (first instr) "set-angle-target")
             (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
-          (=  (first instr) "loop") 
-              (reduce (new-move obstacles) loc 
+          (=  (first instr) "loop")
+              (reduce (new-move obstacles) loc
                       (take (* (second instr) (count (first (rest (rest instr)))))
                       (cycle (first (rest (rest instr))))))
           (= (first instr) "move-while")
               ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
-              (reduce (fn [loc instruction] (if (no-obstacles-in-range loc (second instr) obstacles)
-                    ((new-move obstacles) loc instruction) (reduced loc))) 
+              (reduce (fn [loc instruction] 
+                    (if (no-obstacles-in-range loc (second instr) (Math/toRadians (second instruction)) obstacles)
+                    ((new-move obstacles) loc instruction) (reduced loc)))
                       loc (cycle (first (rest (rest instr)))))
           (= (first instr) "if-obs-range")
-              (if (no-obstacles-in-range loc (second instr) obstacles)
+              (if (no-obstacles-in-range loc (second instr) (Math/toRadians (:angle loc)) obstacles)
                 (reduce (new-move obstacles) loc (first (rest (rest instr)))) loc))))
 
 (defn write-instructions-to-file
@@ -154,7 +156,7 @@
 
 ;file for testing system
 (def testfile "data/pathfiles/condtest.txt")
-(def testobsfile "data/obsfiles/cleartest.txt")
+(def testobsfile "data/obsfiles/test1.txt")
 
 ;FILE OPERATIONS
 ;---------------
