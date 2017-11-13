@@ -125,6 +125,7 @@
                       (take (* (second instr) (count (first (rest (rest instr)))))
                       (cycle (first (rest (rest instr))))))
           (= (first instr) "move-while")
+              ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
               (reduce (fn [loc instruction] (if (no-obstacles-in-range loc (second instr) obstacles)
                     ((new-move obstacles) loc instruction) (reduced loc))) 
                       loc (cycle (first (rest (rest instr)))))
@@ -183,8 +184,7 @@
   ;this is a file wrapper for test-instructions-list
   (if draw-to-window? (start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
-   (load-instruction-list location-file)
-     (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
+   (load-instruction-list location-file) (load-obstacle-list obs-file)))
 
 ;POPULATION DIVERSITY
 ;--------------------
