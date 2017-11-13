@@ -1,1 +1,3 @@
-move-while 5 angle 45 angle 0
+loop 2 angle 0 angle 45 loop 2 angle 90 if-obs-range 5 angle 100
+angle 10
+set-angle-target

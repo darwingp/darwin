@@ -117,23 +117,24 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    (print instr)
     (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
           (= (first instr) "set-angle-target")
             (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
           (=  (first instr) "loop")
               (reduce (new-move obstacles) loc
-                      (take (* (second instr) (count (first (rest (rest instr)))))
-                      (cycle (first (rest (rest instr))))))
+                      (take (* (second instr) (count (nth instr 2)))
+                      (cycle (nth instr 2))))
           (= (first instr) "move-while")
               ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
-              (reduce (fn [loc instruction] 
-                    (if (no-obstacles-in-range loc (second instr) (Math/toRadians (second instruction)) obstacles)
+              (reduce (fn [loc instruction]
+                        ;TODO: get rid of (second instruction for recursive eval)
+                    (if (no-obstacles-in-range loc (second instr) 
+                    (Math/toRadians (second instruction)) obstacles)
                     ((new-move obstacles) loc instruction) (reduced loc)))
-                      loc (cycle (first (rest (rest instr)))))
+                      loc (nth instr 2))
           (= (first instr) "if-obs-range")
               (if (no-obstacles-in-range loc (second instr) (Math/toRadians (:angle loc)) obstacles)
-                (reduce (new-move obstacles) loc (first (rest (rest instr)))) loc))))
+                (reduce (new-move obstacles) loc (nth instr 2)) loc))))
 
 (defn write-instructions-to-file
   [instr-list filename]
@@ -160,20 +161,27 @@
 
 ;FILE OPERATIONS
 ;---------------
+
+(defn prep-instructions
+  "take instruction, prep for eval"
+  [instr]
+  (let [parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
+        parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
+  (cond (= (first instr) "angle") 
+           (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
+        (= (first instr) "set-angle-target") '(("set-angle-target"))
+        (or 
+         (= (first instr) "loop")  
+         (= (first instr) "move-while")  
+         (= (first instr) "if-obs-range"))
+           (list (concat (parse-cond instr) (list (prep-instructions (rest (rest instr)))))))))
+
 (defn load-instruction-list
   "load instructions from file"
   [location-file]
   (let [load-lines (map (fn [line] (clojure.string/split line #" "))
-                    (clojure.string/split-lines (slurp location-file)))
-        parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
-        parse-cond (fn [lst] (list (first lst) (Integer. (second lst))
-                                   (map parse-angle (partition 2 (rest (rest lst))))))]
-    (map (fn [instr]
-            (cond (= (first instr) "angle") (parse-angle instr)
-                  (= (first instr) "set-angle-target") "set-angle-target"
-                  (= (first instr) "loop") (parse-cond instr)
-                  (= (first instr) "move-while") (parse-cond instr)
-                  (= (first instr) "if-obs-range") (parse-cond instr)))  load-lines)))
+                    (clojure.string/split-lines (slurp location-file)))]
+    (map first (map prep-instructions load-lines))))
 
 (defn load-obstacle-list
   "load obstacles from file"
