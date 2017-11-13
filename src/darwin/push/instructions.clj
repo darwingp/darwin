@@ -56,7 +56,8 @@
 
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
-(definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
+(definstr new_rand_angle [] :move (fn [] (str "angle " (angle-noise 45))))
+(definstr new_angle [:integer] :move (fn [i] (str "angle " i)))
 ;TODO: this can be any number of moves: if-obs-range <range> angle <angle> angle <angle> ...angle <angle>
 (definstr new_cond_moves [:integer :move :move :move :move] :move
   (fn [range & moves] (str "if-obs-range " range moves)))
@@ -67,7 +68,10 @@
 (definstr loop_moves [:integer :move :move] (fn [i & moves] (str "loop " i moves))) ;add moves here
 
 ;TODO: multiple moves
-(definstr while_moves [:integer :move :move] (fn [i & moves] (str "move-while " i moves)))
+(definstr while_moves [:integer :integer :move :move] (fn [i & moves] (str "move-while " i moves)))
+
+(definstr move-dup [:integer :move] :move
+  (fn [x mv] (repeat x mv)))
 
 ;advanced push instructions
 (definstr integer-dup [:integer] :integer
@@ -84,9 +88,6 @@
 
 (definstr exec-if [:exec :exec :boolean] :exec
   (fn [x y b] (if b x y)))
-
-(definstr move-dup [:integer :move] :move
-  (fn [x mv] (repeat x mv)))
 
 (definstr exec-dup [:exec] :exec
   (fn [x] [x x]))
