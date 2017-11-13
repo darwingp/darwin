@@ -4,7 +4,7 @@
 
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0})           ;x y angle crash total
-(def target-loc '(200 50))  ;location of target
+(def target-loc '(700 600))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
@@ -122,7 +122,7 @@
               (reduce (fn [loc instruction]
                     (if (no-obstacles-in-range loc (second instr) obstacles)
                     ((new-move obstacles) loc instruction) (reduced loc)))
-                      loc (nth instr 2))
+                      loc (cycle (nth instr 2)))
           (= (first instr) "if-obs-range")
               (if (no-obstacles-in-range loc (second instr) obstacles)
                 (reduce (new-move obstacles) loc (nth instr 2)) loc))))
@@ -160,7 +160,8 @@
         parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
   (cond (= (first instr) "angle")
            (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
-        (= (first instr) "set-angle-target") '(("set-angle-target"))
+        (= (first instr) "set-angle-target") 
+           (cons '("set-angle-target") (prep-instructions (rest instr)))
         (or
          (= (first instr) "loop")
          (= (first instr) "move-while")

@@ -1,5 +1,4 @@
 {:x 778 :y 413 :width 33 :height 46}
-{:x 90 :y 0 :width 33 :height 80}
 {:x 858 :y 674 :width 52 :height 97}
 {:x 839 :y 336 :width 97 :height 59}
 {:x 264 :y 382 :width 68 :height 52}
