@@ -92,7 +92,7 @@
   (cond
     (or (list? result) (vector? result)) (push-many-to-stack state return-stack result)
     (map? result) (reduce-kv
-                    (fn [m k v] 
+                    (fn [m k v]
                       (if (or (list? v) (vector? v))
                         (push-many-to-stack m k v)
                         (push-to-stack m k v)))
@@ -117,12 +117,18 @@
             new-state (:state args-pop-result)]
         (push-return-stack new-state return-stack result)))))
 
+(defn makemultipleinstr
+  [instack num outputstack operation]
+  (list 'fn '[state]
+        (list 'make-push-instruction 'state operation
+        (repeat num instack) outputstack)))
+
 (defmacro definstr
   "Macro for defining Push instructions. Position 0 is the deepest arg,
    the last position is the top of the stack."
   [name arg-stacks outputstack operation]
   (list 'def name (list 'fn '[state]
-                  (list 'make-push-instruction 'state operation 
+                  (list 'make-push-instruction 'state operation
                   arg-stacks outputstack))))
 
 (defn mk-inputs
@@ -130,7 +136,7 @@
    based on the values in the input list inputs."
   [inputs]
   (apply
-    hash-map 
+    hash-map
     (flatten
       (map-indexed
         (fn [idx x] [(keyword (str "in" (inc idx))) x])
