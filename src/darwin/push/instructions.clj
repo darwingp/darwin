@@ -54,9 +54,31 @@
     (println "average: " (/ (reduce + test) (count test)))
     (println (reduce max test)))))
 
+(def prep-moves
+  (fn [& moves]
+    (reduce (fn [total new] (str total " " new)) moves)))
+
 ;move instruction generation
 (definstr new_move [] :move (fn [] "angle 0"))
-(definstr new_angle [] :move (fn [] (str "angle " (angle-noise 45))))
+
+(definstr new_angle [:integer] :move (fn [i] (str "angle " i)))
+
+(definstr new_cond_moves [:integer] :exec
+  (fn [x] (makemultipleinstr :move x :move
+    (fn [& moves] "if-obs-range " (prep-moves moves)))))
+
+(definstr set_angle_target [] :move "set-angle-target")
+
+(definstr loop_moves [:integer :integer] :exec
+  (fn [x y] (makemultipleinstr :move y :move
+    (fn [& moves] "loop " x (prep-moves moves)))))
+
+(definstr while_moves [:integer :integer] :exec
+    (fn [x y] (makemultipleinstr :move y :move
+      (fn [& moves] "move-while " x (prep-moves moves)))))
+
+(definstr move-dup [:integer :move] :move
+  (fn [x mv] (repeat x mv)))
 
 ;advanced push instructions
 (definstr integer-dup [:integer] :integer
@@ -73,9 +95,6 @@
 
 (definstr exec-if [:exec :exec :boolean] :exec
   (fn [x y b] (if b x y)))
-
-(definstr move-dup [:integer :move] :move
-  (fn [x mv] (repeat x mv)))
 
 (definstr exec-dup [:exec] :exec
   (fn [x] [x x]))

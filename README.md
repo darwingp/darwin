@@ -101,16 +101,16 @@ Virtual machine
 
 ### Jack (virtual machine out)
 
-- [ ] Multiple returns for definstr
 - [x] Virtual Machine
   - [x] Virtual machine instructions
   - [x] Replace noop with zero rotate
-  - [ ] Load obstacles from file
+  - [x] Load obstacles from file
+- [ ] Allow nested conditional/loops
 - [x] Measure behavior diversity
   - [x] Figure out how to calculate this based on output from the VM
   - [x] Implement it!
   - [x] Angle noise distribution
-- [ ] Push instructions - these need to manipulate a stack of VM instructions
+- [x] Push instructions - these need to manipulate a stack of VM instructions
 - [x] Novelty, archive
 - [x] Define module under darwin.problems.pathfinding for the driver problem.
   - [x] Move driver VM to submodules of darwin.problems.pathfinding
@@ -145,3 +145,6 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
 
 File/list Specification:
 - ```angle n```  "angle" change and integer value in degrees 0 - ~180 (calculated with standard distribution)
+- ```if-obs-range <range> angle <angle> ... angle <angle>``` Triangular brackets refer to integers.  This only makes the moves listed on the same line if there is no intersection within the set range (argument 2) based on a field of view (configured degree value) and the vehicle's current angle (gets three pts based on current angle, current angle +/- fov)
+- ```loop <times> angle <angle> ... angle <angle>``` This repeats the list of instructions on the line the number of times that the second parameter provides.
+- ```move-while <range> angle <angle> ... angle <angle>``` This loops through the instructions provided on the line.  Before each, it checks for an intersection.  If none, loops back to beginning.

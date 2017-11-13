@@ -495,6 +495,8 @@ angle 152
 angle 142
 angle 0
 angle 146
+ifahead '(angle 104 angle 56 angle 152 angle 142) '(angle 104 angle 56 angle 152 angle 142)
 angle 0
+angle 146
 angle 116
 angle 58

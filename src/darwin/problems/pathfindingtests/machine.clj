@@ -3,13 +3,14 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0})           ;x y angle crash total
-(def target-loc '(200 50))  ;location of target
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0})           ;x y angle crash total
+(def target-loc '(700 600))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
 (def vehicle-speed 15)  ;default tick speed
+(def field-of-view (Math/toRadians 15)) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
 ; {:x 0 :y 0 :width 5 :height 5}
@@ -18,8 +19,7 @@
 (defn intersects?
   "takes point and obstacle and checks for interesection"
   [x y obstacle]
-  (let [
-        obs-ulx (:x obstacle)
+  (let [obs-ulx (:x obstacle)
         obs-uly (:y obstacle)
         obs-lrx (+ obs-ulx (:width obstacle))
         obs-lry (+ obs-uly (:height obstacle))]
@@ -31,8 +31,7 @@
            (> (+ y vehicle-width) window-max-y))
        (or
            (< (- x vehicle-width) 0)
-           (< (- y ) 0)
-        ))
+           (< (- y vehicle-width) 0)))
     (and
        (and
            (> (+ x vehicle-width) obs-ulx)
@@ -60,9 +59,9 @@
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
           color (:color location)
+          addmove (+ (:moves-made location) 1)
           new-x (+ x (* vehicle-speed (Math/cos angle)))
-          new-y (+ y (* vehicle-speed (Math/sin angle)))
-          ]
+          new-y (+ y (* vehicle-speed (Math/sin angle)))]
     (if (move-possible? new-x new-y obs)
       (let [new-state
       { :x new-x
@@ -70,6 +69,7 @@
         :angle angle
         :crash crashes
         :color color
+        :moves-made addmove
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
@@ -88,12 +88,44 @@
     (let [xdif (- x2 x1) ydif (- y2 y1)]
     (Math/sqrt (+ (* xdif xdif) (* ydif ydif))))))
 
+(defn no-obstacles-in-range
+  "checks if an obstacle is in a specific range from vehicle location"
+  [loc range obs] ;px py range
+  (let [x (:x loc)
+        y (:y loc)
+        range2 (/ (max vehicle-speed range) 2)]
+    ;check if the range to an obstacle is less than provided range
+    (and (move-possible? (+ x range2) (- y range2) obs) (move-possible? (+ x range2) (+ y range2) obs)
+         (move-possible? (- x range2) (+ y range2) obs) (move-possible? (- x range2) (- y range2) obs))))
+
+(defn get-angle-to-target
+  "finds the angle between the vehicle location and the target"
+  [x y]
+  (let [dx (- (first target-loc) x)
+        dy (- (second target-loc) y)]
+    (Math/toDegrees (Math/atan (/ dx dy)))))
+
 (defn new-move
   "take obstacle-list, vehicle loc, new move, returns new loc based on move/obstacles and angle"
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    (move (change-attrib loc :angle (second instr)) obstacles)))
+    (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
+          (= (first instr) "set-angle-target")
+            (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
+          (=  (first instr) "loop")
+              (reduce (new-move obstacles) loc
+                      (take (* (second instr) (count (nth instr 2)))
+                      (cycle (nth instr 2))))
+          (= (first instr) "move-while")
+              ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
+              (reduce (fn [loc instruction]
+                    (if (no-obstacles-in-range loc (second instr) obstacles)
+                    ((new-move obstacles) loc instruction) (reduced loc)))
+                      loc (cycle (nth instr 2)))
+          (= (first instr) "if-obs-range")
+              (if (no-obstacles-in-range loc (second instr) obstacles)
+                (reduce (new-move obstacles) loc (nth instr 2)) loc))))
 
 (defn write-instructions-to-file
   [instr-list filename]
@@ -110,23 +142,38 @@
     (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
-      :end-loc '((:x final-loc) (:y final-loc))
+      :end-loc (list (:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
-      :instr-total (count instructionlist)}))
+      :instr-total (:moves-made final-loc)}))
 
 ;file for testing system
-(def testfile "data/pathfiles/test500.txt")
+(def testfile "data/pathfiles/condtest.txt")
 (def testobsfile "data/obsfiles/test1.txt")
 
 ;FILE OPERATIONS
 ;---------------
+
+(defn prep-instructions
+  "take instruction, prep for eval"
+  [instr]
+  (let [parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
+        parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
+  (cond (= (first instr) "angle")
+           (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
+        (= (first instr) "set-angle-target") 
+           (cons '("set-angle-target") (prep-instructions (rest instr)))
+        (or
+         (= (first instr) "loop")
+         (= (first instr) "move-while")
+         (= (first instr) "if-obs-range"))
+           (list (concat (parse-cond instr) (list (prep-instructions (rest (rest instr)))))))))
+
 (defn load-instruction-list
   "load instructions from file"
   [location-file]
-    (map (fn [lst] (list (first lst) (Integer. (second lst))))
-    ;split line by space, read instructions
-    (map (fn [line] (clojure.string/split line #" "))
-    (clojure.string/split-lines (slurp location-file)))))
+  (let [load-lines (map (fn [line] (clojure.string/split line #" "))
+                    (clojure.string/split-lines (slurp location-file)))]
+    (map first (map prep-instructions load-lines))))
 
 (defn load-obstacle-list
   "load obstacles from file"
@@ -139,8 +186,7 @@
   ;this is a file wrapper for test-instructions-list
   (if draw-to-window? (start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
-   (load-instruction-list location-file)
-     (map #(read-string %) (clojure.string/split-lines (slurp obs-file)))))
+   (load-instruction-list location-file) (load-obstacle-list obs-file)))
 
 ;POPULATION DIVERSITY
 ;--------------------

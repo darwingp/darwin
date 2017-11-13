@@ -1,0 +1,7 @@
+if-obs-range 10 angle 90 angle 90 move-while 10 angle 0
+angle 180
+move-while 5 angle 90 set-angle-target loop 2 angle 0 angle 45
+move-while 10 angle 90
+set-angle-target
+if-obs-range 10 angle 180 angle 90 loop 2 angle 0 angle 90 angle 0
+move-while 10 angle 0 angle 20
