@@ -41,7 +41,7 @@
   (let [getter (if genomic :genome :program)
         selection-f (percentaged-or-not (:selection config) nil)
         select #(getter (selection-f population)) ;; Returns a program/genome
-        crossover (:crossover config) ;; Takes two programs/genomes and returns one program/genome
+        crossover (percentaged-or-not (:crossover config) nil) ;; Takes two programs/genomes and returns one program/genome
         op (percentaged-or-not (:percentages config) :mutation)] ;; :mutation, :deletion, :addition, or :crossover
     {getter
      (cond
@@ -79,8 +79,6 @@
   "Reports information on a generation."
   [population generation-num behavioral-diversity-func]
     (let [best (best-overall-fitness population)
-          ;; TODO: not report -1 for behavioral diversity if it's
-          ;;       not implemented.
           behavioral-diversity (if (nil? behavioral-diversity-func)
                                  -1
                                  (behavioral-diversity-func population))
@@ -196,8 +194,8 @@
    - min-initial-program-size (minimum size of randomly generated programs)
    - initial-percent-literals (how much of randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
    - evolution-config (a map)
-     - selection (fn that takes a population and returns an individual)
-     - crossover (fn that takes two programs/genomes and returns a program/genome)
+     - selection (fn that takes a population and returns an individual, or a percentage map like :percentages of such fns)
+     - crossover (fn that takes two programs/genomes and returns a program/genome, or a percentage map like :percentages of such fns)
      - percentages (list of tuples w/ an integer % in position 0 and a keyword in position 1)
      - deletion-percent (an integer from 0 to 100)
      - addition-percent (an integer from 0 to 100)
