@@ -148,3 +148,4 @@ File/list Specification:
 - ```if-obs-range <range> angle <angle> ... angle <angle>``` Triangular brackets refer to integers.  This only makes the moves listed on the same line if there is no intersection within the set range (argument 2) based on a field of view (configured degree value) and the vehicle's current angle (gets three pts based on current angle, current angle +/- fov)
 - ```loop <times> angle <angle> ... angle <angle>``` This repeats the list of instructions on the line the number of times that the second parameter provides.
 - ```move-while <range> angle <angle> ... angle <angle>``` This loops through the instructions provided on the line.  Before each, it checks for an intersection.  If none, loops back to beginning.
+- ```set-speed <speed>``` Sets vehicle speed (per move)

@@ -63,6 +63,8 @@
 
 (definstr new_angle [:integer] :move (fn [i] (str "angle " i)))
 
+(definstr set_speed [:integer] :move (fn [i] (str "set-speed " i))) 
+
 (definstr new_cond_moves [:integer] :exec
   (fn [x] (makemultipleinstr :move x :move
     (fn [& moves] "if-obs-range " (prep-moves moves)))))

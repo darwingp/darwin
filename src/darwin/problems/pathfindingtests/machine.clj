@@ -3,13 +3,12 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 1})           ;x y angle crash total
 (def target-loc '(700 600))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
 (def draw-to-window? true)  ;plug graphical system into machine
-(def vehicle-speed 15)  ;default tick speed
 (def field-of-view (Math/toRadians 15)) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
@@ -59,9 +58,10 @@
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
           color (:color location)
+          speed (:speed location)
           addmove (+ (:moves-made location) 1)
-          new-x (+ x (* vehicle-speed (Math/cos angle)))
-          new-y (+ y (* vehicle-speed (Math/sin angle)))]
+          new-x (+ x (* speed (Math/cos angle)))
+          new-y (+ y (* speed (Math/sin angle)))]
     (if (move-possible? new-x new-y obs)
       (let [new-state
       { :x new-x
@@ -70,6 +70,7 @@
         :crash crashes
         :color color
         :moves-made addmove
+        :speed speed
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
@@ -93,7 +94,8 @@
   [loc range obs] ;px py range
   (let [x (:x loc)
         y (:y loc)
-        range2 (/ (max vehicle-speed range) 2)]
+        speed (:speed loc)
+        range2 (/ (max speed range) 2)]
     ;check if the range to an obstacle is less than provided range
     (and (move-possible? (+ x range2) (- y range2) obs) (move-possible? (+ x range2) (+ y range2) obs)
          (move-possible? (- x range2) (+ y range2) obs) (move-possible? (- x range2) (- y range2) obs))))
@@ -113,6 +115,8 @@
     (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
           (= (first instr) "set-angle-target")
             (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
+          (= (first instr) "set-speed")
+            (move (change-attrib loc :speed (second instr)) obstacles)
           (=  (first instr) "loop")
               (reduce (new-move obstacles) loc
                       (take (* (second instr) (count (nth instr 2)))
@@ -162,6 +166,8 @@
            (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
         (= (first instr) "set-angle-target") 
            (cons '("set-angle-target") (prep-instructions (rest instr)))
+        (= (first instr) "set-speed")
+           (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
         (or
          (= (first instr) "loop")
          (= (first instr) "move-while")
