@@ -1,10 +1,10 @@
 (ns darwin.problems.pathfindingtests.machine
-  (:require [darwin.graphics.environment :refer :all])
+  (:require [darwin.graphics.environment :as display])
 (:gen-class))
 
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 1})           ;x y angle crash total
-(def target-loc '(700 600))  ;location of target
+(def target-loc '(750 600))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
@@ -74,7 +74,7 @@
        }]
         ;if graphical viewing enabled, draw to state first
         (if draw-to-window?
-          (draw-vehicle new-state x y vehicle-width)  ;draw state (returns vehicle state)
+          (display/draw-vehicle new-state x y vehicle-width)  ;draw state (returns vehicle state)
           new-state))
       (assoc location :crash (+ crashes 1))))))
 
@@ -143,7 +143,7 @@
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
-    (let [obs (if draw-to-window? (draw-obstacles obstaclelist) obstaclelist)
+    (let [obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
           final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
       :end-loc (list (:x final-loc) (:y final-loc))
@@ -190,9 +190,19 @@
   "loads instructions from file and obstacles from a file and executes list function"
   [location-file obs-file]
   ;this is a file wrapper for test-instructions-list
-  (if draw-to-window? (start-environment))
+  (if draw-to-window? (display/start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
    (load-instruction-list location-file) (load-obstacle-list obs-file)))
+
+(defn display-obstacle-map
+  "display the obstacle map"
+  [locationfile]
+    (display/start-environment)
+    (display/draw-obstacles (load-obstacle-list locationfile)))
+
+(defn draw-target
+   []
+    (display/draw-pt (first target-loc) (second target-loc)))
 
 ;POPULATION DIVERSITY
 ;--------------------

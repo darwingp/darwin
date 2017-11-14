@@ -19,6 +19,7 @@
 
 (def obstacle-color (Color. 220 204 189))
 (def vehicle-color (Color. 250 192 35))
+(def target-color (Color. 242 183 5))
                       ; (Color. 242 183 5)
                       ; (Color. 242 159 5)
                       ; (Color. 217 121 4)
@@ -34,6 +35,13 @@
     (.drawLine gr (:x vehicle-state) (:y vehicle-state) old-x old-y))
   vehicle-state
 )
+
+(defn draw-pt
+  "draw a pt"
+  [x y]
+  (let [gr (.getGraphics panel)]
+    (.setColor gr target-color)
+    (.fillRect gr x y 10 10)))
 
 (defn draw-obstacles
     "takes machine obstacles state list,
