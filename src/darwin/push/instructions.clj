@@ -59,25 +59,29 @@
     (reduce (fn [total new] (str total " " new)) moves)))
 
 ;move instruction generation
-(definstr new_move [] :move (fn [] "angle 0"))
+(definstr new_move [] :move
+  (constantly "angle 0"))
 
-(definstr new_angle [:integer] :move (fn [i] (str "angle " i)))
+(definstr new_angle [:integer] :move
+  #(str "angle " %))
 
-(definstr set_speed [:integer] :move (fn [i] (str "set-speed " i))) 
+(definstr set_speed [:integer] :move
+  #(str "set-speed " %))
 
 (definstr new_cond_moves [:integer] :exec
-  (fn [x] (makemultipleinstr :move x :move
-    (fn [& moves] "if-obs-range " (prep-moves moves)))))
+  #(makemultipleinstr :move % :move
+    (fn [& moves] "if-obs-range " (prep-moves moves))))
 
-(definstr set_angle_target [] :move "set-angle-target")
+(definstr set_angle_target [] :move
+  (constantly "set-angle-target"))
 
 (definstr loop_moves [:integer :integer] :exec
   (fn [x y] (makemultipleinstr :move y :move
     (fn [& moves] "loop " x (prep-moves moves)))))
 
 (definstr while_moves [:integer :integer] :exec
-    (fn [x y] (makemultipleinstr :move y :move
-      (fn [& moves] "move-while " x (prep-moves moves)))))
+  (fn [x y] (makemultipleinstr :move y :move
+    (fn [& moves] "move-while " x (prep-moves moves)))))
 
 (definstr move-dup [:integer :move] :move
   (fn [x mv] (repeat x mv)))
@@ -87,13 +91,10 @@
   (fn [x] [x x]))
 
 (definstr integer-frombool [:boolean] :integer
-  (fn [x] (if x 1 0)))
+  #(if % 1 0))
 
-(definstr boolean-and [:boolean :boolean] :boolean
-  (fn [x y] (and x y)))
-
-(definstr boolean-or [:boolean :boolean] :boolean
-  (fn [x y] (or x y)))
+(definstr boolean-and [:boolean :boolean] :boolean #(and % %2))
+(definstr boolean-or [:boolean :boolean] :boolean #(or % %2))
 
 (definstr exec-if [:exec :exec :boolean] :exec
   (fn [x y b] (if b x y)))

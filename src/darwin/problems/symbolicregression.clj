@@ -41,7 +41,7 @@
    :max-initial-program-size 50
    :min-initial-program-size 10
    :evolution-config {:selection #(selection/lexicase-selection % 30)
-                      :crossover crossover/uniform-crossover
+                      :crossover crossover/age-hotness-crossover; crossover/uniform-crossover
                       :percentages '([60 :crossover]
                                      [10 :deletion]
                                      [10 :addition]
