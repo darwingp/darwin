@@ -8,7 +8,7 @@
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
-(def draw-to-window? true)  ;plug graphical system into machine
+(def draw-to-window? false)  ;plug graphical system into machine
 (def field-of-view (Math/toRadians 15)) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
@@ -126,8 +126,8 @@
               (reduce (fn [loc instruction]
                     ;check if the next move will result in a crash
                     (if (= (- (:crash loc) (:crash ((new-move obstacles) loc instruction))) 0)
-                    ((new-move obstacles) loc instruction) (reduced loc)))
-                      loc (cycle (nth instr 2)))
+                      ((new-move obstacles) loc instruction) (reduced loc)))
+                    loc (cycle (nth instr 2)))
           (= (first instr) "if-obs-range")
               (if (no-obstacles-in-range loc (second instr) obstacles)
                 (reduce (new-move obstacles) loc (nth instr 2)) loc))))
@@ -144,14 +144,19 @@
 (defn test-instructions-list
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
-  [instructionlist obstaclelist]
+  [instructionlist obstaclelist testcriteria]
     (let [obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
           draw-target (display/draw-pt (first target-loc) (second target-loc))
-          final-loc (reduce (new-move obs) start-loc instructionlist)]
-     {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
+          final-loc (reduce (new-move obs) start-loc instructionlist)
+          dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
+
+     {:dist-to-target dist
       :end-loc (list (:x final-loc) (:y final-loc))
       :num-crash (:crash final-loc)
-      :instr-total (:moves-made final-loc)}))
+      :instr-total (:moves-made final-loc)
+      :fitness (+ (* (:distance-from-target testcriteria) dist)
+                  (* (:total-crashes testcriteria) (:crash final-loc))
+                  (* (:moves-made testcriteria) (:moves-made final-loc)))}))
 
 ;file for testing system
 (def testfile "data/pathfiles/condtest.txt")
@@ -191,11 +196,11 @@
 
 (defn test-instructions-file
   "loads instructions from file and obstacles from a file and executes list function"
-  [location-file obs-file]
+  [location-file obs-file testcriteria]
   ;this is a file wrapper for test-instructions-list
   (if draw-to-window? (display/start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
-   (load-instruction-list location-file) (load-obstacle-list obs-file)))
+   (load-instruction-list location-file) (load-obstacle-list obs-file) testcriteria))
 
 (defn display-obstacle-map
   "display the obstacle map"
