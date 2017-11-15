@@ -39,16 +39,8 @@
   a child individual (note: not program). Chooses which genetic operator
   to use probabilistically. The selection operator, crossover operator, operator
   probabilities and event percentages are determined from provided configuration."
-  [genomic instructions literals percent-literals population config]
-  (let [getter (if genomic :genome :program)
-        selection-f (percentaged-or-not (:selection config) #(tournament-selection % (quot (count population) 20)))
-        select #(getter (selection-f population)) ;; Returns a program/genome
-        crossover (percentaged-or-not (:crossover config) uniform-crossover) ;; Takes two programs/genomes and returns one program/genome
-        deletion (percentaged-or-not (:deletion config) uniform-deletion) ;; A deletion function
-        addition (percentaged-or-not (:addition config) uniform-addition)
-        mutation (percentaged-or-not (:mutation config) uniform-mutation)
-        op (percentaged-or-not (:percentages config) :mutation)] ;; :mutation, :deletion, :addition, or :crossover
-    {getter
+  [genomic select crossover deletion addition mutation op new-element config population]
+    {(if genomic :genome :program)
      (cond
         (= op :crossover) (crossover
                             (select)
@@ -57,17 +49,13 @@
                            (:deletion-percent config)
                            (select))
         (= op :addition) (addition
-                           instructions
-                           literals
-                           percent-literals
+                           new-element
                            (:addition-percent config)
                            (select))
         :else            (mutation
-                           instructions
-                           literals
-                           percent-literals
+                           new-element
                            (:mutation-percent config)
-                           (select)))}))
+                           (select)))})
 
 (defn best-n-errors
   "Given a population and some number n, returns the
@@ -154,7 +142,17 @@
    evolution-config]
   (let [wrap #(evaluate-individual inputses testcases (:individual-transform evolution-config) %)
         instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) %) instrs) instrs)
-        lits-universal (if genomic (map #(gene-wrap 0 %) literals) literals)]
+        lits-universal (if genomic (map #(gene-wrap 0 %) literals) literals)
+        selection-f (percentaged-or-not
+                      (:selection evolution-config)
+                      #(tournament-selection % (quot (count %) 20)))
+        select #((if genomic :genome :program) (selection-f %)) ;; Returns a program/genome
+        crossover (percentaged-or-not(:crossover evolution-config) uniform-crossover)
+        deletion (percentaged-or-not (:deletion evolution-config) uniform-deletion)
+        addition (percentaged-or-not (:addition evolution-config) uniform-addition)
+        mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
+        op (percentaged-or-not (:percentages evolution-config) :mutation)
+        new-element (binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
     (iterate
      (fn [population]
        (prepeatedly
@@ -162,11 +160,15 @@
          #(wrap
            (select-and-vary
              genomic
-             instrs-universal
-             lits-universal
-             percent-literals
-             population
-             evolution-config))))
+             (fn [] (select population))
+             crossover
+             deletion
+             addition
+             mutation
+             op
+             new-element
+             evolution-config
+             population))))
      (prepeatedly
        population-size
         #(wrap

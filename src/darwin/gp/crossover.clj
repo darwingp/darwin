@@ -46,12 +46,6 @@
 
 ;; Gene-Level ALPS
 
-(defn refresh-youngest-genome
-  [layer-size new-gene genome]
-  (map
-    #(if (< (:age %) layer-size) (new-gene) %)
-    genome))
-
 (defn avg
   [nums]
   (/ (reduce + nums) (count nums)))

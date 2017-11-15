@@ -14,10 +14,10 @@
   "Randomly adds new instructions/genes to an input program/genome
    before every instruction (and at the end) with some probability.
    Returns child program/genome."
-  [instructions literals percent-literal add-percent program]
+  [new-element add-percent program]
   (reduce
     #(if (true-percent? add-percent)
-      (concat %1 (list (binary-rand-nth percent-literal literals instructions) %2))
+      (concat %1 (list (new-element) %2))
       (concat %1 (list %2)))
     (list)
     program))
@@ -25,9 +25,15 @@
 (defn uniform-mutation
   "Has an n percent chance of replacing each instruction in a program with a
    random instruction."
-  [instructions literals percent-literal mutate-percent program]
+  [new-element mutate-percent program]
   (map
     #(if (true-percent? mutate-percent)
-      (binary-rand-nth percent-literal literals instructions)
+      (new-element)
        %)
     program))
+
+(defn refresh-youngest-genome
+  [new-gene min-keep-age genome]
+  (map
+    #(if (< (:age %) min-keep-age) (new-gene) %)
+    genome))
