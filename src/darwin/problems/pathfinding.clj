@@ -7,12 +7,19 @@
 
 (def instructions
   '(new_move
-    new_angle))
-
-(defn run-machine
-  "takes individual, runs machine on individual"
-  [indiv]
-  )
+    new_angle
+    set_speed
+    new_cond_moves
+    set_angle_target
+    loop_moves
+    while_moves
+    move-dup
+    integer-dup
+    integer-frombool
+    boolean-and
+    boolean-or
+    exec-if
+    exec-dup))
 
 (def novelty-archive (atom '()))
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj machine-out) machine-out)))
@@ -32,27 +39,46 @@
         (add-novel
         (reduce
           (fn [longest-indiv next-indiv]
-            (if (> (distance (:end-loc (first (:exit-states indiv))))
-                   (distance (:end-loc (first (:exit-states indiv))))) longest-indiv next-indiv))
+            (if (> (distance (:end-loc (first (:exit-states longest-indiv))))
+                   (distance (:end-loc (first (:exit-states next-indiv))))) longest-indiv next-indiv))
           (first population-locations) population-locations))))
+
+(def test-criteria
+  ;constant multiples for each attribute of a machine run
+  {:distance-from-target 0.5
+   :total-crashes 1
+   :moves-made 0.2})
+
+(defn test-on-map
+  "take movestack and location of map and run test"
+  [map]
+  (let [maploaded (testing/load-obstacle-list map)]
+  (fn [movestack]
+    (:fitness (testing/test-instructions-list
+      movestack maploaded test-criteria)))))
+
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
 (def configuration
   {:genomic true
    :instructions instructions
-   :literals '(1 2 3 4) ;; TODO: changeme?
-   :inputses '(()) ;TODO: this needs to change
+   :literals (range 180)
+   :inputses '(())
    :program-arity 0
-   :testcases (testing/load-obstacle-list "data/obsfiles/test1.txt") ;; This should be a list of functions which take a final push state and returns a fitness.
-   :behavioral-diversity #(calculate-behavior-div % 5) ; TODO: play with the frame
+   :testcases '((test-on-map "data/obsfiles/test1.txt")
+                (test-on-map "data/obsfiles/test2.txt")
+                (test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
+   :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.2
    :max-initial-program-size 100
    :min-initial-program-size 50
-   :evolution-config {:selection #(selection/tournament-selection % 30)
-                      :crossover crossover/uniform-crossover
+   :evolution-config {:selection '([:60 #(selection/tournament-selection % 30)]
+                                   [:40 #(novelty-selection %)])
+                      :crossover '([:60 crossover/uniform-crossover]
+                                   [:40 crossover/alternation-crossover])
                       :percentages '([60 :crossover]
                                      [10 :deletion]
                                      [10 :addition]
@@ -60,4 +86,6 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
+                      :individual-transform
+                        (fn [ind] (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
                       }})
