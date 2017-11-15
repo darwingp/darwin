@@ -60,28 +60,28 @@
 
 ;move instruction generation
 (definstr new_move [] :move
-  (constantly "angle 0"))
+  (constantly "angle 0 "))
 
 (definstr new_angle [:integer] :move
-  #(str "angle " %))
+  #(str "angle " % " "))
 
 (definstr set_speed [:integer] :move
-  #(str "set-speed " %))
+  #(str "set-speed " % " "))
 
 (definstr new_cond_moves [:integer] :exec
   #(makemultipleinstr :move % :move
-    (fn [& moves] "if-obs-range " (prep-moves moves))))
+    (fn [& moves] (str "if-obs-range " (prep-moves moves) " "))))
 
 (definstr set_angle_target [] :move
-  (constantly "set-angle-target"))
+  (constantly "set-angle-target "))
 
 (definstr loop_moves [:integer :integer] :exec
   (fn [x y] (makemultipleinstr :move y :move
-    (fn [& moves] "loop " x (prep-moves moves)))))
+    (fn [& moves] (str "loop " x (prep-moves moves) " ")))))
 
 (definstr while_moves [:integer :integer] :exec
   (fn [x y] (makemultipleinstr :move y :move
-    (fn [& moves] "move-while " x (prep-moves moves)))))
+    (fn [& moves] (str "move-while " x (prep-moves moves) " ")))))
 
 (definstr move-dup [:integer :move] :move
   (fn [x mv] (repeat x mv)))

@@ -117,19 +117,19 @@
             new-state (:state args-pop-result)]
         (push-return-stack new-state return-stack result)))))
 
-(defn makemultipleinstr
+(defmacro makemultipleinstr
   "Creates a Push instruction with an arity of n."
   [instack n outputstack operation]
   (fn [state] (make-push-instruction state operation (repeat n instack) outputstack)))
-  ;; (list
-  ;;   'fn
-  ;;   '[state]
-  ;;   (list
-  ;;     'make-push-instruction 
-  ;;     'state
-  ;;     operation
-  ;;     (repeat n instack)
-  ;;     outputstack)))
+  ; (list
+  ;   'fn
+  ;   '[state]
+  ;   (list
+  ;     'make-push-instruction
+  ;     'state
+  ;     operation
+  ;     (repeat n instack)
+  ;     outputstack)))
 
 (defmacro definstr
   "Macro for defining Push instructions. Position 0 is the deepest arg,

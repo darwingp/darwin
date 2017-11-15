@@ -6,20 +6,20 @@
   (:gen-class))
 
 (def instructions
-  '(new_move
-    new_angle
+  '(new_angle
     set_speed
-    new_cond_moves
-    set_angle_target
-    loop_moves
+    ;new_cond_moves
+    ;set_angle_target
+    ;loop_moves
     while_moves
-    move-dup
-    integer-dup
-    integer-frombool
-    boolean-and
-    boolean-or
-    exec-if
-    exec-dup))
+    ;move-dup
+    ;integer-dup
+    ;integer-frombool
+    ;boolean-and
+    ;boolean-or
+    ;exec-if
+    ;exec-dup
+    ))
 
 (def novelty-archive (atom '()))
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj machine-out) machine-out)))
@@ -45,7 +45,7 @@
 
 (def test-criteria
   ;constant multiples for each attribute of a machine run
-  {:distance-from-target 0.5
+  {:distance-from-target 1
    :total-crashes 1
    :moves-made 0.2})
 
@@ -66,19 +66,18 @@
    :literals (range 180)
    :inputses '(())
    :program-arity 0
-   :testcases '((test-on-map "data/obsfiles/test1.txt")
+   :testcases (list
+                (test-on-map "data/obsfiles/test1.txt")
                 (test-on-map "data/obsfiles/test2.txt")
                 (test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
    :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
-   :initial-percent-literals 0.2
+   :initial-percent-literals 0.5
    :max-initial-program-size 100
    :min-initial-program-size 50
-   :evolution-config {:selection '([:60 #(selection/tournament-selection % 30)]
-                                   [:40 #(novelty-selection %)])
-                      :crossover '([:60 crossover/uniform-crossover]
-                                   [:40 crossover/alternation-crossover])
+   :evolution-config {:selection #(selection/lexicase-selection % 30) ;novelty-selection
+                      :crossover #(crossover/alternation-crossover %1 %2 0.2 6)
                       :percentages '([60 :crossover]
                                      [10 :deletion]
                                      [10 :addition]
@@ -86,6 +85,5 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
-                      :individual-transform
-                        (fn [ind] (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
+                      :individual-transform (fn [ind] (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
                       }})

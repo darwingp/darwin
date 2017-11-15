@@ -47,7 +47,6 @@
     "takes machine obstacles state list,
     draws each obstacle from map, returns state"
     [obs-state-lst]
-    (println obs-state-lst)
     ;list contains obstacle maps: :x :y :width :height
     (let [gr (.getGraphics panel)]  ;get graphics object
       (.setColor gr obstacle-color)

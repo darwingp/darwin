@@ -112,6 +112,7 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
+    ;(println "Eval: " instr)
     (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
           (= (first instr) "set-angle-target")
             (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
@@ -141,30 +142,6 @@
 ;MAIN TESTING ENTRY PT.
 ; ------- Takes list of lists of moves for all indivs in gen and obs list -------
 
-(defn test-instructions-list
-  "takes in a list of vehicle instructions, a list of obstacles
-  outputs a map of fitness (can be used for behavioral tracking too)"
-  [instructionlist obstaclelist testcriteria]
-    (let [obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
-          draw-target (display/draw-pt (first target-loc) (second target-loc))
-          final-loc (reduce (new-move obs) start-loc instructionlist)
-          dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
-
-     {:dist-to-target dist
-      :end-loc (list (:x final-loc) (:y final-loc))
-      :num-crash (:crash final-loc)
-      :instr-total (:moves-made final-loc)
-      :fitness (+ (* (:distance-from-target testcriteria) dist)
-                  (* (:total-crashes testcriteria) (:crash final-loc))
-                  (* (:moves-made testcriteria) (:moves-made final-loc)))}))
-
-;file for testing system
-(def testfile "data/pathfiles/condtest.txt")
-(def testobsfile "data/obsfiles/test1.txt")
-
-;FILE OPERATIONS
-;---------------
-
 (defn prep-instructions
   "take instruction, prep for eval"
   [instr]
@@ -182,12 +159,36 @@
          (= (first instr) "if-obs-range"))
            (list (concat (parse-cond instr) (list (prep-instructions (rest (rest instr)))))))))
 
+(defn test-instructions-list
+  "takes in a list of vehicle instructions, a list of obstacles
+  outputs a map of fitness (can be used for behavioral tracking too)"
+  [instructionlist obstaclelist testcriteria]
+    (let [prepped-instr (map first (map prep-instructions (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
+          obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
+          ;draw-target (display/draw-pt (first target-loc) (second target-loc))
+          final-loc (reduce (new-move obs) start-loc prepped-instr)
+          dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
+      ;(println (:x final-loc) " " (:y final-loc))
+     {:dist-to-target dist
+      :end-loc (list (:x final-loc) (:y final-loc))
+      :num-crash (:crash final-loc)
+      :instr-total (:moves-made final-loc)
+      :fitness (int (+ (* (:distance-from-target testcriteria) dist)
+                     (* (:total-crashes testcriteria) (:crash final-loc))
+                     (* (:moves-made testcriteria) (:moves-made final-loc))))}))
+
+;file for testing system
+(def testfile "data/pathfiles/condtest.txt")
+(def testobsfile "data/obsfiles/test1.txt")
+
+;FILE OPERATIONS
+;---------------
+
 (defn load-instruction-list
   "load instructions from file"
   [location-file]
-  (let [load-lines (map (fn [line] (clojure.string/split line #" "))
-                    (clojure.string/split-lines (slurp location-file)))]
-    (map first (map prep-instructions load-lines))))
+  (map (fn [line] (clojure.string/split line #" "))
+                    (clojure.string/split-lines (slurp location-file))))
 
 (defn load-obstacle-list
   "load obstacles from file"
