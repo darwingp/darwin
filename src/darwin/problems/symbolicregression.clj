@@ -1,6 +1,7 @@
 (ns darwin.problems.symbolicregression
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
+  (:require [darwin.gp.mutation :as mutation])
   (:require [darwin.gp.utilities :as utils])
   (:gen-class))
 
@@ -42,6 +43,9 @@
    :min-initial-program-size 10
    :evolution-config {:selection #(selection/lexicase-selection % 30)
                       :crossover crossover/age-hotness-crossover; crossover/uniform-crossover
+                      :deletion mutation/uniform-deletion
+                      :addition mutation/uniform-addition
+                      :mutation mutation/uniform-mutation
                       :percentages '([60 :crossover]
                                      [10 :deletion]
                                      [10 :addition]

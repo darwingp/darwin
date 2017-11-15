@@ -3,6 +3,8 @@
   (:require [darwin.push.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
   (:require [darwin.gp.mutation :refer :all])
+  (:require [darwin.gp.selection :refer :all])
+  (:require [darwin.gp.crossover :refer :all])
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
@@ -39,25 +41,28 @@
   probabilities and event percentages are determined from provided configuration."
   [genomic instructions literals percent-literals population config]
   (let [getter (if genomic :genome :program)
-        selection-f (percentaged-or-not (:selection config) nil)
+        selection-f (percentaged-or-not (:selection config) #(tournament-selection % (quot (count population) 20)))
         select #(getter (selection-f population)) ;; Returns a program/genome
-        crossover (percentaged-or-not (:crossover config) nil) ;; Takes two programs/genomes and returns one program/genome
+        crossover (percentaged-or-not (:crossover config) uniform-crossover) ;; Takes two programs/genomes and returns one program/genome
+        deletion (percentaged-or-not (:deletion config) uniform-deletion) ;; A deletion function
+        addition (percentaged-or-not (:addition config) uniform-addition)
+        mutation (percentaged-or-not (:mutation config) uniform-mutation)
         op (percentaged-or-not (:percentages config) :mutation)] ;; :mutation, :deletion, :addition, or :crossover
     {getter
      (cond
         (= op :crossover) (crossover
                             (select)
                             (select))
-        (= op :deletion) (uniform-deletion
+        (= op :deletion) (deletion
                            (:deletion-percent config)
                            (select))
-        (= op :addition) (uniform-addition
+        (= op :addition) (addition
                            instructions
                            literals
                            percent-literals
                            (:addition-percent config)
                            (select))
-        :else            (uniform-mutation
+        :else            (mutation
                            instructions
                            literals
                            percent-literals
