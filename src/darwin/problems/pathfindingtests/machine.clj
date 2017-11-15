@@ -124,7 +124,8 @@
           (= (first instr) "move-while")
               ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
               (reduce (fn [loc instruction]
-                    (if (no-obstacles-in-range loc (second instr) obstacles)
+                    ;check if the next move will result in a crash
+                    (if (= (- (:crash loc) (:crash ((new-move obstacles) loc instruction))) 0)
                     ((new-move obstacles) loc instruction) (reduced loc)))
                       loc (cycle (nth instr 2)))
           (= (first instr) "if-obs-range")
@@ -139,11 +140,13 @@
 
 ;MAIN TESTING ENTRY PT.
 ; ------- Takes list of lists of moves for all indivs in gen and obs list -------
+
 (defn test-instructions-list
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist]
     (let [obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
+          draw-target (display/draw-pt (first target-loc) (second target-loc))
           final-loc (reduce (new-move obs) start-loc instructionlist)]
      {:dist-to-target (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))
       :end-loc (list (:x final-loc) (:y final-loc))
@@ -164,7 +167,7 @@
         parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
   (cond (= (first instr) "angle")
            (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
-        (= (first instr) "set-angle-target") 
+        (= (first instr) "set-angle-target")
            (cons '("set-angle-target") (prep-instructions (rest instr)))
         (= (first instr) "set-speed")
            (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
@@ -199,10 +202,6 @@
   [locationfile]
     (display/start-environment)
     (display/draw-obstacles (load-obstacle-list locationfile)))
-
-(defn draw-target
-   []
-    (display/draw-pt (first target-loc) (second target-loc)))
 
 ;POPULATION DIVERSITY
 ;--------------------
