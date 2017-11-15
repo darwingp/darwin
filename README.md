@@ -66,12 +66,13 @@ Virtual machine
 
 ### Both
 
-- [ ] Polyploidy
+- [ ] Polyploidy? (if enough time)
 
 ### Nate (up to virtual machine)
 
-- [ ] Genetic Hotspots through :age epigenetic marker - like ALPS
-    - [ ] This genetic marker is untouched by translation; instead it's
+- [ ] Add layering to genetic hotspots
+- [x] Genetic Hotspots through :age epigenetic marker - like ALPS
+    - This genetic marker is untouched by translation; instead it's
           used solely by genetic operators.
 - [x] Adapt GP to use Plush genomes in addition to push programs
    - [x] Generation operators
