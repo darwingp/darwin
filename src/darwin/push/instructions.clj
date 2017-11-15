@@ -68,20 +68,20 @@
 (definstr set_speed [:integer] :move
   #(str "set-speed " % " "))
 
-(definstr new_cond_moves [:integer] :exec
-  #(makemultipleinstr :move % :move
-    (fn [& moves] (str "if-obs-range " (prep-moves moves) " "))))
+(definstr new_cond_moves [:integer :integer] :exec
+  (fn [x y] (makemultipleinstr :move x :move
+    (fn [& moves] (str "if-obs-range " y " " (prep-moves moves) " ")))))
 
 (definstr set_angle_target [] :move
   (constantly "set-angle-target "))
 
 (definstr loop_moves [:integer :integer] :exec
-  (fn [x y] (makemultipleinstr :move y :move
-    (fn [& moves] (str "loop " x (prep-moves moves) " ")))))
+  (fn [x y] (makemultipleinstr :move x :move
+    (fn [& moves] (str "loop " y " " (prep-moves moves) " ")))))
 
 (definstr while_moves [:integer :integer] :exec
-  (fn [x y] (makemultipleinstr :move y :move
-    (fn [& moves] (str "move-while " x (prep-moves moves) " ")))))
+  (fn [x y] (makemultipleinstr :move x :move
+    (fn [& moves] (str "move-while " y " " (prep-moves moves) " ")))))
 
 (definstr move-dup [:integer :move] :move
   (fn [x mv] (repeat x mv)))

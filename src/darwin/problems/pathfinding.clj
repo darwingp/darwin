@@ -10,8 +10,8 @@
     set_speed
     ;new_cond_moves
     ;set_angle_target
-    ;loop_moves
-    while_moves
+    loop_moves
+    ;while_moves
     ;move-dup
     ;integer-dup
     ;integer-frombool
