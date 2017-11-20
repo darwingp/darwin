@@ -109,7 +109,7 @@
   (not (nil? (find-list zero? (map :total-error population)))))
 
 (defn evaluate-individual
-  [inputses testcases xform individual]
+  [inputses testcases xform other-attribute individual] ;TODO: novelty param
   (let [ind (prepare-individual individual)
         ran (assoc
               ind
@@ -118,7 +118,7 @@
                 #(run-individual % ind)
                 inputses))
         xformed (if (nil? xform) ran (xform ran))]
-    (test-individual testcases xformed)))
+    (test-individual testcases xformed other-attribute)))
 
 (defn generate
   "Generate a new individual."
@@ -142,7 +142,9 @@
    inputses
    testcases
    evolution-config]
-  (let [wrap #(evaluate-individual inputses testcases (:individual-transform evolution-config) %)
+  (let [wrap #(evaluate-individual inputses testcases
+            (:individual-transform evolution-config)
+            (:keep-test-attribute evolution-config) %) ;novelty param
         instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) %) instrs) instrs)
         lits-universal (if genomic (map #(gene-wrap 0 %) literals) literals)
         selection-f (percentaged-or-not

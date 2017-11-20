@@ -13,7 +13,7 @@
   (+' (+' (reduce *' (repeat 3 x)) x) 3))
 
 (defn delta-error
-  "For a final Push state, compares (target-function in1) to 
+  "For a final Push state, compares (target-function in1) to
    the top of the integer stack on that same Push state and returns
    the difference, always positive."
   [ret-state]
@@ -53,4 +53,5 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
+                      :keep-test-attribute false
                       }})

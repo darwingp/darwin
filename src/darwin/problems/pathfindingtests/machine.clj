@@ -3,7 +3,7 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 1})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 10})           ;x y angle crash total
 (def target-loc '(750 600))  ;location of target
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
@@ -163,8 +163,8 @@
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist testcriteria]
-    (let [prepped-instr (map first 
-                             (map prep-instructions 
+    (let [prepped-instr (map first
+                             (map prep-instructions
                                   (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
           obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
           ;draw-target (display/draw-pt (first target-loc) (second target-loc))
@@ -226,7 +226,7 @@
         ;mapcat to flatten results by 1 level (partition is list of lists)
         (mapcat
          ;get all partitions for each individual (step 1 for ALL)
-         (fn [ind] (partition diversity-frame 1 ind))
+         (fn [ind] (partition diversity-frame 1 (:error ind)))
          generation-instructions)]
     ;check total against distinct
     (- (count all-frames) (count (distinct all-frames)))))

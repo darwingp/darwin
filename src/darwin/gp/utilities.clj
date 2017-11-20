@@ -47,10 +47,14 @@
 
 (defn test-individual
   "Performs each test in tests on each of the individual's exit states."
-  [tests individual]
+  [tests individual testattribute]
   (let [errors (flatten (map #(map % (:exit-states individual)) tests))]
-    (merge individual {:errors errors
-                       :total-error (reduce +' errors)})))
+    (merge individual (if testattribute
+                      {:errors (map :error errors)
+                       testattribute (map testattribute errors)
+                       :total-error (reduce +' (map :error errors))}
+                      {:errors errors
+                       :total-error (reduce +' errors)}))))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
@@ -74,10 +78,10 @@
 (defn best-overall-fitness
   "Returns the member of the population with the the lowest total error."
   [population]
-  (reduce
+  (try (reduce
     #(if (< (:total-error %1) (:total-error %2))
       %1 %2)
-    population))
+    population) (catch Exception e (str "error "))))
 
 (defn prepeatedly
   "Like repeatedly, but parallel."
