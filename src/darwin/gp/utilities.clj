@@ -75,8 +75,6 @@
   "Returns the member of the population with the the lowest total error."
   [population]
   (reduce
-    ;(fn [a b] (println b) (if (< (:total-error a) (:total-error b))
-        ;a b))
     #(if (< (:total-error %1) (:total-error %2))
       %1 %2)
     population))

@@ -163,7 +163,9 @@
   "takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist testcriteria]
-    (let [prepped-instr (map first (map prep-instructions (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
+    (let [prepped-instr (map first 
+                             (map prep-instructions 
+                                  (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
           obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
           ;draw-target (display/draw-pt (first target-loc) (second target-loc))
           final-loc (reduce (new-move obs) start-loc prepped-instr)
@@ -180,6 +182,9 @@
 ;file for testing system
 (def testfile "data/pathfiles/condtest.txt")
 (def testobsfile "data/obsfiles/test1.txt")
+(def examplecriteria {:distance-from-target 1
+   :total-crashes 1
+   :moves-made 0.2})
 
 ;FILE OPERATIONS
 ;---------------
@@ -187,8 +192,7 @@
 (defn load-instruction-list
   "load instructions from file"
   [location-file]
-  (map (fn [line] (clojure.string/split line #" "))
-                    (clojure.string/split-lines (slurp location-file))))
+  (clojure.string/split-lines (slurp location-file)))
 
 (defn load-obstacle-list
   "load obstacles from file"

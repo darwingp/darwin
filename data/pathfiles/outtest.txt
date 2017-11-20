@@ -1,0 +1,28 @@
+set-speed 156
+set-angle-target
+set-speed 156
+set-angle-target
+set-angle-target
+set-speed 76
+set-speed 29
+set-speed 6
+set-angle-target
+set-speed 148
+set-speed 42
+set-angle-target
+set-speed 148
+set-speed 148
+set-speed 156
+set-speed 79
+set-angle-target
+set-speed 79
+set-speed 79
+set-speed 79
+set-angle-target
+set-angle-target
+set-speed 156
+set-speed 79
+set-speed 79
+set-angle-target
+loop 79 set-speed 42 set-speed 156 set-angle-target set-angle-target set-speed 79 set-angle-target set-angle-target set-speed 156 set-speed 148 set-speed 156 set-speed 156 set-speed 42 set-speed 42 set-angle-target set-angle-target set-angle-target set-speed 79 set-angle-target set-angle-target set-speed 79 set-speed 79 set-speed 79 set-speed 79 set-angle-target set-speed 79
+set-angle-target

@@ -98,6 +98,7 @@
      (print-many-ln " -> errors: " (:errors best))
      (print-many-ln " -> total error: " (:total-error best))
      (print-many-ln " -> size: " (count (:program best)))
+     ;(print-many-ln " -> exit state: " (:exit-states best))
      (print-many-ln "Best 20 errors: " (best-n-errors population 20))
      (print-many-ln "Behavioral Diversity: " behavioral-diversity)))
 
