@@ -25,6 +25,7 @@
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj (:novelty machine-out)) machine-out)))
 
 (defn most-novel
+  "get max pt"
   [indiv]
   (reduce  ;take individual, get most novel
     (fn [novel loc]
@@ -69,8 +70,6 @@
        :novelty (:end-loc testresult)}))))
 
 
-;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
-; into the machine and run against an individual.  This generates an error map.)
 (def configuration
   {:genomic true
    :instructions instructions
