@@ -107,7 +107,6 @@
                                   (swap! max-vals assoc data-type (data-type state))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
-    ;TODO (Jack): clean up shitty average fitness conditional
           current-pt (
                       (normalize-to-graph w-zero (data-type (deref max-vals)))
                       (if (= data-type :average-fitness)

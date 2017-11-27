@@ -25,7 +25,7 @@
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj (:novelty machine-out)) machine-out)))
 
 (defn most-novel
-  "Takes an individual and returns a tuple."
+  "Takes an individual and returns a tuple. Gets the max point"
   [indiv]
   (reduce  ;take individual, get most novel
     (fn [novel loc]
@@ -71,6 +71,7 @@
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
+
 (def configuration
   {:genomic true
    :instructions instructions
