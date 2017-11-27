@@ -24,16 +24,20 @@
 (def novelty-archive (atom '()))
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj (:novelty machine-out)) machine-out)))
 
+(defn most-novel
+  [indiv]
+  (reduce  ;take individual, get most novel
+    (fn [novel loc]
+      (if (and
+        (> (first loc) (first novel))
+        (> (second loc) (second novel))) loc novel))
+    indiv))
+
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
-  (let [most-novel (fn [indiv] (reduce  ;take individual, get most novel
-                    (fn [novel loc]
-                      (if (and
-                        (> (first loc) (first novel))
-                        (> (second loc) (second novel))) loc novel)) indiv))
-        pop-transform (map #(assoc % :novelty (most-novel (:novelty %))) population)
+  (let [pop-transform (map #(assoc % :novelty (:novelty (most-novel %))) population)
         plus-archive (concat (map :novelty pop-transform) (deref novelty-archive))
         average-x (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive)
         average-y (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive)
@@ -77,7 +81,9 @@
                 (test-on-map "data/obsfiles/test1.txt")
                 (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
-   :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
+   :behavioral-diversity #(do
+                            (println %)
+                              (testing/calculate-behavior-div % 5)) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.4
