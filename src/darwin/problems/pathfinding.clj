@@ -25,19 +25,20 @@
 (def add-novel (fn [machine-out] (do (swap! novelty-archive conj (:novelty machine-out)) machine-out)))
 
 (defn most-novel
+  "Takes an individual and returns a tuple."
   [indiv]
   (reduce  ;take individual, get most novel
     (fn [novel loc]
       (if (and
         (> (first loc) (first novel))
         (> (second loc) (second novel))) loc novel))
-    indiv))
+    (:novelty indiv)))
 
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
-  (let [pop-transform (map #(assoc % :novelty (:novelty (most-novel %))) population)
+  (let [pop-transform (map #(assoc % :novelty (most-novel %)) population)
         plus-archive (concat (map :novelty pop-transform) (deref novelty-archive))
         average-x (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive)
         average-y (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive)
@@ -63,11 +64,10 @@
   [map]
   (let [maploaded (testing/load-obstacle-list map)]
     (fn [movestack]
-      (let [testresult (testing/test-instructions-list
-      movestack maploaded test-criteria)]
+      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)]
+;        (println testresult)
       {:error (:fitness testresult)
        :novelty (:end-loc testresult)}))))
-
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
@@ -81,9 +81,10 @@
                 (test-on-map "data/obsfiles/test1.txt")
                 (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
-   :behavioral-diversity #(do
-                            (println %)
-                              (testing/calculate-behavior-div % 5)) ; TODO: play with the frame
+   :behavioral-diversity (fn [_] -1)
+   ;; :behavioral-diversity #(do
+   ;;                          (println %)
+   ;;                            (testing/calculate-behavior-div % 5)) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.4

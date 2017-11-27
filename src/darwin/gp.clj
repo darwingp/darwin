@@ -71,7 +71,6 @@
 (defn report
   "Reports information on a generation."
   [population generation-num behavioral-diversity-func]
-    ;(println population)
     (let [best (best-overall-fitness population)
           behavioral-diversity (if (nil? behavioral-diversity-func)
                                  -1
@@ -83,6 +82,8 @@
                          :best-size (count (:program best))
                          :generation generation-num
                          }]
+
+     (print-many-ln "BEST " best)
 
      ;; plot data points
      (add-pt current-state :points-fit line-color-1)

@@ -59,7 +59,7 @@
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
   [arity v]
-  { :value v :arity v :close (if (true-percent? 5) (rand-int 4) 0) })
+  { :value v :arity arity :close (if (true-percent? 5) (rand-int 4) 0) })
 
 ;; any time a test is mentioned, it's the idx in the individual.
 
