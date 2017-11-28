@@ -27,7 +27,6 @@
 (defn most-novel
   "Takes an individual and returns a tuple. Gets the max point"
   [indiv]
-  ;TODO: make judgement about instructions length here?
   (reduce  ;take individual, get most novel
     (fn [novel loc]
       (if (and

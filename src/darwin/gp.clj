@@ -71,6 +71,7 @@
 (defn report
   "Reports information on a generation."
   [population generation-num behavioral-diversity-func]
+    (println (:total-error (first population)))
     (let [best (best-overall-fitness population)
           behavioral-diversity (if (nil? behavioral-diversity-func)
                                  -1
