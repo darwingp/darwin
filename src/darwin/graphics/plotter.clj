@@ -221,5 +221,4 @@
   (init-sub-window  0 0 frame-width frame-height background-color) ;add bg color
   (add-windows-lines)  ;add sub-windows
   (add-legend (count all-line-colors) data-fields all-line-colors)
-  "UI initialized..."
-)
+  "UI initialized...")

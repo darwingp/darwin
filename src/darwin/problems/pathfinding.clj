@@ -27,6 +27,7 @@
 (defn most-novel
   "Takes an individual and returns a tuple. Gets the max point"
   [indiv]
+  ;TODO: make judgement about instructions length here?
   (reduce  ;take individual, get most novel
     (fn [novel loc]
       (if (and
@@ -40,8 +41,10 @@
   [population]
   (let [pop-transform (map #(assoc % :novelty (most-novel %)) population)
         plus-archive (concat (map :novelty pop-transform) (deref novelty-archive))
-        average-x (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive)
-        average-y (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive)
+        archive-size (count plus-archive)
+        average-x (/ (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive) archive-size)
+        average-y (/ (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive) archive-size)
+        average-size (/ (reduce (fn [prev new] (+ (nth prev 2) (nth new 2))) plus-archive) archive-size)
         distance (fn [pt]
            (let [xdif (- average-x (first pt)) ydif (- average-y (second pt))]
            (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))]
@@ -49,8 +52,8 @@
         (add-novel
         (reduce
           (fn [longest-indiv next-indiv]
-            (if (> (distance (:novelty longest-indiv))
-                   (distance (:novelty next-indiv))) longest-indiv next-indiv))
+            (if (and (> (distance (:novelty next-indiv))
+                   (distance (:novelty longest-indiv))) (> average-size (nth (:novelty next-indiv) 2))) next-indiv longest-indiv))
           pop-transform))))
 
 (def test-criteria

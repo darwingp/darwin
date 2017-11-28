@@ -78,10 +78,10 @@
 (defn best-overall-fitness
   "Returns the member of the population with the the lowest total error."
   [population]
-  (try (reduce
+  (reduce
     #(if (< (:total-error %1) (:total-error %2))
       %1 %2)
-    population) (catch Exception e (str "error "))))
+    population))
 
 (defn prepeatedly
   "Like repeatedly, but parallel."
