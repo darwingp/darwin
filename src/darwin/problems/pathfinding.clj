@@ -42,9 +42,9 @@
   (let [pop-transform (map #(assoc % :novelty (most-novel %)) population)
         plus-archive (concat (map :novelty pop-transform) (deref novelty-archive))
         archive-size (count plus-archive)
-        average-x (/ (reduce (fn [prev new] (+ (first prev) (first new))) plus-archive) archive-size)
-        average-y (/ (reduce (fn [prev new] (+ (second prev) (second new))) plus-archive) archive-size)
-        average-size (/ (reduce (fn [prev new] (+ (nth prev 2) (nth new 2))) plus-archive) archive-size)
+        average-x (/ (reduce (fn [prev new] (+ prev (first new))) 0  plus-archive) archive-size)
+        average-y (/ (reduce (fn [prev new] (+ prev (second new))) 0 plus-archive) archive-size)
+        average-size (/ (reduce (fn [prev new] (+ prev (nth new 2))) 0 plus-archive) archive-size)
         distance (fn [pt]
            (let [xdif (- average-x (first pt)) ydif (- average-y (second pt))]
            (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))]
