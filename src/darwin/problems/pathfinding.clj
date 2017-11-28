@@ -21,8 +21,8 @@
     ;exec-dup
     ))
 
-(def novelty-archive (atom '()))
-(def add-novel (fn [machine-out] (do (swap! novelty-archive conj (:novelty machine-out)) machine-out)))
+(def novelty-archive (ref '()))
+(def add-novel (fn [machine-out] (dosync (alter novelty-archive conj (:novelty machine-out)) machine-out)))
 
 (defn most-novel
   "Takes an individual and returns a tuple. Gets the max point"
