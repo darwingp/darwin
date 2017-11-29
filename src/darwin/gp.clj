@@ -12,7 +12,7 @@
   "Takes literally anything and converts it into an integer"
   [v]
   (cond (keyword? v) (to-integer (name v))
-        (string? v) (Integer. v)
+        (string? v) (bigint v)
         :else v))
 
 (defn percentaged-or-not
@@ -24,16 +24,16 @@
    (cond
      (nil? col) default
      (not (coll? col)) col
-     :else (loop [v-remaining (rand-int 100)
+     :else (loop [perc-remaining (rand-int 100)
                   percs col]
              (if (empty? percs)
                default
                (let [pair (first percs)
-                     perc (to-integer (nth pair 0))
-                     v (nth pair 1)]
-                 (if (< v-remaining perc) ;; FIXME: is this correct?
+                     perc (to-integer (first pair))
+                     v (second pair)]
+                 (if (< perc-remaining perc) ;; FIXME: is this correct?
                    v
-                   (recur (- v-remaining perc) (rest percs))))))))
+                   (recur (- perc-remaining perc) (rest percs))))))))
 
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
@@ -151,8 +151,8 @@
         selection-f (percentaged-or-not
                       (:selection evolution-config)
                       #(tournament-selection % (quot (count %) 20)))
-        select #((if genomic :genome :program) (selection-f %)) ;; Returns a program/genome
-        crossover (percentaged-or-not(:crossover evolution-config) uniform-crossover)
+        key (if genomic :genome :program)
+        crossover (percentaged-or-not (:crossover evolution-config) uniform-crossover)
         deletion (percentaged-or-not (:deletion evolution-config) uniform-deletion)
         addition (percentaged-or-not (:addition evolution-config) uniform-addition)
         mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
@@ -160,20 +160,21 @@
         new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
     (iterate
      (fn [population]
-       (prepeatedly
-         population-size
-         #(wrap
-           (select-and-vary
-             genomic
-             (fn [] (select population))
-             crossover
-             deletion
-             addition
-             mutation
-             op
-             new-element
-             evolution-config
-             population))))
+       (let [select #(key (selection-f population))]
+         (prepeatedly
+           population-size
+           #(wrap
+             (select-and-vary
+               genomic
+               select
+               crossover
+               deletion
+               addition
+               mutation
+               op
+               new-element
+               evolution-config
+               population)))))
      (prepeatedly
        population-size
         #(wrap

@@ -41,14 +41,14 @@
       (reverse child)
       (do
         (if (< (rand) alternation-rate)
-          (recur (+ index (add-noise alignment-deviation)) (cons (nth pa (Math/abs index)) child) pb pa)
-          (recur (+ index 1) (cons (nth pa (Math/abs index)) child) pa pb))))))
+          (recur (+' index (add-noise alignment-deviation)) (cons (nth pa (Math/abs index)) child) pb pa)
+          (recur (+' index 1) (cons (nth pa (Math/abs index)) child) pa pb))))))
 
 ;; Gene-Level ALPS
 
 (defn avg
   [nums]
-  (/ (reduce + nums) (count nums)))
+  (/ (reduce +' nums) (count nums)))
 
 (defn avg-age
   "Given any number of genes, return the average age"
@@ -82,14 +82,12 @@
   [a b]
   (let [avg-ages (map avg-age a b)
         avg-age (max (apply max avg-ages) 1)
-        heatmap (map #(int (* 100 (/ % avg-age))) avg-ages) ;; percentages (0-100)
+        heatmap (map #(bigint (*' 100 (/ % avg-age))) avg-ages) ;; percentages (0-100)
         [ta tb tail] (truncate-lists a b)]
-    (map
-      inc-age
       (concat
         (map
           #(if (true-percent? %3) %1 %2)
           ta
           tb
           heatmap)
-      tail))))
+      tail)))

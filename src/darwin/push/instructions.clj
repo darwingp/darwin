@@ -51,7 +51,7 @@
   [total]
   (let [test (repeatedly total (fn [] (angle-noise 45))) ]
     (do
-    (println "average: " (/ (reduce + test) (count test)))
+    (println "average: " (/ (reduce +' test) (count test)))
     (println (reduce max test)))))
 
 (def prep-moves

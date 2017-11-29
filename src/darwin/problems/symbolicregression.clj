@@ -29,6 +29,8 @@
     integer_*
     integer_%))
 
+; TODO: steady/solid state: How many times should crossover occur?
+
 (def configuration
   {:genomic true
    :instructions instructions
@@ -41,17 +43,18 @@
    :initial-percent-literals 0.2
    :max-initial-program-size 50
    :min-initial-program-size 10
-   :evolution-config {:selection #(selection/lexicase-selection % 30)
-                      :crossover crossover/age-hotness-crossover; crossover/uniform-crossover
-                      :deletion mutation/uniform-deletion
-                      :addition mutation/uniform-addition
-                      :mutation mutation/uniform-mutation
+   :evolution-config {;:selection #(selection/lexicase-selection % 30)
+                      ; :crossover crossover/age-hotness-crossover
+                     ; :deletion mutation/uniform-deletion
+                     ; :addition mutation/uniform-addition
+                     ; :mutation #(mutation/refresh-youngest-genome %1 10 %3)
                       :percentages '([60 :crossover]
                                      [10 :deletion]
                                      [10 :addition]
                                      [20 :mutation])
                       :deletion-percent 7
                       :addition-percent 7
-                      :mutation-percent 7
-                      :keep-test-attribute false
+                      :mutation-percent 20
+                      ;:keep-test-attribute false
+                      ;:individual-transform (fn [ind] (assoc ind :genome (map crossover/inc-age (:genome ind))))
                       }})

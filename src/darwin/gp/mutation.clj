@@ -35,5 +35,5 @@
 (defn refresh-youngest-genome
   [new-gene min-keep-age genome]
   (map
-    #(if (< (:age %) min-keep-age) (new-gene) %)
+    #(if (< (get % :age 0) min-keep-age) (new-gene) %)
     genome))
