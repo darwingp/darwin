@@ -1,12 +1,13 @@
 (ns darwin.problems.pathfinding
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
+  (:require [darwin.gp.mutation :as mutation])
   (:require [darwin.problems.pathfindingtests.machine :as testing])
   (:gen-class))
 
 (def instructions
   '(new_angle
-    ;set_speed
+    set_speed
     new_cond_moves
     set_angle_target
     loop_moves
@@ -74,18 +75,38 @@
    :total-crashes 0.5
    :moves-made 2})
 
+(defn gradate-error
+  [err]
+  (let [logerr (Math/log err)]
+    (Math/floor (* (/ logerr 10) logerr))))
+
 (defn test-on-map
   "take movestack and location of map and run test"
   [map]
   (let [maploaded (testing/load-obstacle-list map)]
     (fn [movestack]
-      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)]
+      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)
+            dist-from-target (:distance-from-target test-criteria)
+            total-crashes (:total-crashes test-criteria)
+            moves-made (:moves-made test-criteria)
+
+            dist-to-target (:dist-to-target testresult)
+            end-loc (:end-loc testresult)
+            num-crash (:num-crash testresult)
+            instr-total (:instr-total testresult)
+            fitness (bigint (+' (*' dist-from-target dist-to-target)
+                                (*' total-crashes num-crash)
+                            ))]
 ;        (println testresult)
-      {:error (:fitness testresult)
-       :novelty (:end-loc testresult)}))))
+      {:error (if (zero? (gradate-error fitness)) 0 fitness)
+       :novelty end-loc}))))
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
+
+(defn set-exit-states-to-move
+  [ind]
+  (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
 
 (def configuration
   {:genomic true
@@ -97,24 +118,25 @@
                 (test-on-map "data/obsfiles/test1.txt")
                 (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
-   :behavioral-diversity (fn [_] -1)
-   ;; :behavioral-diversity #(do
-   ;;                          (println %)
-   ;;                            (testing/calculate-behavior-div % 5)) ; TODO: play with the frame
+   :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.4
    :max-initial-program-size 100
    :min-initial-program-size 50
-   :evolution-config {:selection novelty-selection ; #(selection/tournament-selection % 30)
-                      :crossover crossover/uniform-crossover ; #(crossover/alternation-crossover %1 %2 0.2 6)
-                      :percentages '([40 :crossover]
-                                     [25 :deletion]
-                                     [5 :addition]
-                                     [30 :mutation])
+   :evolution-config {:selection (list
+                                   [50 novelty-selection]
+                                   [50 #(selection/lexicase-selection % 30)])
+                      :crossover crossover/age-hotness-crossover
+                      :mutation #(mutation/refresh-youngest-genome %1 3 %3)
+                      :percentages '([20 :crossover]
+                                     [20 :deletion]
+                                     [20 :addition]
+                                     [20 :mutation]
+                                     [20 :copy])
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
                       :keep-test-attribute :novelty
-                      :individual-transform (fn [ind] (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
+                      :individual-transform #(set-exit-states-to-move %)
                       }})

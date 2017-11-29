@@ -53,6 +53,7 @@
                            new-element
                            (:addition-percent config)
                            (select))
+        (= op :copy)     ((if genomic :genome :program) (rand-nth population))
         :else            (mutation
                            new-element
                            (:mutation-percent config)
@@ -151,7 +152,6 @@
         selection-f (percentaged-or-not
                       (:selection evolution-config)
                       #(tournament-selection % (quot (count %) 20)))
-        key (if genomic :genome :program)
         crossover (percentaged-or-not (:crossover evolution-config) uniform-crossover)
         deletion (percentaged-or-not (:deletion evolution-config) uniform-deletion)
         addition (percentaged-or-not (:addition evolution-config) uniform-addition)
@@ -160,7 +160,11 @@
         new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
     (iterate
      (fn [population]
-       (let [select #(key (selection-f population))]
+       (let [select #(if genomic
+                            (map inc-age 
+                                 (:genome (selection-f population))
+                                 )
+                            (:program (selection-f population)))]
          (prepeatedly
            population-size
            #(wrap

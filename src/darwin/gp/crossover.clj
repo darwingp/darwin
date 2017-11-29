@@ -80,8 +80,9 @@
 (defn age-hotness-crossover
   "Performs crossover based on the age of genes in a genome."
   [a b]
-  (let [avg-ages (map avg-age a b)
-        avg-age (max (apply max avg-ages) 1)
+  (let [[ta tb tail] (truncate-lists a b)
+        avg-ages (map avg-age ta tb) ;; The average age of each pair of genes across genomes
+        avg-age (apply avg-age (concat a b)) ;; The average age of all genes in and and b
         heatmap (map #(bigint (*' 100 (/ % avg-age))) avg-ages) ;; percentages (0-100)
         [ta tb tail] (truncate-lists a b)]
       (concat
