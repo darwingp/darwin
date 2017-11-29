@@ -240,4 +240,5 @@
                        (report %2 (inc %1) behavioral-diversity)
                        %2)
                      gens))]
+    (println (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
     (if (nil? solution) nil :SUCCESS)))

@@ -6,7 +6,7 @@
 
 (def instructions
   '(new_angle
-    ;set_speed
+    set_speed
     new_cond_moves
     set_angle_target
     loop_moves
@@ -70,18 +70,19 @@
 
 (def test-criteria
   ;constant multiples for each attribute of a machine run
-  {:distance-from-target 0.8
-   :total-crashes 0.5
-   :moves-made 2})
+  {:distance-from-target 1
+   :total-crashes 0.2
+   :moves-made 0.3})
 
 (defn test-on-map
   "take movestack and location of map and run test"
   [map]
   (let [maploaded (testing/load-obstacle-list map)]
     (fn [movestack]
-      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)]
+      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)
+            fit (if (> 10 (:dist-to-target testresult)) 0 (:fitness testresult))]
 ;        (println testresult)
-      {:error (:fitness testresult)
+      {:error fit
        :novelty (:end-loc testresult)}))))
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
@@ -94,8 +95,13 @@
    :inputses '(())
    :program-arity 0
    :testcases (list
+                ;(test-on-map "data/obsfiles/easytest.txt")
+                ;(test-on-map "data/obsfiles/easytest2.txt")
                 (test-on-map "data/obsfiles/test1.txt")
-                (test-on-map "data/obsfiles/test2.txt"))
+                )
+              ; (list
+              ;   (test-on-map "data/obsfiles/test1.txt")
+              ;   (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
    :behavioral-diversity (fn [_] -1)
    ;; :behavioral-diversity #(do
@@ -106,11 +112,11 @@
    :initial-percent-literals 0.4
    :max-initial-program-size 100
    :min-initial-program-size 50
-   :evolution-config {:selection novelty-selection ; #(selection/tournament-selection % 30)
+   :evolution-config {:selection novelty-selection ;#(selection/tournament-selection % 30)
                       :crossover crossover/uniform-crossover ; #(crossover/alternation-crossover %1 %2 0.2 6)
                       :percentages '([40 :crossover]
-                                     [25 :deletion]
-                                     [5 :addition]
+                                     [20 :deletion]
+                                     [10 :addition]
                                      [30 :mutation])
                       :deletion-percent 7
                       :addition-percent 7
