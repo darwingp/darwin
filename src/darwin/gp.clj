@@ -157,7 +157,7 @@
         addition (percentaged-or-not (:addition evolution-config) uniform-addition)
         mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
         op (percentaged-or-not (:percentages evolution-config) :mutation)
-        new-element (binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
+        new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
     (iterate
      (fn [population]
        (prepeatedly
