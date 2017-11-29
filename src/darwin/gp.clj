@@ -21,18 +21,19 @@
    value is the value associated with the percentage. Returns a random value
    respecting the percentages. Otherwise, returns the argument."
    [col default]
-   (if (not (coll? col))
-     col
-     (loop [v-remaining (rand-int 100)
-            percs col]
-       (if (empty? percs)
-         default
-         (let [pair (first percs)
-               perc (to-integer (nth pair 0))
-               v (nth pair 1)]
-           (if (< v-remaining perc) ;; FIXME: is this correct?
-             v
-             (recur (- v-remaining perc) (rest percs))))))))
+   (cond
+     (nil? col) default
+     (not (coll? col)) col
+     :else (loop [v-remaining (rand-int 100)
+                  percs col]
+             (if (empty? percs)
+               default
+               (let [pair (first percs)
+                     perc (to-integer (nth pair 0))
+                     v (nth pair 1)]
+                 (if (< v-remaining perc) ;; FIXME: is this correct?
+                   v
+                   (recur (- v-remaining perc) (rest percs))))))))
 
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
@@ -158,6 +159,9 @@
         mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
         op (percentaged-or-not (:percentages evolution-config) :mutation)
         new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
+    (locking *out* (print "SELECT: ") (println selection-f)
+                   (print "SELECTION: ") (println (:selection evolution-config))
+                   (print "EVO CONF: ") (println evolution-config))
     (iterate
      (fn [population]
        (prepeatedly
