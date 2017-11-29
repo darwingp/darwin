@@ -54,8 +54,8 @@
           average-size (/ (apply +' (map #(nth % 2) plus-archive)) archive-size)
           calc-distance (fn [pt]
                           ;; In the subtraction shits is where the bug is encountered
-                          (let [xdif (- average-x (if (< 0 (count pt)) (first pt) 0))
-                                ydif (- average-y (if (< 1 (count pt)) (second pt) 0))
+                          (let [xdif (- average-x (first pt))
+                                ydif (- average-y (second pt))
                                 ret (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))]
                             ret))
           reduce-f (fn [longest-indiv next-indiv]

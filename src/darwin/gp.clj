@@ -159,9 +159,6 @@
         mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
         op (percentaged-or-not (:percentages evolution-config) :mutation)
         new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
-    (locking *out* (print "SELECT: ") (println selection-f)
-                   (print "SELECTION: ") (println (:selection evolution-config))
-                   (print "EVO CONF: ") (println evolution-config))
     (iterate
      (fn [population]
        (prepeatedly
