@@ -84,25 +84,24 @@
                          :generation generation-num
                          }]
 
-     (print-many-ln "BEST " best)
-
      ;; plot data points
      (add-pt current-state :points-fit line-color-1)
      (add-pt current-state :points-behavior line-color-2)
      (add-pt current-state :average-fitness line-color-3)
      (add-pt current-state :best-size line-color-4)
 
-     ;; print stats to the console
-     (print-many-ln "------------------------------------")
-     (print-many-ln "        Report for Generation " generation-num)
-     (print-many-ln "------------------------------------")
-     (print-many-ln "Best individual: " (:program best))
-     (print-many-ln " -> errors: " (:errors best))
-     (print-many-ln " -> total error: " (:total-error best))
-     (print-many-ln " -> size: " (count (:program best)))
-     ;(print-many-ln " -> exit state: " (:exit-states best))
-     (print-many-ln "Best 20 errors: " (best-n-errors population 20))
-     (print-many-ln "Behavioral Diversity: " behavioral-diversity)))
+     (locking *out*
+       ;; print stats to the console
+       (print-many-ln "------------------------------------")
+       (print-many-ln "        Report for Generation " generation-num)
+       (print-many-ln "------------------------------------")
+       (print-many-ln "Best individual: " (:program best))
+       (print-many-ln " -> errors: " (:errors best))
+       (print-many-ln " -> total error: " (:total-error best))
+       (print-many-ln " -> size: " (count (:program best)))
+       ;(print-many-ln " -> exit state: " (:exit-states best))
+       (print-many-ln "Best 20 errors: " (best-n-errors population 20))
+       (print-many-ln "Behavioral Diversity: " behavioral-diversity))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
