@@ -1,7 +1,6 @@
 (ns darwin.problems.pathfinding
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
-  (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.problems.pathfindingtests.machine :as testing])
   (:gen-class))
 
@@ -21,39 +20,53 @@
     ;exec-dup
     ))
 
-(def novelty-archive (ref '()))
-(def add-novel (fn [machine-out] (dosync (alter novelty-archive conj (:novelty machine-out)) machine-out)))
-
 (defn most-novel
   "Takes an individual and returns a tuple. Gets the max point"
   [indiv]
-  (reduce  ;take individual, get most novel
-    (fn [novel loc]
-      (if (and
-        (> (first loc) (first novel))
-        (> (second loc) (second novel))) loc novel))
-    (:novelty indiv)))
+  (let [novelty (:novelty indiv)]
+    (if (= 1 (count novelty))
+      (first novelty)
+      (reduce  ;take individual, get most novel
+        #(if (and (> (first %2) (first %1))
+                  (> (second %2) (second %1)))
+           %2
+           %1)
+        novelty))))
 
+(def novelty-archive (ref '()))
+(defn add-novel
+  [machine-out]
+  (dosync
+    (alter novelty-archive conj (:novelty machine-out))
+    machine-out))
+
+;; FIXME: NULL POINTER EXCEPTION IS IN HERE!
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
-  (let [pop-transform (map #(assoc % :novelty (most-novel %)) population)
-        plus-archive (concat (map :novelty pop-transform) (deref novelty-archive))
-        archive-size (count plus-archive)
-        average-x (/ (reduce (fn [prev new] (+ prev (first new))) 0  plus-archive) archive-size)
-        average-y (/ (reduce (fn [prev new] (+ prev (second new))) 0 plus-archive) archive-size)
-        average-size (/ (reduce (fn [prev new] (+ prev (nth new 2))) 0 plus-archive) archive-size)
-        distance (fn [pt]
-           (let [xdif (- average-x (first pt)) ydif (- average-y (second pt))]
-           (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))]
-        ;find longest distance from average (includes archived anomolies)
-        (add-novel
-        (reduce
-          (fn [longest-indiv next-indiv]
-            (if (and (> (distance (:novelty next-indiv))
-                   (distance (:novelty longest-indiv))) (> average-size (nth (:novelty next-indiv) 2))) next-indiv longest-indiv))
-          pop-transform))))
+;  (dosync
+    (let [;plus-archive (concat (map most-novel population) (deref novelty-archive))
+          plus-archive (map most-novel population)
+          archive-size (count plus-archive)
+          average-x (/ (apply +' (map first plus-archive)) archive-size)
+          average-y (/ (apply +' (map second plus-archive)) archive-size)
+          average-size (/ (apply +' (map #(nth % 2) plus-archive)) archive-size)
+          calc-distance (fn [pt]
+                          ;; In the subtraction shits is where the bug is encountered
+                          (let [xdif (- average-x (if (< 0 (count pt)) (first pt) 0))
+                                ydif (- average-y (if (< 1 (count pt)) (second pt) 0))
+                                ret (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))]
+                            ret))
+          reduce-f (fn [longest-indiv next-indiv]
+                     (if (and (> (calc-distance (most-novel next-indiv))
+                                 (calc-distance (most-novel longest-indiv))) ;; TRYME: calc this by (/ distance program size) to balance out bloating
+                              (> average-size (nth (most-novel next-indiv) 2)))
+                       next-indiv
+                       longest-indiv))]
+          ;find longest distance from average (includes archived anomolies)
+;          (add-novel
+            (reduce reduce-f population))) ; )
 
 (def test-criteria
   ;constant multiples for each attribute of a machine run
@@ -93,8 +106,8 @@
    :initial-percent-literals 0.4
    :max-initial-program-size 100
    :min-initial-program-size 50
-   :evolution-config {:selection novelty-selection
-                      :crossover #(crossover/alternation-crossover %1 %2 0.2 6)
+   :evolution-config {:selection novelty-selection ; #(selection/tournament-selection % 30)
+                      :crossover crossover/uniform-crossover ; #(crossover/alternation-crossover %1 %2 0.2 6)
                       :percentages '([40 :crossover]
                                      [25 :deletion]
                                      [5 :addition]

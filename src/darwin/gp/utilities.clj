@@ -79,8 +79,7 @@
   "Returns the member of the population with the the lowest total error."
   [population]
   (reduce
-    #(if (< (:total-error %1) (:total-error %2))
-      %1 %2)
+    #(if (< (:total-error %1) (:total-error %2)) %1 %2)
     population))
 
 (defn prepeatedly
