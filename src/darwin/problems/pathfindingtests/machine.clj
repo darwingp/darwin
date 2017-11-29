@@ -5,6 +5,7 @@
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 20})           ;x y angle crash total
 (def target-loc '(750 600))  ;location of target
+(def max-speed 30)
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
@@ -81,7 +82,7 @@
 (def change-attrib
   ;change a state attribute
   (fn [loc-map attrib val]
-    (assoc loc-map attrib val)))
+    (assoc loc-map attrib (if (and (= attrib :speed) (> val max-speed)) max-speed val))))
 
 (def distance
   "calculate distance between points"

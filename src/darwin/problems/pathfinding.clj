@@ -80,7 +80,7 @@
   (let [maploaded (testing/load-obstacle-list map)]
     (fn [movestack]
       (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)
-            fit (if (> 10 (:dist-to-target testresult)) 0 (:fitness testresult))]
+            fit (if (> 10 (:dist-to-target testresult)) (do (println testresult) 0) (:fitness testresult))]
 ;        (println testresult)
       {:error fit
        :novelty (:end-loc testresult)}))))
