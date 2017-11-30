@@ -83,7 +83,7 @@
   (fn [x y] (makemultipleinstr :move x :move
     (fn [& moves] (str "move-while " y " " (prep-moves moves) " ")))))
 
-(definstr move-dup [:integer :move] :move
+(definstr move-dup [:integer :move] :exec
   (fn [x mv] (repeat x mv)))
 
 ;advanced push instructions

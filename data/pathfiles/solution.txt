@@ -1,20 +1,77 @@
-angle 23
-angle 162
+angle 88
+set-angle-target
+set-speed 155
+set-angle-target
+angle 84
+angle 75
+set-angle-target
+set-speed 8
+angle 82
+set-speed 113
+set-angle-target
+set-angle-target
+set-angle-target
+set-angle-target
+set-angle-target
+set-speed 171
+angle 131
+set-angle-target
+angle 37
+set-angle-target
+angle 158
+set-speed 30
+angle 64
+set-speed 98
+set-angle-target
+set-speed 118
+set-angle-target
+set-speed 21
+set-angle-target
+set-angle-target
+angle 148
+set-angle-target
+angle 124
+set-angle-target
+angle 3
+set-angle-target
+angle 135
+angle 82
+set-speed 36
+set-angle-target
+set-angle-target
+set-speed 102
+set-angle-target
+set-angle-target
+angle 179
+set-speed 58
+set-angle-target
+set-speed 4
+set-angle-target
+set-angle-target
+loop 90 angle 96
+set-angle-target
+angle 41
+set-speed 108
+set-angle-target
+set-angle-target
+set-speed 25
+angle 4
+set-angle-target
+set-angle-target
+set-angle-target
+angle 33
+set-angle-target
+set-angle-target
+set-angle-target
+set-speed 142
+if-obs-range 129
 set-speed 172
+set-speed 127
+set-speed 161
+set-speed 7
 set-angle-target
+set-speed 43
+angle 170
 set-angle-target
-set-angle-target
-set-speed 20
-set-speed 147
-angle 23
-set-angle-target
-set-angle-target
-set-speed 78
-set-speed 29
-angle 97
-set-speed 159
-set-speed 177
-angle 107
-set-angle-target
-set-angle-target
-set-angle-target
+angle 47
+set-speed 32

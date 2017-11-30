@@ -41,7 +41,6 @@
     (alter novelty-archive conj (:novelty machine-out))
     machine-out))
 
-;; FIXME: NULL POINTER EXCEPTION IS IN HERE!
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
@@ -72,7 +71,7 @@
   ;constant multiples for each attribute of a machine run
   {:distance-from-target 1
    :total-crashes 0.2
-   :moves-made 0.3})
+   :moves-made 0.5})
 
 (defn gradate-error
   [err]
@@ -112,35 +111,37 @@
 (def configuration
   {:genomic true
    :instructions instructions
-   :literals (range 180)
+   :literals (range 90)
    :inputses '(())
    :program-arity 0
    :testcases (list
                 (test-on-map "data/obsfiles/easytest.txt")
-                (test-on-map "data/obsfiles/easytest2.txt")
-                (test-on-map "data/obsfiles/test1.txt")
+                ;(test-on-map "data/obsfiles/easytest2.txt")
+                ;(test-on-map "data/obsfiles/test1.txt")
                 )
               ; (list
               ;   (test-on-map "data/obsfiles/test1.txt")
               ;   (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
-   :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
+   :behavioral-diversity (fn [_] 0) ;#(testing/calculate-behavior-div % 5) ; TODO: play with the frame
    :max-generations 500
    :population-size 200
    :initial-percent-literals 0.4
    :max-initial-program-size 100
    :min-initial-program-size 50
    :evolution-config {:selection (list
-                                  [0 novelty-selection]
-                                  [100 #(selection/epsilon-lexicase-selection % 30 10)])
+                                  [75 novelty-selection]
+                                  ;[10 #(selection/tournament-selection % 30)]
+                                  [25 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [80 crossover/age-hotness-crossover])
-                             ;     [60 #(crossover/alternation-crossover %1 %2 0.2 6)])
+                                  [80 crossover/age-hotness-crossover]
+                                  ;[20 crossover/uniform-crossover]
+                                  [20 #(crossover/alternation-crossover %1 %2 0.2 7)])
                       :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
-                      :percentages '([40 :crossover]
-                                     [20 :deletion]
-                                     [10 :addition]
-                                     [30 :mutation]
+                      :percentages '([55 :crossover]
+                                     [15 :deletion]
+                                     [15 :addition]
+                                     [15 :mutation]
                                      [0 :copy])
    ;; :evolution-config {:selection novelty-selection
    ;;                    :percentages '([40 :crossover]
@@ -151,5 +152,6 @@
                       :addition-percent 7
                       :mutation-percent 7 ;; only if the age is right, see :mutation
                       :keep-test-attribute :novelty
+                      :end-action (fn [exit-state] (testing/final-display exit-state "data/obsfiles/easytest.txt"))
                       :individual-transform #(set-exit-states-to-move %)
                       }})

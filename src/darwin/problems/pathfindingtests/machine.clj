@@ -5,11 +5,11 @@
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 20})           ;x y angle crash total
 (def target-loc '(750 600))  ;location of target
-(def max-speed 30)
+(def max-speed 20)
 (def vehicle-width 2)  ;not used as an exact radius
 (def window-max-x 900) ;based on graphical window bounds
 (def window-max-y 700)
-(def draw-to-window? false)  ;plug graphical system into machine
+(def draw-to-window? (atom false))  ;plug graphical system into machine
 (def field-of-view (Math/toRadians 15)) ;angle change for checking for obstacles
 
 ;Note: Obstacle list is formatted in the following way:
@@ -74,7 +74,7 @@
         :speed speed
        }]
         ;if graphical viewing enabled, draw to state first
-        (if draw-to-window?
+        (if (deref draw-to-window?)
           (display/draw-vehicle new-state x y vehicle-width)  ;draw state (returns vehicle state)
           new-state))
       (assoc location :crash (+ crashes 1))))))
@@ -167,7 +167,7 @@
     (let [prepped-instr (map first
                              (map prep-instructions
                                   (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
-          obs (if draw-to-window? (display/draw-obstacles obstaclelist) obstaclelist)
+          obs (if (deref draw-to-window?) (display/draw-obstacles obstaclelist) obstaclelist)
           ;draw-target (display/draw-pt (first target-loc) (second target-loc))
           final-loc (reduce (new-move obs) start-loc prepped-instr)
           dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
@@ -178,11 +178,11 @@
       :instr-total (:moves-made final-loc)
       :fitness (bigint (+' (*' (:distance-from-target testcriteria) dist)
                      (*' (:total-crashes testcriteria) (:crash final-loc))
-                     (*' (:moves-made testcriteria) (:moves-made final-loc))))}))
+                     (*' (:moves-made testcriteria) (count instructionlist))))}))
 
 ;file for testing system
 (def testfile "data/pathfiles/solution.txt")
-(def testobsfile "data/obsfiles/test1.txt")
+(def testobsfile "data/obsfiles/easytest.txt")
 (def examplecriteria {:distance-from-target 1
    :total-crashes 1
    :moves-made 0.2})
@@ -204,7 +204,7 @@
   "loads instructions from file and obstacles from a file and executes list function"
   [location-file obs-file testcriteria]
   ;this is a file wrapper for test-instructions-list
-  (if draw-to-window? (display/start-environment))
+  (if (deref draw-to-window?) (display/start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
    (load-instruction-list location-file) (load-obstacle-list obs-file) testcriteria))
 
@@ -213,6 +213,13 @@
   [locationfile]
     (display/start-environment)
     (display/draw-obstacles (load-obstacle-list locationfile)))
+
+(defn final-display
+  [instrs test-loc]
+  (do
+    (reset! draw-to-window? true)
+    (display/start-environment)
+    (test-instructions-list instrs (load-obstacle-list test-loc) examplecriteria)))
 
 ;POPULATION DIVERSITY
 ;--------------------

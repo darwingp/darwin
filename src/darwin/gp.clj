@@ -161,7 +161,7 @@
     (iterate
      (fn [population]
        (let [select #(if genomic
-                            (map inc-age 
+                            (map inc-age
                                  (:genome (selection-f population))
                                  )
                             (:program (selection-f population)))]
@@ -244,5 +244,5 @@
                        (report %2 (inc %1) behavioral-diversity)
                        %2)
                      gens))]
-    (println (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
+    ((:end-action evolution-config) (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
     (if (nil? solution) nil :SUCCESS)))
