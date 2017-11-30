@@ -55,15 +55,6 @@
   [& genes]
   (avg (map #(get % :age 0) genes)))
 
-;; (defn older
-;;   [a b]
-;;   (let [a-age (get a :age 0)
-;;         b-age (get b :age 0)]
-;;     (cond
-;;       (= a-age b-age) (if (percent-true? 50) a b) ; There is no age difference, so random!
-;;       (> a-age b-age) a
-;;       :else           b)))
-
 (defn inc-age
   [gene]
   (assoc gene :age (min 50 (inc (get gene :age 0)))))
