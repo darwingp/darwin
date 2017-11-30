@@ -134,7 +134,7 @@
                                   [0 novelty-selection]
                                   [100 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [40 crossover/age-hotness-crossover])
+                                  [80 crossover/age-hotness-crossover])
                              ;     [60 #(crossover/alternation-crossover %1 %2 0.2 6)])
                       :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
                       :percentages '([40 :crossover]
