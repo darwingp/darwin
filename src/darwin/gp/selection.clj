@@ -45,10 +45,12 @@
   [population number-to-select]
   (-lexicase-selection population number-to-select =))
 
+(defn my-abs [n] (max n (-' n)))
+
 (defn epsilon-lexicase-selection
   "epsilon lexicase"
   [population number-to-select epsilon]
   (-lexicase-selection
     population
     number-to-select
-    #(<= (Math/abs (-' %2 %1)) epsilon)))
+    #(<= (my-abs (-' %2 %1)) epsilon)))

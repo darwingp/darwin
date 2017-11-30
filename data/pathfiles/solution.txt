@@ -1,0 +1,20 @@
+angle 23
+angle 162
+set-speed 172
+set-angle-target
+set-angle-target
+set-angle-target
+set-speed 20
+set-speed 147
+angle 23
+set-angle-target
+set-angle-target
+set-speed 78
+set-speed 29
+angle 97
+set-speed 159
+set-speed 177
+angle 107
+set-angle-target
+set-angle-target
+set-angle-target

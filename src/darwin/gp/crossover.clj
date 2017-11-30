@@ -66,7 +66,7 @@
 
 (defn inc-age
   [gene]
-  (assoc gene :age (inc (get gene :age 0))))
+  (assoc gene :age (min 50 (inc (get gene :age 0)))))
 
 (defn truncate-lists
   "Returns a vector: [new-a new-b tail] where new-a and new-b are
@@ -81,14 +81,7 @@
   "Performs crossover based on the age of genes in a genome."
   [a b]
   (let [[ta tb tail] (truncate-lists a b)
-        avg-ages (map avg-age ta tb) ;; The average age of each pair of genes across genomes
-        avg-age (apply avg-age (concat a b)) ;; The average age of all genes in and and b
-        heatmap (map #(bigint (*' 100 (/ % avg-age))) avg-ages) ;; percentages (0-100)
-        [ta tb tail] (truncate-lists a b)]
-      (concat
-        (map
-          #(if (true-percent? %3) %1 %2)
-          ta
-          tb
-          heatmap)
-      tail)))
+        avg-gene-age (apply avg-age (concat a b)) ;; Damn obvious
+        heatmap (map #(> (avg-age %1 %2) avg-gene-age) ta tb) ;; percentages (0-100)
+        crossed-over (map #(if %3 %1 %2) ta tb heatmap)]
+      (concat crossed-over (map #(> % avg-gene-age) tail))))

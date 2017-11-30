@@ -46,18 +46,17 @@
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
-;  (dosync
-    (let [;plus-archive (concat (map most-novel population) (deref novelty-archive))
-          plus-archive (map most-novel population)
+  (dosync
+    (let [plus-archive (concat (map most-novel population) (first (deref novelty-archive)))
           archive-size (count plus-archive)
           average-x (/ (apply +' (map first plus-archive)) archive-size)
           average-y (/ (apply +' (map second plus-archive)) archive-size)
           average-size (/ (apply +' (map #(nth % 2) plus-archive)) archive-size)
           calc-distance (fn [pt]
                           ;; In the subtraction shits is where the bug is encountered
-                          (let [xdif (- average-x (first pt))
-                                ydif (- average-y (second pt))
-                                ret (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))]
+                          (let [xdif (Math/abs (-' average-x (first pt)))
+                                ydif (Math/abs (-' average-y (second pt)))
+                                ret (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))]
                             ret))
           reduce-f (fn [longest-indiv next-indiv]
                      (if (and (> (calc-distance (most-novel next-indiv))
@@ -66,14 +65,14 @@
                        next-indiv
                        longest-indiv))]
           ;find longest distance from average (includes archived anomolies)
-;          (add-novel
-            (reduce reduce-f population))) ; )
+          (add-novel
+            (reduce reduce-f population)))))
 
 (def test-criteria
   ;constant multiples for each attribute of a machine run
-  {:distance-from-target 0.8
-   :total-crashes 0.5
-   :moves-made 2})
+  {:distance-from-target 1
+   :total-crashes 0.2
+   :moves-made 0.3})
 
 (defn gradate-error
   [err]
@@ -97,9 +96,11 @@
             fitness (bigint (+' (*' dist-from-target dist-to-target)
                                 (*' total-crashes num-crash)
                             ))]
-;        (println testresult)
       {:error (if (zero? (gradate-error fitness)) 0 fitness)
        :novelty end-loc}))))
+;;             fit (if (> 10 (:dist-to-target testresult)) (do (println testresult) 0) (:fitness testresult))]
+;;       {:error fit
+;;        :novelty (:end-loc testresult)}))))
 
 ;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
 ; into the machine and run against an individual.  This generates an error map.)
@@ -115,8 +116,13 @@
    :inputses '(())
    :program-arity 0
    :testcases (list
+                (test-on-map "data/obsfiles/easytest.txt")
+                (test-on-map "data/obsfiles/easytest2.txt")
                 (test-on-map "data/obsfiles/test1.txt")
-                (test-on-map "data/obsfiles/test2.txt"))
+                )
+              ; (list
+              ;   (test-on-map "data/obsfiles/test1.txt")
+              ;   (test-on-map "data/obsfiles/test2.txt"))
                 ;(test-on-map "data/obsfiles/test3.txt")) ;; This should be a list of functions which take a final push state and returns a fitness.
    :behavioral-diversity #(testing/calculate-behavior-div % 5) ; TODO: play with the frame
    :max-generations 500
@@ -125,18 +131,25 @@
    :max-initial-program-size 100
    :min-initial-program-size 50
    :evolution-config {:selection (list
-                                   [50 novelty-selection]
-                                   [50 #(selection/lexicase-selection % 30)])
-                      :crossover crossover/age-hotness-crossover
-                      :mutation #(mutation/refresh-youngest-genome %1 3 %3)
-                      :percentages '([20 :crossover]
+                                  [0 novelty-selection]
+                                  [100 #(selection/epsilon-lexicase-selection % 30 10)])
+                      :crossover (list
+                                  [40 crossover/age-hotness-crossover])
+                             ;     [60 #(crossover/alternation-crossover %1 %2 0.2 6)])
+                      :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
+                      :percentages '([40 :crossover]
                                      [20 :deletion]
-                                     [20 :addition]
-                                     [20 :mutation]
-                                     [20 :copy])
+                                     [10 :addition]
+                                     [30 :mutation]
+                                     [0 :copy])
+   ;; :evolution-config {:selection novelty-selection
+   ;;                    :percentages '([40 :crossover]
+   ;;                                   [20 :deletion]
+   ;;                                   [10 :addition]
+   ;;                                   [30 :mutation])
                       :deletion-percent 7
                       :addition-percent 7
-                      :mutation-percent 7
+                      :mutation-percent 7 ;; only if the age is right, see :mutation
                       :keep-test-attribute :novelty
                       :individual-transform #(set-exit-states-to-move %)
                       }})
