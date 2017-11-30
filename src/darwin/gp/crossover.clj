@@ -2,19 +2,36 @@
   (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
+(defn truncate-lists
+  "Returns a vector: [new-a new-b tail] where new-a and new-b are
+   the the same length and tail is the remaining portion of either a or b."
+  [a b]
+  (let [len (min (count a) (count b))]
+    [(take len a)
+     (take len b)
+     (drop len (if (> (count a) (count b)) a b))]))
+
 ;; Uniform Crossover
 
+;; (defn uniform-crossover-old
+;;   "Crosses over two programs or genomes (note: not individuals) using uniform crossover.
+;;    Returns child program."
+;;   [a b]
+;;   (let [min-len (min (count a) (count b))
+;;         ;get random value within length difference to prevent lower or upper length trend
+;;         final-len (Math/round (* (rand) (- (max (count a) (count b)) min-len)))
+;;         ap (take min-len a)
+;;         bp (take min-len b)
+;;         xs (if (= min-len (count a)) (drop min-len b) (drop min-len a))]
+;;     (concat (map #(if (= (rand-int 2) 1) %1 %2) ap bp) (take final-len xs))))
+
 (defn uniform-crossover
-  "Crosses over two programs or genomes (note: not individuals) using uniform crossover.
-   Returns child program."
+  "Has an equal probability of selecting a gene/instruction/literal from either
+   parent program when crossing them over. Takes two genomes or programs and
+   return a genome or program."
   [a b]
-  (let [min-len (min (count a) (count b))
-        ;get random value within length difference to prevent lower or upper length trend
-        final-len (Math/round (* (rand) (- (max (count a) (count b)) min-len)))
-        ap (take min-len a)
-        bp (take min-len b)
-        xs (if (= min-len (count a)) (drop min-len b) (drop min-len a))]
-    (concat (map #(if (= (rand-int 2) 1) %1 %2) ap bp) (take final-len xs))))
+  (let [[aa bb tail] (truncate-lists a b)]
+    (concat (map #(if (= (rand-int 2) 1) %1 %2) aa bb) tail)))
 
 ;; Alternation Crossover
 
@@ -59,15 +76,9 @@
   [gene]
   (assoc gene :age (min 50 (inc (get gene :age 0)))))
 
-(defn truncate-lists
-  "Returns a vector: [new-a new-b tail] where new-a and new-b are
-   the the same length and tail is the remaining portion of either a or b."
-  [a b]
-  (let [len (min (count a) (count b))]
-    [(take len a)
-     (take len b)
-     (drop len (if (> (count a) (count b)) a b))]))
-
+;; TODO: make the heatmap mean a crossover happens,
+;;       equal probability of picking from either a or b at that point.
+;;       Maybe even allow for the use of another operator
 (defn age-hotness-crossover
   "Performs crossover based on the age of genes in a genome."
   [a b]
