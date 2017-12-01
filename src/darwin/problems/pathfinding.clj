@@ -7,9 +7,18 @@
 
 (def instructions
   '(new_angle
-    set_speed
+    new_angle
+    new_angle
+    new_angle
+    ;set_speed
     new_cond_moves
     set_angle_target
+    loop_moves
+    while_moves
+    loop_moves
+    while_moves
+    loop_moves
+    while_moves
     loop_moves
     while_moves
     ;move-dup
@@ -21,51 +30,72 @@
     ;exec-dup
     ))
 
-(defn most-novel
-  "Takes an individual and returns a tuple. Gets the max point"
-  [indiv]
-  (let [novelty (:novelty indiv)]
-    (if (= 1 (count novelty))
-      (first novelty)
-      (reduce  ;take individual, get most novel
-        #(if (and (> (first %2) (first %1))
-                  (> (second %2) (second %1)))
-           %2
-           %1)
-        novelty))))
+;Novelty information:
+;novelty archive contains a path average for each test case.
+;each individual's paths are compared to their respective averages and an aggregate
+;novelty score is generated.  The best scoring individual is selected.
 
+(defn calc-avg-pt
+  "averages a list of pts"
+  [pts]
+  (let [len (count pts)
+        xlst (map first pts)
+        xavg (/ (reduce +' xlst) len)
+        ylst (map second pts)
+        yavg (/ (reduce +' ylst) len)]
+    (list (float xavg) (float yavg))))
+
+(defn score-novelty
+  "Takes an individual's paths and returns an aggregate score for those paths"
+  [indiv-paths avg-paths]
+  (let [calc-dist (fn [p1 p2] (let [xdif (Math/abs (-' (first p1) (first p2)))
+                                    ydif (Math/abs (-' (second p1) (second p2)))]
+                                    (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))))]
+    (reduce +' (map (fn [path average]
+      (reduce +' (map #(calc-dist %1 %2) path average))) indiv-paths avg-paths))))
+
+;novelty archive contains a path average for each test-case
 (def novelty-archive (ref '()))
+;size limit for memory protection
+(def max-archive-size 500)
+(def factor-scale 5)
+
 (defn add-novel
+  "take the equivalent of an individual test/path/pt list and add to novelty archive
+  IN: path WITHOUT size associated"
   [machine-out]
   (dosync
-    (alter novelty-archive conj (:novelty machine-out))
+   ;repeat weights novel individual against average
+    (alter novelty-archive conj (second (:novelty machine-out)))
+    (commute novelty-archive #(take max-archive-size %))
     machine-out))
+
+(defn build-avg
+  "IN: list of individuals
+   -each individual has a list of path lists (one for each test) containing pts
+  OUT: average paths for each test"
+  [paths]
+  ; ( (:indiv1 (:t1 (pt pt pt pt pt pt )) (:t2 (pt pt pt)) ... etc
+  (let [prepped-list (map (fn [test-set]
+                            (apply map vector test-set))
+                               (apply map vector paths))]
+    (map (fn [test-list] (map calc-avg-pt test-list)) prepped-list)))
 
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
   (dosync
-    (let [plus-archive (concat (map most-novel population) (first (deref novelty-archive)))
-          archive-size (count plus-archive)
-          average-x (/ (apply +' (map first plus-archive)) archive-size)
-          average-y (/ (apply +' (map second plus-archive)) archive-size)
-          average-size (/ (apply +' (map #(nth % 2) plus-archive)) archive-size)
-          calc-distance (fn [pt]
-                          ;; In the subtraction shits is where the bug is encountered
-                          (let [xdif (Math/abs (-' average-x (first pt)))
-                                ydif (Math/abs (-' average-y (second pt)))
-                                ret (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))]
-                            ret))
-          reduce-f (fn [longest-indiv next-indiv]
-                     (if (and (> (calc-distance (most-novel next-indiv))
-                                 (calc-distance (most-novel longest-indiv))) ;; TRYME: calc this by (/ distance program size) to balance out bloating
-                              (> average-size (nth (most-novel next-indiv) 2)))
-                       next-indiv
-                       longest-indiv))]
-          ;find longest distance from average (includes archived anomolies)
-          (add-novel
-            (reduce reduce-f population)))))
+    (let [all-paths (concat (map (fn [ind] (:novelty ind)) population) (deref novelty-archive))
+          all-avg-paths (build-avg all-paths)  ;length of number of test cases, contains path list for each
+          ;relies on internal tranform that associates score with novelty field
+          associate-score (fn [ind] (assoc ind :novelty (list (score-novelty (:novelty ind) all-avg-paths) (:novelty ind))))
+          calc-best (fn [best-so-far next]
+                            (if (< (first (:novelty next)) (first (:novelty best-so-far)))
+                              next best-so-far))
+          best  (reduce calc-best (map associate-score population))]
+          (repeatedly factor-scale (add-novel best)) best)))
+
 
 (def test-criteria
   ;constant multiples for each attribute of a machine run
@@ -87,16 +117,15 @@
             dist-from-target (:distance-from-target test-criteria)
             total-crashes (:total-crashes test-criteria)
             moves-made (:moves-made test-criteria)
-
             dist-to-target (:dist-to-target testresult)
-            end-loc (:end-loc testresult)
+            path-and-move-size (:path testresult)
             num-crash (:num-crash testresult)
             instr-total (:instr-total testresult)
             fitness (bigint (+' (*' dist-from-target dist-to-target)
                                 (*' total-crashes num-crash)
                             ))]
       {:error (if (zero? (gradate-error fitness)) 0 fitness)
-       :novelty end-loc}))))
+       :novelty path-and-move-size}))))
 ;;             fit (if (> 10 (:dist-to-target testresult)) (do (println testresult) 0) (:fitness testresult))]
 ;;       {:error fit
 ;;        :novelty (:end-loc testresult)}))))
@@ -130,9 +159,9 @@
    :max-initial-program-size 100
    :min-initial-program-size 50
    :evolution-config {:selection (list
-                                  [75 novelty-selection]
+                                  [85 novelty-selection]
                                   ;[10 #(selection/tournament-selection % 30)]
-                                  [25 #(selection/epsilon-lexicase-selection % 30 10)])
+                                  [15 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
                                   [80 crossover/age-hotness-crossover]
                                   ;[20 crossover/uniform-crossover]

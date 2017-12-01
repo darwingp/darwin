@@ -3,7 +3,7 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 20})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 20 :path '()})           ;x y angle crash total
 (def target-loc '(750 600))  ;location of target
 (def max-speed 20)
 (def vehicle-width 2)  ;not used as an exact radius
@@ -56,6 +56,7 @@
   (fn [location obs]
     (let [x (:x location)
           y (:y location)
+          current-path (:path location)
           angle (Math/toRadians (:angle location))
           crashes (:crash location)
           color (:color location)
@@ -72,6 +73,7 @@
         :color color
         :moves-made addmove
         :speed speed
+        :path (cons (list new-x new-y) current-path)
        }]
         ;if graphical viewing enabled, draw to state first
         (if (deref draw-to-window?)
@@ -173,7 +175,7 @@
           dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
       ;(println (:x final-loc) " " (:y final-loc))
      {:dist-to-target dist
-      :end-loc (list (:x final-loc) (:y final-loc) (count instructionlist)) ;original instruction list size
+      :path (:path final-loc) ;original instruction list size
       :num-crash (:crash final-loc)
       :instr-total (:moves-made final-loc)
       :fitness (bigint (+' (*' (:distance-from-target testcriteria) dist)
