@@ -100,9 +100,10 @@
   against each other and an archive of novel individuals"
   [population]
   (dosync
-    (let [max-size (reduce max-path-size 0 population)
+    (let [goal-size (reduce max-path-size 0 population)
+          ;ERROR HERE: trying to normalize individuals makes later calculations fail
           normalize-population (map (fn [ind] 
-                             (assoc ind :novelty (normalize-lengths max-size (:novelty ind)))) population)
+                             (assoc ind :novelty (normalize-lengths goal-size (:novelty ind)))) population)
           all-paths (concat (map (fn [ind] (:novelty ind)) normalize-population) (deref novelty-archive))
           all-avg-paths (build-avg all-paths)  ;length of number of test cases, contains path list for each
           ;relies on internal tranform that associates score with novelty field
