@@ -52,8 +52,13 @@
   (let [calc-dist (fn [p1 p2] (let [xdif (Math/abs (-' (first p1) (first p2)))
                                     ydif (Math/abs (-' (second p1) (second p2)))]
                                     (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))))]
-    (reduce +' (map (fn [path average]
-      (reduce +' (map #(calc-dist %1 %2) path average))) indiv-paths avg-paths))))
+    (reduce +'
+      (map
+        (fn [path average]
+          (reduce +'
+            (map #(calc-dist %1 average) path)))
+        indiv-paths
+        avg-paths))))
 
 ;novelty archive contains a path average for each test-case
 (def novelty-archive (ref '()))
@@ -71,17 +76,6 @@
     (commute novelty-archive #(take max-archive-size %))
     machine-out))
 
-(defn build-avg
-  "IN: list of individuals
-   -each individual has a list of path lists (one for each test) containing pts
-  OUT: average paths for each test"
-  [paths]
-  ; ( (:indiv1 (:t1 (pt pt pt pt pt pt )) (:t2 (pt pt pt)) ... etc
-  (let [prepped-list (map (fn [test-set]
-                            (apply map vector test-set))
-                               (apply map vector paths))]
-    (map (fn [test-list] (map calc-avg-pt test-list)) prepped-list)))
-
 (def max-path-size
   ;get the average-size of an individual's paths
     (fn [best ind]
@@ -93,7 +87,7 @@
   "given an individuals path, change the size of that path to match the max
   by replicating the final element (stopped in place)"
   [goal path-set]
-  (map (fn [path] (take goal (concat path (repeat (last path))))) path-set))
+  (map #(take goal (concat % (repeat (last %)))) path-set))
 
 (defn novelty-selection
   "select novel individual by comparing all individuals point paths
@@ -101,17 +95,17 @@
   [population]
   (dosync
     (let [max-size (reduce max-path-size 0 population)
-          normalize-population (map (fn [ind] 
-                             (assoc ind :novelty (normalize-lengths max-size (:novelty ind)))) population)
-          all-paths (concat (map (fn [ind] (:novelty ind)) normalize-population) (deref novelty-archive))
-          all-avg-paths (build-avg all-paths)  ;length of number of test cases, contains path list for each
+          normalize-population (map #(assoc % :novelty (normalize-lengths max-size (:novelty %))) population)
+          all-paths (concat (map #(:novelty %) normalize-population) (deref novelty-archive))
+          all-avg-paths (map #(map calc-avg-pt %) all-paths) ;length of number of test cases, contains path list for each
           ;relies on internal tranform that associates score with novelty field
-          associate-score (fn [ind] (assoc ind :novelty 
-                                    (list (score-novelty (:novelty ind) all-avg-paths) (:novelty ind))))
+          associate-score #(assoc % :novelty 
+                             (list (score-novelty (:novelty %) all-avg-paths) (:novelty %)))
           calc-best (fn [best-so-far next]
                             (if (> (first (:novelty next)) (first (:novelty best-so-far)))
                               next best-so-far))
           best (reduce calc-best (map associate-score normalize-population))]
+          ;; TODO: remove associated best from individual's :novelty
           (repeatedly factor-scale (add-novel best)) best)))
 
 
