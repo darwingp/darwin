@@ -55,6 +55,7 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 20
+                      :end-action (fn [_] (println "Done"))
                       ;:keep-test-attribute false
                       ;:individual-transform (fn [ind] (assoc ind :genome (map crossover/inc-age (:genome ind))))
                       }})

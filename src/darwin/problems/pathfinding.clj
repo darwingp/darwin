@@ -163,7 +163,7 @@
    :inputses '(())
    :program-arity 0
    :testcases (list
-                (test-on-map "data/obsfiles/easytest.txt")
+                ;(test-on-map "data/obsfiles/easytest.txt")
                 (test-on-map "data/obsfiles/easytest2.txt")
                 ;(test-on-map "data/obsfiles/test1.txt")
                 ;(test-on-map "data/obsfiles/test2.txt")
