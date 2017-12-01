@@ -21,14 +21,6 @@
     while_moves
     loop_moves
     while_moves
-    test_macro
-    ;move-dup
-    ;integer-dup
-    ;integer-frombool
-    ;boolean-and
-    ;boolean-or
-    ;exec-if
-    ;exec-dup
     ))
 
 ;Novelty information:
@@ -127,7 +119,6 @@
                               next best-so-far))
           best (reduce calc-best (map associate-score normalize-population))]
           (repeatedly factor-scale (add-novel best)) ;; Causes side effects, updating the novelty archive
-         
           (assoc best :novelty (second (:novelty best))))))
 
 
@@ -174,21 +165,21 @@
    :testcases (list
                 (test-on-map "data/obsfiles/easytest.txt")
                 (test-on-map "data/obsfiles/easytest2.txt")
-                (test-on-map "data/obsfiles/test1.txt")
+                ;(test-on-map "data/obsfiles/test1.txt")
                 ;(test-on-map "data/obsfiles/test2.txt")
                 ;(test-on-map "data/obsfiles/test3.txt")
                 )
    :max-generations 500
-   :population-size 300
+   :population-size 200
    :initial-percent-literals 0.5
    :max-initial-program-size 120
    :min-initial-program-size 100
    :evolution-config {:selection (list
-                                  [75 novelty-selection]
-                                  [10 #(selection/tournament-selection % 30)]
-                                  [15 #(selection/epsilon-lexicase-selection % 30 10)])
+                                  [55 novelty-selection]
+                                  [20 #(selection/tournament-selection % 30)]
+                                  [25 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [100 (crossover/age-hotspot-wrap
+                                  [80 (crossover/age-hotspot-wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
                       :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
                       :percentages '([55 :crossover]
