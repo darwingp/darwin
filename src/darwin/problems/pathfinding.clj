@@ -55,8 +55,8 @@
     (reduce +'
       (map
         (fn [path average]
-          (reduce +'
-            (map #(calc-dist %1 average) path)))
+            (reduce +'
+              (map #(calc-dist %1 %2) path average)))
         indiv-paths
         avg-paths))))
 
@@ -83,11 +83,18 @@
             current (apply max (map count all-paths))]
         (if (> current best) current best))))
 
+(defn normalize-length
+  [lst length]
+  (cond
+    (empty? lst) (list)
+    (< (count lst) length) (concat lst (repeat (- length (count lst)) (last lst)))
+    :else lst))
+
 (defn normalize-lengths
   "given an individuals path, change the size of that path to match the max
   by replicating the final element (stopped in place)"
   [goal path-set]
-  (map #(take goal (concat % (repeat (last %)))) path-set))
+  (map #(normalize-length % goal) path-set))
 
 (defn novelty-selection
   "select novel individual by comparing all individuals point paths
