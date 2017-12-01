@@ -21,6 +21,7 @@
     while_moves
     loop_moves
     while_moves
+    test_macro
     ;move-dup
     ;integer-dup
     ;integer-frombool
@@ -58,7 +59,7 @@
 (def novelty-archive (ref '()))
 ;size limit for memory protection
 (def max-archive-size 500)
-(def factor-scale 5)
+(def factor-scale 20)
 
 (defn add-novel
   "take the equivalent of an individual test/path/pt list and add to novelty archive
@@ -81,19 +82,28 @@
                                (apply map vector paths))]
     (map (fn [test-list] (map calc-avg-pt test-list)) prepped-list)))
 
+(def check-size
+  ;get the average-size of an individual's paths
+    (fn [ind]
+      (let [all-paths (:novelty ind)]
+        (/ (reduce +' (map #(count %) all-paths)) (count all-paths)))))
+
 (defn novelty-selection
   "select novel individual by comparing all individuals ending locations against the ending locations
   in the archive"
   [population]
   (dosync
-    (let [all-paths (concat (map (fn [ind] (:novelty ind)) population) (deref novelty-archive))
+    (let [average-path-length (/ (reduce +' (map check-size population)) (count population))
+          population-filtered (filter (fn [ind] (> average-path-length (check-size ind))) population)
+          population-size-protected (if (empty? population-filtered) population population-filtered)
+          all-paths (concat (map (fn [ind] (:novelty ind)) population-size-protected) (deref novelty-archive))
           all-avg-paths (build-avg all-paths)  ;length of number of test cases, contains path list for each
           ;relies on internal tranform that associates score with novelty field
           associate-score (fn [ind] (assoc ind :novelty (list (score-novelty (:novelty ind) all-avg-paths) (:novelty ind))))
           calc-best (fn [best-so-far next]
                             (if (< (first (:novelty next)) (first (:novelty best-so-far)))
                               next best-so-far))
-          best  (reduce calc-best (map associate-score population))]
+          best  (reduce calc-best (map associate-score population-size-protected))]
           (repeatedly factor-scale (add-novel best)) best)))
 
 
@@ -144,19 +154,20 @@
    :inputses '(())
    :program-arity 0
    :testcases (list
-                (test-on-map "data/obsfiles/easytest.txt")
-                (test-on-map "data/obsfiles/easytest2.txt")
+                ;(test-on-map "data/obsfiles/easytest.txt")
+                ;(test-on-map "data/obsfiles/easytest2.txt")
                 (test-on-map "data/obsfiles/test1.txt")
-                (test-on-map "data/obsfiles/test2.txt")
-                (test-on-map "data/obsfiles/test3.txt"))
+                ;(test-on-map "data/obsfiles/test2.txt")
+                ;(test-on-map "data/obsfiles/test3.txt")
+                )
    :max-generations 500
-   :population-size 200
-   :initial-percent-literals 0.4
-   :max-initial-program-size 100
-   :min-initial-program-size 50
+   :population-size 300
+   :initial-percent-literals 0.5
+   :max-initial-program-size 120
+   :min-initial-program-size 100
    :evolution-config {:selection (list
-                                  [85 novelty-selection]
-                                  ;[10 #(selection/tournament-selection % 30)]
+                                  [75 novelty-selection]
+                                  [10 #(selection/tournament-selection % 30)]
                                   [15 #(selection/epsilon-lexicase-selection % 30 10)])
                                   ;[100 novelty-selection])
                       :crossover (list
@@ -172,6 +183,6 @@
                       :addition-percent 7
                       :mutation-percent 7
                       :keep-test-attribute :novelty
-                      :end-action (fn [exit-state] (testing/final-display exit-state "data/obsfiles/easytest.txt"))
+                      :end-action (fn [exit-state] (do (testing/final-display exit-state "data/obsfiles/easytest2.txt") (println exit-state)))
                       :individual-transform #(set-exit-states-to-move %)
                       }})

@@ -65,6 +65,9 @@
 (definstr new_angle [:integer] :move
   #(str "angle " % " "))
 
+(definstr test_macro [:integer :integer :integer] :move
+    #(str "move-while " %1 " angle " %2 " angle " %3 " "))
+
 (definstr set_speed [:integer] :move
   #(str "set-speed " % " "))
 
