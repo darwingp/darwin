@@ -155,13 +155,10 @@
    :max-initial-program-size 100
    :min-initial-program-size 50
    :evolution-config {:selection (list
-<<<<<<< HEAD
                                   [85 novelty-selection]
                                   ;[10 #(selection/tournament-selection % 30)]
                                   [15 #(selection/epsilon-lexicase-selection % 30 10)])
-=======
                                   [100 novelty-selection])
->>>>>>> 1545264bf25eebc49fa5360747d30a52b1eb8817
                       :crossover (list
                                   [100 (crossover/age-hotspot-wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
