@@ -84,6 +84,8 @@
         (if (> current best) current best))))
 
 (defn normalize-length
+  "Ensure lst is at least length elements long. This is accomplished by
+   repeating the last element. If empty, do nothing."
   [lst length]
   (cond
     (empty? lst) (list)
@@ -91,9 +93,8 @@
     :else lst))
 
 (defn build-avg
-  "IN: list of individuals
-   -each individual has a list of path lists (one for each test) containing pts
-  OUT: average paths for each test"
+  "IN: list of individuals' paths through each test map
+   OUT: average paths for each test" ;; This needs more clarification
   [paths]
   ; ( (:indiv1 (:t1 (pt pt pt pt pt pt )) (:t2 (pt pt pt)) ... etc
   (let [prepped-list (map (fn [test-set]
@@ -113,7 +114,9 @@
   [population]
   (dosync
     (let [goal-size (reduce max-path-size 0 population)
-          normalize-population  population ;(map #(assoc % :novelty (normalize-lengths goal-size (:novelty %))) population)
+
+          ;; TODO: include novelty archive in all-avg-paths calculation.
+          normalize-population (map #(assoc % :novelty (normalize-lengths goal-size (:novelty %))) population)
           all-paths (concat (map #(:novelty %) normalize-population) (deref novelty-archive))
           all-avg-paths (build-avg all-paths) ;length of number of test cases, contains path list for each
           ;relies on internal tranform that associates score with novelty field
@@ -123,7 +126,7 @@
                             (if (> (first (:novelty next)) (first (:novelty best-so-far)))
                               next best-so-far))
           best (reduce calc-best (map associate-score normalize-population))]
-          (repeatedly factor-scale (add-novel best))
+          (repeatedly factor-scale (add-novel best)) ;; Causes side effects, updating the novelty archive
          
           (assoc best :novelty (second (:novelty best))))))
 
@@ -158,7 +161,7 @@
       {:error (if (zero? (gradate-error fitness)) 0 fitness)
        :novelty path-and-move-size}))))
 
-(defn set-exit-states-to-move
+(defn set-exit-states-to-move-stack
   [ind]
   (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
 
@@ -169,8 +172,8 @@
    :inputses '(())
    :program-arity 0
    :testcases (list
-                ;(test-on-map "data/obsfiles/easytest.txt")
-                ;(test-on-map "data/obsfiles/easytest2.txt")
+                (test-on-map "data/obsfiles/easytest.txt")
+                (test-on-map "data/obsfiles/easytest2.txt")
                 (test-on-map "data/obsfiles/test1.txt")
                 ;(test-on-map "data/obsfiles/test2.txt")
                 ;(test-on-map "data/obsfiles/test3.txt")
@@ -184,7 +187,6 @@
                                   [75 novelty-selection]
                                   [10 #(selection/tournament-selection % 30)]
                                   [15 #(selection/epsilon-lexicase-selection % 30 10)])
-                                  ;[100 novelty-selection])
                       :crossover (list
                                   [100 (crossover/age-hotspot-wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
@@ -198,6 +200,6 @@
                       :addition-percent 7
                       :mutation-percent 7
                       :keep-test-attribute :novelty
-                      :end-action (fn [exit-state] (do (testing/final-display exit-state "data/obsfiles/easytest2.txt") (println exit-state)))
-                      :individual-transform #(set-exit-states-to-move %)
+                      :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
+                      :individual-transform set-exit-states-to-move-stack
                       }})
