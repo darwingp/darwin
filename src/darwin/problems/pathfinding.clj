@@ -82,28 +82,36 @@
                                (apply map vector paths))]
     (map (fn [test-list] (map calc-avg-pt test-list)) prepped-list)))
 
-(def check-size
+(def max-path-size
   ;get the average-size of an individual's paths
-    (fn [ind]
-      (let [all-paths (:novelty ind)]
-        (/ (reduce +' (map #(count %) all-paths)) (count all-paths)))))
+    (fn [best ind]
+      (let [all-paths (:novelty ind)
+            current (apply max (map count all-paths))]
+        (if (> current best) current best))))
+
+(defn normalize-lengths
+  "given an individuals path, change the size of that path to match the max
+  by replicating the final element (stopped in place)"
+  [goal path-set]
+  (map (fn [path] (take goal (concat path (repeat (last path))))) path-set))
 
 (defn novelty-selection
-  "select novel individual by comparing all individuals ending locations against the ending locations
-  in the archive"
+  "select novel individual by comparing all individuals point paths
+  against each other and an archive of novel individuals"
   [population]
   (dosync
-    (let [average-path-length (/ (reduce +' (map check-size population)) (count population))
-          population-filtered (filter (fn [ind] (> average-path-length (check-size ind))) population)
-          population-size-protected (if (empty? population-filtered) population population-filtered)
-          all-paths (concat (map (fn [ind] (:novelty ind)) population-size-protected) (deref novelty-archive))
+    (let [max-size (reduce max-path-size 0 population)
+          normalize-population (map (fn [ind] 
+                             (assoc ind :novelty (normalize-lengths max-size (:novelty ind)))) population)
+          all-paths (concat (map (fn [ind] (:novelty ind)) normalize-population) (deref novelty-archive))
           all-avg-paths (build-avg all-paths)  ;length of number of test cases, contains path list for each
           ;relies on internal tranform that associates score with novelty field
-          associate-score (fn [ind] (assoc ind :novelty (list (score-novelty (:novelty ind) all-avg-paths) (:novelty ind))))
+          associate-score (fn [ind] (assoc ind :novelty 
+                                    (list (score-novelty (:novelty ind) all-avg-paths) (:novelty ind))))
           calc-best (fn [best-so-far next]
-                            (if (< (first (:novelty next)) (first (:novelty best-so-far)))
+                            (if (> (first (:novelty next)) (first (:novelty best-so-far)))
                               next best-so-far))
-          best  (reduce calc-best (map associate-score population-size-protected))]
+          best (reduce calc-best (map associate-score normalize-population))]
           (repeatedly factor-scale (add-novel best)) best)))
 
 
@@ -136,12 +144,6 @@
                             ))]
       {:error (if (zero? (gradate-error fitness)) 0 fitness)
        :novelty path-and-move-size}))))
-;;             fit (if (> 10 (:dist-to-target testresult)) (do (println testresult) 0) (:fitness testresult))]
-;;       {:error fit
-;;        :novelty (:end-loc testresult)}))))
-
-;TODO: Generalize testcases field to problem. (Testcases currently lists map file location.  This is then loaded
-; into the machine and run against an individual.  This generates an error map.)
 
 (defn set-exit-states-to-move
   [ind]

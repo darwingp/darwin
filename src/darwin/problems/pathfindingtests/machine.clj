@@ -175,7 +175,7 @@
           dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
       ;(println (:x final-loc) " " (:y final-loc))
      {:dist-to-target dist
-      :path (:path final-loc) ;original instruction list size
+      :path (reverse (:path final-loc)  )     ;original instruction list size
       :num-crash (:crash final-loc)
       :instr-total (:moves-made final-loc)
       :fitness (bigint (+' (*' (:distance-from-target testcriteria) dist)
