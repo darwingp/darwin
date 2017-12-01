@@ -182,14 +182,14 @@
                                   [80 (crossover/age-hotspot-wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
                       :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
-                      :percentages '([55 :crossover]
-                                     [15 :deletion]
-                                     [15 :addition]
-                                     [15 :mutation]
+                      :percentages '([35 :crossover]
+                                     [20 :deletion]
+                                     [20 :addition]
+                                     [25 :mutation]
                                      [0 :copy])
-                      :deletion-percent 7
-                      :addition-percent 7
-                      :mutation-percent 7
+                      :deletion-percent 20
+                      :addition-percent 20
+                      :mutation-percent 20
                       :keep-test-attribute :novelty
                       :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
                       :individual-transform set-exit-states-to-move-stack

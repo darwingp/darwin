@@ -81,7 +81,13 @@
 
 (defn hot?
   [gene age-threshold]
-  (< (get gene :age 0) age-threshold))
+  (let [thold (max age-threshold 1)
+        age (get gene :age 0)
+        perc-difference (if (< age thold)
+                          (float (/ age thold))
+                          (float (/ thold age)))]
+    (< perc-difference 0.25)))
+;  (< (get gene :age 0) age-threshold))
 
 (defn insert-hot
   [genome new-hotgenes age-threshold]
