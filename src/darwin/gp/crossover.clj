@@ -64,31 +64,6 @@
   [gene]
   (assoc gene :age (min 50 (inc (get gene :age 0)))))
 
-;; TODO: make the heatmap mean a crossover happens,
-;;       equal probability of picking from either a or b at that point.
-;;       Maybe even allow for the use of another operator
-(defn age-hotness-crossover
-  "Performs crossover based on the age of genes in a genome."
-  [a b]
-  (let [[ta tb tail] (truncate-lists a b)
-        avg-gene-age (apply avg-age (concat a b)) ;; Damn obvious
-        heatmap (map #(< (avg-age %1 %2) avg-gene-age) ta tb) ;; percentages (0-100)
-        crossed-over (map #(if %3 %1 %2) ta tb heatmap)]
-      (concat crossed-over (map #(> (get % :age 0) avg-gene-age) tail))))
-
-;; This is an idea that could be worked on farther
-;; Performing crossover on hot genes only
-
-(defn hot?
-  [gene age-threshold]
-  (let [thold (max age-threshold 1)
-        age (get gene :age 0)
-        perc-difference (if (< age thold)
-                          (float (/ age thold))
-                          (float (/ thold age)))]
-    (< perc-difference 0.25)))
-;  (< (get gene :age 0) age-threshold))
-
 (defn insert-hot
   [genome new-hotgenes age-threshold]
   (loop [g genome

@@ -86,3 +86,12 @@
   "Like repeatedly, but parallel."
   [n fn]
   (apply pcalls (repeat n fn)))
+
+(defn hot?
+  [gene age-threshold]
+  (let [thold (max age-threshold 1)
+        age (get gene :age 0)
+        perc-difference (if (< age thold)
+                          (float (/ age thold))
+                          (float (/ thold age)))]
+    (< perc-difference 0.25)))
