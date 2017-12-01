@@ -2,19 +2,24 @@
   (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 
+(defn truncate-lists
+  "Returns a vector: [new-a new-b tail] where new-a and new-b are
+   the the same length and tail is the remaining portion of either a or b."
+  [a b]
+  (let [len (min (count a) (count b))]
+    [(take len a)
+     (take len b)
+     (drop len (if (> (count a) (count b)) a b))]))
+
 ;; Uniform Crossover
 
 (defn uniform-crossover
-  "Crosses over two programs or genomes (note: not individuals) using uniform crossover.
-   Returns child program."
+  "Has an equal probability of selecting a gene/instruction/literal from either
+   parent program when crossing them over. Takes two genomes or programs and
+   return a genome or program."
   [a b]
-  (let [min-len (min (count a) (count b))
-        ;get random value within length difference to prevent lower or upper length trend
-        final-len (Math/round (* (rand) (- (max (count a) (count b)) min-len)))
-        ap (take min-len a)
-        bp (take min-len b)
-        xs (if (= min-len (count a)) (drop min-len b) (drop min-len a))]
-    (concat (map #(if (= (rand-int 2) 1) %1 %2) ap bp) (take final-len xs))))
+  (let [[aa bb tail] (truncate-lists a b)]
+    (concat (map #(if (= (rand-int 2) 1) %1 %2) aa bb) tail)))
 
 ;; Alternation Crossover
 
@@ -59,20 +64,50 @@
   [gene]
   (assoc gene :age (min 50 (inc (get gene :age 0)))))
 
-(defn truncate-lists
-  "Returns a vector: [new-a new-b tail] where new-a and new-b are
-   the the same length and tail is the remaining portion of either a or b."
-  [a b]
-  (let [len (min (count a) (count b))]
-    [(take len a)
-     (take len b)
-     (drop len (if (> (count a) (count b)) a b))]))
-
+;; TODO: make the heatmap mean a crossover happens,
+;;       equal probability of picking from either a or b at that point.
+;;       Maybe even allow for the use of another operator
 (defn age-hotness-crossover
   "Performs crossover based on the age of genes in a genome."
   [a b]
   (let [[ta tb tail] (truncate-lists a b)
         avg-gene-age (apply avg-age (concat a b)) ;; Damn obvious
-        heatmap (map #(> (avg-age %1 %2) avg-gene-age) ta tb) ;; percentages (0-100)
+        heatmap (map #(< (avg-age %1 %2) avg-gene-age) ta tb) ;; percentages (0-100)
         crossed-over (map #(if %3 %1 %2) ta tb heatmap)]
-      (concat crossed-over (map #(> % avg-gene-age) tail))))
+      (concat crossed-over (map #(> (get % :age 0) avg-gene-age) tail))))
+
+;; This is an idea that could be worked on farther
+;; Performing crossover on hot genes only
+
+(defn hot?
+  [gene age-threshold]
+  (< (get gene :age 0) age-threshold))
+
+(defn insert-hot
+  [genome new-hotgenes age-threshold]
+  (loop [g genome
+         result []
+         new-genes new-hotgenes]
+    (cond
+      (empty? g) (seq result)
+      (hot? (first g) age-threshold) (recur
+                                       (rest g)
+                                       (conj result (first new-genes))
+                                       (rest new-genes))
+      :else (recur
+              (rest g)
+              (conj result (first g))
+              new-genes))))
+
+(defn age-hotspot-wrap
+  "Wraps another crossover operator with age-hotness. This means that
+   whatever crossover operator f is, it only crosses over hot genes."
+  [f]
+  (fn [a b]
+    (let [avg-gene-age (apply avg-age (concat a b)) ;; Damn obvious
+          hota (filter #(hot? % avg-gene-age) a)
+          hotb (filter #(hot? % avg-gene-age) b)]
+      (insert-hot
+        (if (true-percent? 50) a b)
+        (f hota hotb)
+        avg-gene-age))))
