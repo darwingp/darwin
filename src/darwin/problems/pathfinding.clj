@@ -158,7 +158,7 @@
                                   [85 novelty-selection]
                                   ;[10 #(selection/tournament-selection % 30)]
                                   [15 #(selection/epsilon-lexicase-selection % 30 10)])
-                                  [100 novelty-selection])
+                                  ;[100 novelty-selection])
                       :crossover (list
                                   [100 (crossover/age-hotspot-wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
