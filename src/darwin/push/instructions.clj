@@ -31,7 +31,7 @@
 
 ;; Protected division, returns numerator if the denominator is zero.
 (definstr integer_% [:integer :integer] :integer
-  (fn [x y] (if (zero? y) x (int (quot x y)))))
+  (fn [x y] (if (zero? y) x (quot x y))))
 
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)

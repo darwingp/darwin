@@ -2,6 +2,8 @@
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.gp.mutation :as mutation])
+  (:require [darwin.gp.hotspots :as hotspots])
+  (:require [darwin.gp.utilities :as utils])
   (:require [darwin.problems.pathfindingtests.machine :as testing])
   (:gen-class))
 
@@ -49,8 +51,8 @@
 (defn score-novelty
   "Takes an individual's paths and returns an aggregate score for those paths"
   [indiv-paths avg-paths]
-  (let [calc-dist (fn [p1 p2] (let [xdif (Math/abs (-' (first p1) (first p2)))
-                                    ydif (Math/abs (-' (second p1) (second p2)))]
+  (let [calc-dist (fn [p1 p2] (let [xdif (utils/abs (-' (first p1) (first p2)))
+                                    ydif (utils/abs (-' (second p1) (second p2)))]
                                     (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))))]
     (reduce +'
       (map
@@ -165,19 +167,31 @@
   [ind]
   (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
 
+;; ; OLD mutation operator
+;; ; e.g. #(mutation/refresh-youngest-genome %1 %2 2 %3)
+;; (defn refresh-hottest-genome
+;;   "Mutation operator that only mutates the hot genes."
+;;   [new-gene mutate-percent min-keep-age genome]
+;;   (map
+;;     #(if (or (hot? % min-keep-age) (true-percent? mutate-percent)) (new-gene) %)
+;;     genome))
+
+(def test-maps
+  (list
+    "data/obsfiles/easytest.txt"
+    "data/obsfiles/easytest2.txt"
+    "data/obsfiles/test1.txt"
+    ; "data/obsfiles/test2.txt"
+    ; "data/obsfiles/test3.txt"
+   ))
+
 (def configuration
   {:genomic true
    :instructions instructions
    :literals (range 90)
    :inputses '(())
    :program-arity 0
-   :testcases (list
-                (test-on-map "data/obsfiles/easytest.txt")
-                (test-on-map "data/obsfiles/easytest2.txt")
-                (test-on-map "data/obsfiles/test1.txt")
-                ;(test-on-map "data/obsfiles/test2.txt")
-                ;(test-on-map "data/obsfiles/test3.txt")
-                )
+   :testcases (map test-on-map test-maps)
    :max-generations 500
    :population-size 300
    :initial-percent-literals 0.5
@@ -188,9 +202,9 @@
                                   [10 #(selection/tournament-selection % 30)]
                                   [15 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [100 (crossover/age-hotspot-wrap
+                                  [100 (hotspots/wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 7))])
-                      :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
+                      :mutation (hotspots/wrap mutation/uniform-mutation)
                       :percentages '([35 :crossover]
                                      [20 :deletion]
                                      [20 :addition]
@@ -200,6 +214,7 @@
                       :addition-percent 20
                       :mutation-percent 20
                       :keep-test-attribute :novelty
+                      :decrease-heat-by-age true
                       :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
                       :individual-transform set-exit-states-to-move-stack
                       }})

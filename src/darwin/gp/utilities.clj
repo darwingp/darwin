@@ -4,6 +4,10 @@
   (:require [darwin.plush.translate :refer :all])
   (:gen-class))
 
+(defn abs
+  [n]
+  (if (< n 0) (* -1 n) n))
+
 (defn find-list
   "Finds the first element in l for which p is true"
   [p l]
@@ -58,8 +62,8 @@
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."
-  [arity v]
-  { :value v :arity arity :close (if (true-percent? 5) (rand-int 4) 0) })
+  [arity heat v]
+  { :value v :arity arity :close (if (true-percent? 5) (rand-int 4) 0) :heat heat})
 
 ;; any time a test is mentioned, it's the idx in the individual.
 
@@ -86,12 +90,3 @@
   "Like repeatedly, but parallel."
   [n fn]
   (apply pcalls (repeat n fn)))
-
-(defn hot?
-  [gene age-threshold]
-  (let [thold (max age-threshold 1)
-        age (get gene :age 0)
-        perc-difference (if (< age thold)
-                          (float (/ age thold))
-                          (float (/ thold age)))]
-    (< perc-difference 0.25)))
