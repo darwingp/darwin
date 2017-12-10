@@ -45,6 +45,7 @@ Virtual machine
   - `:close` -> the number of close parens to insert after the gene
   - `:no-op` -> No-ops the gene. The gene still affects genome translation.
   - `:arity` -> The arity of a push instruction. Affects parenthesization.
+  - `:heat` -> How hot a gene is. 0 is the most hot and aleph-naught is the least hot. This depends on the implementation of `darwin.gp.hotspots/hot?'.
 
 *individual* -> A map containing the following keys:
 
