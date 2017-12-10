@@ -12,6 +12,9 @@ There are two ways to run the main GP function:
 1. Load `core.clj` into the interpreter, and then run `(-main)`.
 2. From the command line, run `lein run`.
 
+## Operation
+- Pathfinding system will likely require several runs to get a satisfactory start and avoid premature convergence or static size.
+
 ## Idea for Expansion
 
 New GP system: Plush, Behavioral diversity, and Gene-level ALPS (gene-age based genetic hotspots)
@@ -106,7 +109,7 @@ Virtual machine
   - [x] Virtual machine instructions
   - [x] Replace noop with zero rotate
   - [x] Load obstacles from file
-- [ ] Allow nested conditional/loops
+- [x] Allow nested conditional/loops
 - [x] Measure behavior diversity
   - [x] Figure out how to calculate this based on output from the VM
   - [x] Implement it!

@@ -40,8 +40,6 @@
 (def literal-heat
   { 3 4 })
 
-; TODO: steady/solid state: How many times should crossover occur?
-
 (def configuration
   {:genomic true
    :instructions instructions
@@ -69,5 +67,6 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
+                      :end-action (fn [_] (println "Done"))
                       ;:keep-test-attribute false
                       }})

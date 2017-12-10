@@ -23,14 +23,6 @@
     while_moves
     loop_moves
     while_moves
-    test_macro
-    ;move-dup
-    ;integer-dup
-    ;integer-frombool
-    ;boolean-and
-    ;boolean-or
-    ;exec-if
-    ;exec-dup
     ))
 
 ;Novelty information:
@@ -129,7 +121,6 @@
                               next best-so-far))
           best (reduce calc-best (map associate-score normalize-population))]
           (repeatedly factor-scale (add-novel best)) ;; Causes side effects, updating the novelty archive
-         
           (assoc best :novelty (second (:novelty best))))))
 
 
@@ -178,9 +169,9 @@
 
 (def test-maps
   (list
-    "data/obsfiles/easytest.txt"
+    ;"data/obsfiles/easytest.txt"
     "data/obsfiles/easytest2.txt"
-    "data/obsfiles/test1.txt"
+    ;"data/obsfiles/test1.txt"
     ; "data/obsfiles/test2.txt"
     ; "data/obsfiles/test3.txt"
    ))
@@ -193,17 +184,17 @@
    :program-arity 0
    :testcases (map test-on-map test-maps)
    :max-generations 500
-   :population-size 300
+   :population-size 200
    :initial-percent-literals 0.5
    :max-initial-program-size 120
    :min-initial-program-size 100
    :evolution-config {:selection (list
-                                  [75 novelty-selection]
-                                  [10 #(selection/tournament-selection % 30)]
-                                  [15 #(selection/epsilon-lexicase-selection % 30 10)])
+                                  [55 novelty-selection]
+                                  [20 #(selection/tournament-selection % 30)]
+                                  [25 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [100 (hotspots/wrap
-                                         #(crossover/alternation-crossover %1 %2 0.2 7))])
+                                  [80 (hotspots/wrap
+                                        #(crossover/alternation-crossover %1 %2 0.2 7))])
                       :mutation (hotspots/wrap mutation/uniform-mutation)
                       :percentages '([35 :crossover]
                                      [20 :deletion]
