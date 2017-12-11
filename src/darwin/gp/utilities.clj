@@ -49,16 +49,41 @@
   (let [start-state (assoc empty-push-state :input (mk-inputs inputs))]
     (interpret-push-program (:program individual) start-state)))
 
+(defn set-total-error
+  [ind]
+  (assoc ind :total-error (reduce +' (:errors ind))))
+
+(defn flatten-maplist
+  "Takes a list of maps, and returns a map where each key appears in maplist
+   and the value is a list of all values for that key in maplist."
+  [maplist]
+  (loop [ms maplist
+         res {}]
+    (if
+      (empty? ms)
+      res
+      (recur
+       (rest ms)
+       (reduce-kv
+         #(assoc %1 %2
+            (concat
+              (get %1 %2 '())
+              (list %3)))
+         res
+         (first ms))))))
+
 (defn test-individual
   "Performs each test in tests on each of the individual's exit states."
-  [tests individual testattribute]
-  (let [errors (flatten (map #(map % (:exit-states individual)) tests))]
-    (merge individual (if testattribute
-                      {:errors (map :error errors)
-                       testattribute (map testattribute errors)
-                       :total-error (reduce +' (map :error errors))}
-                      {:errors errors
-                       :total-error (reduce +' errors)}))))
+  [tests individual]
+  (let [errors (flatten (map #(map % (:exit-states individual)) tests))
+        is-fitnesses (integer? (first errors))]
+    (set-total-error
+      (if is-fitnesses
+        (assoc individual :errors errors)
+        (let [flattened (flatten-maplist errors)]
+          (merge
+            (assoc individual :errors (get flattened :error '()))
+            (dissoc flattened :error)))))))
 
 (defn gene-wrap
   "Creates a gene given a value the gene represents."

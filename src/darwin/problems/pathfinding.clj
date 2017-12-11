@@ -204,7 +204,6 @@
                       :deletion-percent 20
                       :addition-percent 20
                       :mutation-percent 20
-                      :keep-test-attribute :novelty
                       :decrease-heat-by-age true
                       :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
                       :individual-transform set-exit-states-to-move-stack

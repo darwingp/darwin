@@ -67,6 +67,4 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
-                      :end-action (fn [_] (println "Done"))
-                      ;:keep-test-attribute false
-                      }})
+                      :end-action (fn [_] (println "Done"))}})
