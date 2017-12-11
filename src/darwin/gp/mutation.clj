@@ -32,8 +32,3 @@
        %)
     program))
 
-(defn refresh-youngest-genome
-  [new-gene mutate-percent min-keep-age genome]
-  (map
-    #(if (or (hot? % min-keep-age) (true-percent? mutate-percent)) (new-gene) %)
-    genome))

@@ -5,6 +5,7 @@
   (:require [darwin.gp.mutation :refer :all])
   (:require [darwin.gp.selection :refer :all])
   (:require [darwin.gp.crossover :refer :all])
+  (:require [darwin.gp.hotspots :refer :all])
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
@@ -138,6 +139,8 @@
    instr-arities
    instrs
    literals
+   instr-heat
+   literal-heat
    percent-literals
    max-initial-program-size
    min-initial-program-size
@@ -147,8 +150,14 @@
   (let [wrap #(evaluate-individual inputses testcases
             (:individual-transform evolution-config)
             (:keep-test-attribute evolution-config) %) ;novelty param
-        instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) %) instrs) instrs)
-        lits-universal (if genomic (map #(gene-wrap 0 %) literals) literals)
+        get-heat (fn [v heatinfo]
+                   (cond
+                     (map? heatinfo) (get heatinfo v 0)
+                     (integer? heatinfo) heatinfo
+                     :else 0))
+        instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) (get-heat % instr-heat) %) instrs) instrs)
+        lits-universal (if genomic (map #(gene-wrap 0 (get-heat % literal-heat) %) literals) literals)
+        should-age-heat (get evolution-config :decrease-heat-by-age false)
         selection-f (percentaged-or-not
                       (:selection evolution-config)
                       #(tournament-selection % (quot (count %) 20)))
@@ -161,10 +170,10 @@
     (iterate
      (fn [population]
        (let [select #(if genomic
-                            (map inc-age
-                                 (:genome (selection-f population))
-                                 )
-                            (:program (selection-f population)))]
+                       (if should-age-heat
+                         (map inc-heat (:genome (selection-f population)))
+                         (:genome (selection-f population)))
+                       (:program (selection-f population)))]
          (prepeatedly
            population-size
            #(wrap
@@ -205,12 +214,15 @@
    - program-arity (the number of inputs your evolved program takes)
    - instructions (a list of instructions)
    - literals (a list of literals)
+   - instruction-heat (map of instruction to heat or single value)
+   - literal-heat (map of literal to heat or single value)
    - instruction-arities (a hash of symbols to integers, where the symbols refer to instructions)
    - number-inputs (the number of inputs the program will take)
    - max-initial-program-size (max size of randomly generated programs)
    - min-initial-program-size (minimum size of randomly generated programs)
    - initial-percent-literals (how much of randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
    - evolution-config (a map)
+     - decrease-heat-with-age (bool, whether or not to increase the heat of genes with age)
      - selection (fn that takes a population and returns an individual, or a percentage map like :percentages of such fns)
      - crossover (fn that takes two programs/genomes and returns a program/genome, or a percentage map like :percentages of such fns)
      - percentages (list of tuples w/ an integer % in position 0 and a keyword in position 1)
@@ -219,9 +231,10 @@
      - mutation-percent (an integer from 0 to 100)
      - individual-transform (a function that takes an individual and returns an individual. Applied before select-and-vary)
    - behavioral-diversity (a function to calculate behavioral diversity given a population)"
-  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform instruction-arities]}]
+  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals instruction-heat literal-heat max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform instruction-arities]}]
   (start-plotter)
-  (let [all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
+  (let [end-action (get evolution-config :end-action (fn [_] ))
+        all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
         gens (take
                max-generations
                (make-generations
@@ -231,6 +244,8 @@
                  (concat all-inputs instructions)
                  literals ;; THINK ON: should inputs be considered literals
                           ;; or instructions?
+                 instruction-heat
+                 literal-heat
                  initial-percent-literals
                  max-initial-program-size
                  min-initial-program-size
@@ -244,5 +259,6 @@
                        (report %2 (inc %1) behavioral-diversity)
                        %2)
                      gens))]
-    ((:end-action evolution-config) (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
+    
+    (end-action (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
     (if (nil? solution) nil :SUCCESS)))

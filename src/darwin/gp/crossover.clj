@@ -37,58 +37,18 @@
 (defn alternation-crossover
   "Crosses over two programs or genomes (note: not individuals) using alternation crossover
   takes alternation rate and alignment-deviation"
-  ;alternation
   [prog-a prog-b alternation-rate alignment-deviation]
-  (loop [index 0 child '() pa prog-a pb prog-b]
+  (loop [index 0
+         child '()
+         pa prog-a
+         pb prog-b]
     (if (or
-        (>= (Math/abs index) (count prog-a))
-        (>= (Math/abs index) (count prog-b)))
+          (>= (abs index) (count prog-a))
+          (>= (abs index) (count prog-b)))
       (reverse child)
-      (do
-        (if (< (rand) alternation-rate)
-          (recur (+' index (add-noise alignment-deviation)) (cons (nth pa (Math/abs index)) child) pb pa)
-          (recur (+' index 1) (cons (nth pa (Math/abs index)) child) pa pb))))))
-
-;; Gene-Level ALPS
-
-(defn avg
-  [nums]
-  (/ (reduce +' nums) (count nums)))
-
-(defn avg-age
-  "Given any number of genes, return the average age"
-  [& genes]
-  (avg (map #(get % :age 0) genes)))
-
-(defn inc-age
-  [gene]
-  (assoc gene :age (min 50 (inc (get gene :age 0)))))
-
-(defn insert-hot
-  [genome new-hotgenes age-threshold]
-  (loop [g genome
-         result []
-         new-genes new-hotgenes]
-    (cond
-      (empty? g) (seq result)
-      (hot? (first g) age-threshold) (recur
-                                       (rest g)
-                                       (conj result (first new-genes))
-                                       (rest new-genes))
-      :else (recur
-              (rest g)
-              (conj result (first g))
-              new-genes))))
-
-(defn age-hotspot-wrap
-  "Wraps another crossover operator with age-hotness. This means that
-   whatever crossover operator f is, it only crosses over hot genes."
-  [f]
-  (fn [a b]
-    (let [avg-gene-age (apply avg-age (concat a b)) ;; Damn obvious
-          hota (filter #(hot? % avg-gene-age) a)
-          hotb (filter #(hot? % avg-gene-age) b)]
-      (insert-hot
-        (if (true-percent? 50) a b)
-        (f hota hotb)
-        avg-gene-age))))
+      (let [alternate (< (rand) alternation-rate)]
+        (recur
+         (+' index (if alternate (add-noise alignment-deviation) 1))
+         (cons (nth pa (abs index)) child)
+         (if alternate pb pa)
+         (if alternate pa pb))))))
