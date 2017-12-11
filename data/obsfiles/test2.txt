@@ -1,3 +1,4 @@
+(
 {:x 322 :y 504 :width 30 :height 22}
 {:x 453 :y 126 :width 27 :height 12}
 {:x 746 :y 173 :width 23 :height 49}
@@ -398,3 +399,4 @@
 {:x 299 :y 425 :width 22 :height 45}
 {:x 677 :y 99 :width 19 :height 34}
 {:x 130 :y 233 :width 4 :height 42}
+)

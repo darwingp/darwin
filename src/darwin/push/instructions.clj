@@ -2,6 +2,9 @@
   (:require [darwin.push.utilities :refer :all])
   (:gen-class))
 
+;; TODO: Return lists to the :move stack
+;;       push interpreter misinterprets a list being returned
+
 ;; CITE: http://faculty.hampshire.edu/lspector/push3-description.html#Type
 ;; DESC:
 ;; Behavior implemented according to document at URL ^
@@ -47,67 +50,71 @@
      (* (Math/sqrt (* -2 (Math/log u)))
         (Math/cos (* 2 Math/PI v)))))))
 
-(defn noise-test
-  [total]
-  (let [test (repeatedly total (fn [] (angle-noise 45))) ]
-    (do
-    (println "average: " (/ (reduce +' test) (count test)))
-    (println (reduce max test)))))
-
-(def prep-moves
-  (fn [& moves]
-    (reduce (fn [total new] (str total " " new)) moves)))
-
 ;move instruction generation
 (definstr new_move [] :move
-  (constantly "angle 0 "))
+  #(list "angle" 0))
 
 (definstr new_angle [:integer] :move
-  #(str "angle " % " "))
+  #(list "angle" %))
 
 (definstr test_macro [:integer :integer] :move
-    #(str "move-while " %1 " angle " %2 " "))
+  #(list "move-while" %1 (list
+                           (list "angle" %2))))
 
 (definstr test_macro_2 [:integer :integer :integer] :move
-  #(str "loop " %1 " angle " %2 " move-while 10 angle " %3 " "))
+  #(list "loop" %1 (list
+                     (list "angle" %2)
+                     (list "move-while" 10
+                       (list
+                         (list "angle" %3))))))
 
 (definstr test_macro_3 [:integer :integer] :move
-  #(str "move-while " %1 " angle " %2 " loop 10 angle 45 "))
+  #(list "move-while" %1 (list
+                           (list "angle" %2)
+                           (list "loop" 10
+                             (list
+                               (list "angle" 45))))))
 
 (definstr simple_loop [:integer :integer] :move
-  #(str "loop " %1 " angle " %2 " "))
+  #(list "loop" %1 (list (list "angle" %2))))
 
 (definstr loop_compose [:move] :move
-  #(str "loop 10 " % " "))
+  #(list "loop" 10 (list %)))
 
 (definstr set_speed [:integer] :move
-  #(str "set-speed " % " "))
+  #(list "set-speed" %))
 
 (definstr new_cond_moves [:integer :integer] :exec
-  (fn [x y] (makemultipleinstr :move x :move
-    (fn [& moves] (str "if-obs-range " y " " (prep-moves moves) " ")))))
+  (fn [x y]
+    (makemultipleinstr :move x :move
+      (fn [& moves]
+        (list "if-obs-range" y moves)))))
 
 (definstr set_angle_target [] :move
-  (constantly "set-angle-target "))
+  #(list "set-angle-target"))
 
 (definstr loop_moves [:integer :integer] :exec
-  (fn [x y] (makemultipleinstr :move x :move
-    (fn [& moves] (str "loop " y " " (prep-moves moves) " ")))))
+  (fn [x y]
+    (makemultipleinstr :move x :move
+      (fn [& moves]
+        (list "loop" y moves)))))
 
+;; FIXME: Is this correct??
 (definstr loop_moves_2 [:integer :move :move :move] :move
-      (fn [i mv mv mv] (str "loop " i " " mv " " mv " " mv " "))
-)
+  #(list "loop" %1 %2 %3 %4))
 
 (definstr while_moves [:integer :integer] :exec
-  (fn [x y] (makemultipleinstr :move x :move
-    (fn [& moves] (str "move-while " y " " (prep-moves moves) " ")))))
+  (fn [x y]
+    (makemultipleinstr :move x :move
+      (fn [& moves]
+        (list "move-while" y moves)))))
 
+;; FIXME: is this correct??
 (definstr while_moves_2 [:integer :move :move :move] :move
-  (fn [i mv mv mv] (str "move-while " i " " mv " " mv " " mv " "))
-  )
+  #(list "move-while" %1 %2 %3 %4))
 
 (definstr move-dup [:integer :move] :exec
-  (fn [x mv] (repeat x mv)))
+  #(vec (repeat %1 %2)))
 
 ;advanced push instructions
 (definstr integer-dup [:integer] :integer
@@ -119,8 +126,8 @@
 (definstr boolean-and [:boolean :boolean] :boolean #(and % %2))
 (definstr boolean-or [:boolean :boolean] :boolean #(or % %2))
 
-(definstr exec-if [:exec :exec :boolean] :exec
-  (fn [x y b] (if b x y)))
+(definstr exec-if [:boolean :exec :exec] :exec
+  (fn [b x y] (if b x y)))
 
 (definstr exec-dup [:exec] :exec
   (fn [x] [x x]))

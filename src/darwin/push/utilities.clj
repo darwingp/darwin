@@ -22,15 +22,15 @@
   [state stack item]
   (assoc state stack (cons item (get state stack '()))))
 
-(defn push-many-to-stack
-  "Pushes multiple items to the stack at once. Vectors are copied in order
-   to on top of the stack and lists are copied in reverse to on top of the stack."
-  [state stack items]
-  (let [oldstack (get state stack '())
-        newstack (if (vector? items)
-                     (concat items oldstack) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
-                     (concat (reverse items) oldstack))] ;; concat vectors onto the top of the stack in order
-    (assoc state stack newstack)))
+;; (defn push-many-to-stack
+;;   "Pushes multiple items to the stack at once. Vectors are copied in order
+;;    to on top of the stack and lists are copied in reverse to on top of the stack."
+;;   [state stack items]
+;;   (let [oldstack (get state stack '())
+;;         newstack (if (vector? items)
+;;                      (concat items oldstack) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
+;;                      (concat (reverse items) oldstack))] ;; concat vectors onto the top of the stack in order
+;;     (assoc state stack newstack)))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
@@ -79,25 +79,21 @@
                  (rest stacks)
                  (conj args (peek-stack state stack))))))))
 
+(defn prepend-stack
+  "Concats coll onto the front of stack in state."
+  [coll stack state]
+  (assoc state stack (concat coll (get state stack '()))))
+
 (defn push-return-stack
   "Pushes a/many return value(s) to the stack(s).
-   If the value is a list/vector, items are pushed using
-   push-many-to-stack. If the value is a map, return-stack
-   is ignored, and for each k/v pair: push v onto stack k.
-   Maps can contain lists of values to push.
-
-   Otherwise, the value is pushed onto the stack in accordance with
-   Professor Helmuth's original make-push-instruction implementation."
+   If the value is a vector, items are prepended in order.
+   If the value is a map, return-stack is ignored, and for
+   each k/v pair: push v onto stack k. Maps can contain vectors
+   of values to prepend. Otherwise, the value is pushed onto return-stack."
   [state return-stack result]
   (cond
-    (or (list? result) (vector? result)) (push-many-to-stack state return-stack result)
-    (map? result) (reduce-kv
-                    (fn [m k v]
-                      (if (or (list? v) (vector? v))
-                        (push-many-to-stack m k v)
-                        (push-to-stack m k v)))
-                    state
-                    result) ;;; FIXME: this pushes individual items backwards!!!
+    (vector? result) (prepend-stack result return-stack state)
+    (map? result) (reduce-kv push-return-stack state result)
     :else (push-to-stack state return-stack result)))
 
 ;; WRITTEN BY Professor Helmuth

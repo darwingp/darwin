@@ -51,9 +51,9 @@
         (if (intersects? x y (first rem-obs)) false
             (recur (rest rem-obs))))))
 
-(def move
+(defn move
   "move based on angle and x,y and no collision present"
-  (fn [location obs]
+  [location obs]
     (let [x (:x location)
           y (:y location)
           current-path (:path location)
@@ -79,18 +79,18 @@
         (if (deref draw-to-window?)
           (display/draw-vehicle new-state x y vehicle-width)  ;draw state (returns vehicle state)
           new-state))
-      (assoc location :crash (+ crashes 1))))))
+      (assoc location :crash (+ crashes 1)))))
 
-(def change-attrib
-  ;change a state attribute
-  (fn [loc-map attrib val]
-    (assoc loc-map attrib (if (and (= attrib :speed) (> val max-speed)) max-speed val))))
+(defn change-attrib
+  "change a state attribute"
+  [loc-map attrib val]
+    (assoc loc-map attrib (if (and (= attrib :speed) (> val max-speed)) max-speed val)))
 
-(def distance
+(defn distance
   "calculate distance between points"
-  (fn [x1 y1 x2 y2]
+  [x1 y1 x2 y2]
     (let [xdif (- x2 x1) ydif (- y2 y1)]
-    (Math/sqrt (+ (* xdif xdif) (* ydif ydif))))))
+    (Math/sqrt (+ (* xdif xdif) (* ydif ydif)))))
 
 (defn no-obstacles-in-range
   "checks if an obstacle is in a specific range from vehicle location"
@@ -115,92 +115,72 @@
   [obstacles]
   ;lambda takes: current-loc (x y angle speed crash) and instruction
   (fn [loc instr]
-    ;(println "Eval: " instr)
-    (cond (= (first instr) "angle") (move (change-attrib loc :angle (second instr)) obstacles)
-          (= (first instr) "set-angle-target")
-            (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
-          (= (first instr) "set-speed")
-            (move (change-attrib loc :speed (second instr)) obstacles)
-          (=  (first instr) "loop")
-              (reduce (new-move obstacles) loc
-                      (take (* (second instr) (count (nth instr 2)))
-                      (cycle (nth instr 2))))
-          (= (first instr) "move-while")
-              ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
-              (reduce (fn [loc instruction]
-                    ;check if the next move will result in a crash
-                    (if (= (- (:crash loc) (:crash ((new-move obstacles) loc instruction))) 0)
-                      ((new-move obstacles) loc instruction) (reduced loc)))
-                    loc (cycle (nth instr 2)))
-          (= (first instr) "if-obs-range")
-              (if (no-obstacles-in-range loc (second instr) obstacles)
-                (reduce (new-move obstacles) loc (nth instr 2)) loc))))
+    (cond
+      (= (first instr) "angle")
+        (move (change-attrib loc :angle (second instr)) obstacles)
+      (= (first instr) "set-angle-target")
+        (move (change-attrib loc :angle (get-angle-to-target (:x loc) (:y loc))) obstacles)
+      (= (first instr) "set-speed")
+        (move (change-attrib loc :speed (second instr)) obstacles)
+      (= (first instr) "loop")
+        (reduce
+          (new-move obstacles)
+          loc
+          (take (* (second instr) (count (nth instr 2)))
+          (cycle (nth instr 2))))
+      (= (first instr) "move-while")
+        ;create lazy-seq of provided moves, reduce until obstacle in range, return reduced loc
+        (reduce
+          (fn [loc instruction]
+            ; check if the next move will result in a crash
+            (if
+              (zero?
+                (-
+                 (:crash loc)
+                 (:crash ((new-move obstacles) loc instruction))))
+              ((new-move obstacles) loc instruction)
+              (reduced loc)))
+          loc
+          (cycle (nth instr 2)))
+      (= (first instr) "if-obs-range")
+          (if (no-obstacles-in-range loc (second instr) obstacles)
+            (reduce (new-move obstacles) loc (nth instr 2)) loc))))
 
-(defn write-instructions-to-file
-  [instr-list filename]
-  ;file needs to exist
-  (spit filename
-  (reduce (fn [total instr] (str total "\n" instr)) instr-list )))
-
-;MAIN TESTING ENTRY PT.
-; ------- Takes list of lists of moves for all indivs in gen and obs list -------
-
-(defn prep-instructions
-  "take instruction, prep for eval"
-  [instr]
-  (let [parse-angle (fn [lst] (list (first lst) (Integer. (second lst))))
-        parse-cond (fn [lst] (list (first lst) (Integer. (second lst))))]
-  (cond (= (first instr) "angle")
-           (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
-        (= (first instr) "set-angle-target")
-           (cons '("set-angle-target") (prep-instructions (rest instr)))
-        (= (first instr) "set-speed")
-           (cons (parse-angle instr) (prep-instructions (rest (rest instr))))
-        (or
-         (= (first instr) "loop")
-         (= (first instr) "move-while")
-         (= (first instr) "if-obs-range"))
-           (list (concat (parse-cond instr) (list (prep-instructions (rest (rest instr)))))))))
+;;
+;; MAIN TESTING ENTRY PT.
+;; Takes list of lists of moves for all indivs in gen and obs list
+;;
 
 (defn test-instructions-list
-  "takes in a list of vehicle instructions, a list of obstacles
+  "Takes in a list of vehicle instructions, a list of obstacles
   outputs a map of fitness (can be used for behavioral tracking too)"
   [instructionlist obstaclelist testcriteria]
-    (let [prepped-instr (map first
-                             (map prep-instructions
-                                  (map (fn [line] (clojure.string/split line #" ")) instructionlist)))
-          obs (if (deref draw-to-window?) (display/draw-obstacles obstaclelist) obstaclelist)
+    (let [obs (if
+                (deref draw-to-window?)
+                (display/draw-obstacles obstaclelist) obstaclelist)
           ;draw-target (display/draw-pt (first target-loc) (second target-loc))
-          final-loc (reduce (new-move obs) start-loc prepped-instr)
-          dist (distance (:x final-loc) (:y final-loc) (first target-loc) (second target-loc))]
-      ;(println (:x final-loc) " " (:y final-loc))
+          final-loc (reduce (new-move obs) start-loc instructionlist)
+          dist (distance (:x final-loc) (:y final-loc)
+                         (first target-loc) (second target-loc))]
      {:dist-to-target dist
-      :path (reverse (:path final-loc)  )     ;original instruction list size
+      :path (reverse (:path final-loc)) ;original instruction list size ; OPTIMIZE: How can reversing this (long) list be avoided?
       :num-crash (:crash final-loc)
       :instr-total (:moves-made final-loc)
       :fitness (bigint (+' (*' (:distance-from-target testcriteria) dist)
                      (*' (:total-crashes testcriteria) (:crash final-loc))
                      (*' (:moves-made testcriteria) (count instructionlist))))}))
 
-;file for testing system
-(def testfile "data/pathfiles/condtest.txt")
-(def testobsfile "data/obsfiles/test1.txt")
-(def examplecriteria {:distance-from-target 1
-   :total-crashes 1
-   :moves-made 0.2})
+;;
+;; FILE OPERATIONS
+;;
 
-;FILE OPERATIONS
-;---------------
+(defn data-structure-from-file
+  [filename]
+  (read-string (slurp filename)))
 
-(defn load-instruction-list
-  "load instructions from file"
-  [location-file]
-  (clojure.string/split-lines (slurp location-file)))
-
-(defn load-obstacle-list
-  "load obstacles from file"
-  [obs-file]
-  (map #(read-string %) (clojure.string/split-lines (slurp obs-file))))
+(defn data-structure-to-file
+  [ds filename]
+  (spit filename (prn-str ds)))
 
 (defn test-instructions-file
   "loads instructions from file and obstacles from a file and executes list function"
@@ -208,23 +188,30 @@
   ;this is a file wrapper for test-instructions-list
   (if (deref draw-to-window?) (display/start-environment))
   (test-instructions-list ;call list-based with parsed instruction file and parsed obs file
-   (load-instruction-list location-file) (load-obstacle-list obs-file) testcriteria))
+    (data-structure-from-file location-file)
+    (data-structure-from-file obs-file)
+    testcriteria))
 
 (defn display-obstacle-map
   "display the obstacle map"
   [locationfile]
-    (display/start-environment)
-    (display/draw-obstacles (load-obstacle-list locationfile)))
+  (display/start-environment)
+  (display/draw-obstacles (data-structure-from-file locationfile)))
+
+(def examplecriteria {:distance-from-target 1
+   :total-crashes 1
+   :moves-made 0.2})
 
 (defn final-display
   [instrs test-loc]
-  (do
-    (reset! draw-to-window? true)
-    (display/start-environment)
-    (test-instructions-list instrs (load-obstacle-list test-loc) examplecriteria)))
+  (reset! draw-to-window? true)
+  (display/start-environment)
+  (test-instructions-list instrs (data-structure-from-file test-loc) examplecriteria))
 
-;POPULATION DIVERSITY
-;--------------------
+;;
+;; POPULATION DIVERSITY
+;;
+
 (defn calculate-behavior-div
   "this function takes in all the lists of instructions
   for a generation and determines a behavioral diversity value"

@@ -34,7 +34,10 @@ Virtual machine
 
 ## Terminology
 
-*testcase* -> A function that takes a final Push state and returns a numerical error value.
+*testcase* -> A function that takes a final Push state and returns either
+	      1. A numerical error value.
+	      2. A map with a key :error. All non-:error keys are assimilated
+	         into the individual being tested.
 
 *inputs* -> A list of input values to be used to create the :input attribute on an individual.
 	    Order matters.
@@ -74,7 +77,7 @@ Virtual machine
 
 ### Nate (up to virtual machine)
 
-- [ ] Add layering to genetic hotspots
+- [x] Add layering to genetic hotspots
 - [x] Genetic Hotspots through :age epigenetic marker - like ALPS
     - This genetic marker is untouched by translation; instead it's
           used solely by genetic operators.
@@ -147,6 +150,10 @@ NOTE*** After all TODO items are complete, we need to check each other's work.
    - https://github.com/trystan/random-seed
 
 ### Machine specifications
+
+TODO: update me to reflect new format:
+  - Instructions are stored using Clojure's read-string (fetched with prn-str)
+  - Same format, different representation
 
 File/list Specification:
 - ```angle n```  "angle" change and integer value in degrees 0 - ~180 (calculated with standard distribution)

@@ -130,10 +130,13 @@
 
 (defn test-on-map
   "take movestack and location of map and run test"
-  [map]
-  (let [maploaded (testing/load-obstacle-list map)]
+  [mapfile]
+  (let [maploaded (testing/data-structure-from-file mapfile)]
     (fn [movestack]
-      (let [testresult (testing/test-instructions-list movestack maploaded test-criteria)
+      (let [testresult (testing/test-instructions-list
+                         movestack
+                         maploaded
+                         test-criteria)
             dist-from-target (:distance-from-target test-criteria)
             total-crashes (:total-crashes test-criteria)
             moves-made (:moves-made test-criteria)
@@ -149,15 +152,20 @@
 
 (defn set-exit-states-to-move-stack
   [ind]
-  (assoc ind :exit-states (map #(:move %) (:exit-states ind))))
+  (assoc
+    ind
+    :exit-states
+    (map
+     #(:move %)
+     (:exit-states ind))))
 
 ;; ; OLD mutation operator
 ;; ; e.g. #(mutation/refresh-youngest-genome %1 %2 2 %3)
 ;; (defn refresh-hottest-genome
 ;;   "Mutation operator that only mutates the hot genes."
-;;   [new-gene mutate-percent min-keep-age genome]
+;;   [new-gene mutate-percent min-keep-heat genome]
 ;;   (map
-;;     #(if (or (hot? % min-keep-age) (true-percent? mutate-percent)) (new-gene) %)
+;;     #(if (or (hot? % min-keep-heat) (true-percent? mutate-percent)) (new-gene) %)
 ;;     genome))
 
 (def test-maps
@@ -186,9 +194,13 @@
                                   [15 #(selection/tournament-selection % 30)]
                                   [20 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [80 (crossover/age-hotspot-wrap
+                                  [80 (hotspots/wrap
                                          #(crossover/alternation-crossover %1 %2 0.2 3))])
-                      :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
+                      :deletion #((hotspots/wrap 
+                                   (fn [g] (mutation/uniform-deletion %1 g))) %2)
+                      :mutation #((hotspots/wrap
+                                   (fn [g] (mutation/uniform-mutation %1 %2 g))) %3)
+                      ; :mutation #(refresh-hottestest-genome %1 %2 2 %3)
                       :percentages '([45 :crossover]
                                      [15 :deletion]
                                      [15 :addition]
