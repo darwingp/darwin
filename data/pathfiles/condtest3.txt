@@ -1,0 +1,11 @@
+set-speed 5
+angle 180
+set-angle-target
+set-speed 10
+if-obs-range 10 angle 45 angle 90 move-while 10 angle 0
+move-while 10 angle 180
+set-angle-target
+move-while 5 angle 100 set-angle-target loop 2 angle 0 angle 30
+set-speed 10
+if-obs-range 10 angle 0 angle 45 loop 2 angle 25 angle 145 angle 0
+move-while 10 angle 0 angle 45

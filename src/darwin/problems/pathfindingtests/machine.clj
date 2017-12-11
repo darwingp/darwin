@@ -3,7 +3,7 @@
 (:gen-class))
 
 ;starting attributes
-(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 0 :moves-made 0 :speed 20 :path '()})           ;x y angle crash total
+(def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 4 :moves-made 0 :speed 20 :path '()})           ;x y angle crash total
 (def target-loc '(750 600))  ;location of target
 (def max-speed 20)
 (def vehicle-width 2)  ;not used as an exact radius
@@ -183,8 +183,8 @@
                      (*' (:moves-made testcriteria) (count instructionlist))))}))
 
 ;file for testing system
-(def testfile "data/pathfiles/solution.txt")
-(def testobsfile "data/obsfiles/easytest.txt")
+(def testfile "data/pathfiles/condtest.txt")
+(def testobsfile "data/obsfiles/test1.txt")
 (def examplecriteria {:distance-from-target 1
    :total-crashes 1
    :moves-made 0.2})
