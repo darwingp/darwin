@@ -65,8 +65,20 @@
 (definstr new_angle [:integer] :move
   #(str "angle " % " "))
 
-(definstr test_macro [:integer :integer :integer] :move
-    #(str "move-while " %1 " angle " %2 " angle " %3 " "))
+(definstr test_macro [:integer :integer] :move
+    #(str "move-while " %1 " angle " %2 " "))
+
+(definstr test_macro_2 [:integer :integer :integer] :move
+  #(str "loop " %1 " angle " %2 " move-while 10 angle " %3 " "))
+
+(definstr test_macro_3 [:integer :integer] :move
+  #(str "move-while " %1 " angle " %2 " loop 10 angle 45 "))
+
+(definstr simple_loop [:integer :integer] :move
+  #(str "loop " %1 " angle " %2 " "))
+
+(definstr loop_compose [:move] :move
+  #(str "loop 10 " % " "))
 
 (definstr set_speed [:integer] :move
   #(str "set-speed " % " "))
@@ -82,9 +94,17 @@
   (fn [x y] (makemultipleinstr :move x :move
     (fn [& moves] (str "loop " y " " (prep-moves moves) " ")))))
 
+(definstr loop_moves_2 [:integer :move :move :move] :move
+      (fn [i mv mv mv] (str "loop " i " " mv " " mv " " mv " "))
+)
+
 (definstr while_moves [:integer :integer] :exec
   (fn [x y] (makemultipleinstr :move x :move
     (fn [& moves] (str "move-while " y " " (prep-moves moves) " ")))))
+
+(definstr while_moves_2 [:integer :move :move :move] :move
+  (fn [i mv mv mv] (str "move-while " i " " mv " " mv " " mv " "))
+  )
 
 (definstr move-dup [:integer :move] :exec
   (fn [x mv] (repeat x mv)))

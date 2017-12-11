@@ -9,20 +9,14 @@
 
 (def instructions
   '(new_angle
-    new_angle
-    new_angle
-    new_angle
     ;set_speed
-    new_cond_moves
+    ;new_cond_moves
     set_angle_target
-    loop_moves
-    while_moves
-    loop_moves
-    while_moves
-    loop_moves
-    while_moves
-    loop_moves
-    while_moves
+    test_macro
+    test_macro_2
+    test_macro_3
+    simple_loop
+    loop_compose
     ))
 
 ;Novelty information:
@@ -54,18 +48,18 @@
         indiv-paths
         avg-paths))))
 
-;novelty archive contains a path average for each test-case
 (def novelty-archive (ref '()))
-;size limit for memory protection
+;size limit
 (def max-archive-size 500)
+;number of add repeats
 (def factor-scale 20)
 
 (defn add-novel
-  "take the equivalent of an individual test/path/pt list and add to novelty archive
-  IN: path WITHOUT size associated"
+  "take the equivalent of an individual test/path/pt list
+   and add to novelty archive
+   IN: path WITHOUT size associated"
   [machine-out]
   (dosync
-   ;repeat weights novel individual against average
     (alter novelty-archive conj (second (:novelty machine-out)))
     (commute novelty-archive #(take max-archive-size %))
     machine-out))
@@ -108,8 +102,7 @@
   [population]
   (dosync
     (let [goal-size (reduce max-path-size 0 population)
-
-          ;; TODO: include novelty archive in all-avg-paths calculation.
+    ;(random-sample 0.5
           normalize-population (map #(assoc % :novelty (normalize-lengths goal-size (:novelty %))) population)
           all-paths (concat (map #(:novelty %) normalize-population) (deref novelty-archive))
           all-avg-paths (build-avg all-paths) ;length of number of test cases, contains path list for each
@@ -179,31 +172,31 @@
 (def configuration
   {:genomic true
    :instructions instructions
-   :literals (range 90)
+   :literals (range 180)
    :inputses '(())
    :program-arity 0
    :testcases (map test-on-map test-maps)
    :max-generations 500
-   :population-size 200
+   :population-size 150
    :initial-percent-literals 0.5
    :max-initial-program-size 120
    :min-initial-program-size 100
    :evolution-config {:selection (list
-                                  [55 novelty-selection]
-                                  [20 #(selection/tournament-selection % 30)]
-                                  [25 #(selection/epsilon-lexicase-selection % 30 10)])
+                                  [65 novelty-selection]
+                                  [15 #(selection/tournament-selection % 30)]
+                                  [20 #(selection/epsilon-lexicase-selection % 30 10)])
                       :crossover (list
-                                  [80 (hotspots/wrap
-                                        #(crossover/alternation-crossover %1 %2 0.2 7))])
-                      :mutation (hotspots/wrap mutation/uniform-mutation)
-                      :percentages '([35 :crossover]
-                                     [20 :deletion]
-                                     [20 :addition]
+                                  [80 (crossover/age-hotspot-wrap
+                                         #(crossover/alternation-crossover %1 %2 0.2 3))])
+                      :mutation #(mutation/refresh-youngest-genome %1 %2 2 %3)
+                      :percentages '([45 :crossover]
+                                     [15 :deletion]
+                                     [15 :addition]
                                      [25 :mutation]
                                      [0 :copy])
-                      :deletion-percent 20
-                      :addition-percent 20
-                      :mutation-percent 20
+                      :deletion-percent 10
+                      :addition-percent 10
+                      :mutation-percent 10
                       :decrease-heat-by-age true
                       :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
                       :individual-transform set-exit-states-to-move-stack

@@ -107,26 +107,22 @@
                                   (swap! max-vals assoc data-type (data-type state))
                                   (swap! previous-values assoc data-type (data-type state)) ) "not gen 1")
     (let [gen (:generation state)
-          current-pt (
-                      (normalize-to-graph w-zero (data-type (deref max-vals)))
+          current-pt ((normalize-to-graph w-zero (data-type (deref max-vals)))
                       (if (= data-type :average-fitness)
                         (list gen
                           (/ (+ (data-type state) (data-type (deref previous-values))) (+ gen 2)))
                         (list gen (data-type state))))
-          previous-pt (
-                       (normalize-to-graph w-zero (data-type (deref max-vals)))
+          previous-pt ((normalize-to-graph w-zero (data-type (deref max-vals)))
                        (if (= data-type :average-fitness)
                         (list (:generation (deref previous-values))
                         (/ (data-type (deref previous-values)) (+ gen 1)))
                         (list (:generation (deref previous-values)) (data-type (deref previous-values)))))]
-
         ((line-from-points (.getGraphics panel) color) current-pt previous-pt)
         ;set previous values
         (if (= data-type :average-fitness)
           (swap! previous-values assoc data-type (+ (data-type state) (data-type (deref previous-values))))
           (swap! previous-values assoc data-type (data-type state)))
-        (swap! previous-values assoc :generation gen)
-        ))
+        (swap! previous-values assoc :generation gen)))
 
 (defn init-sub-window
   "create a new sub window in the jframe"
