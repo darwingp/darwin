@@ -5,7 +5,6 @@
   (:require [darwin.gp.hotspots :as hotspots])
   (:require [darwin.gp.utilities :as utils])
   (:require [darwin.utilities :refer :all])
-;  (:require [darwin.push.instructions :refer :all])
   (:require [darwin.problems.pathfinding.machine :as machine])
   (:require [darwin.problems.pathfinding.instructions :refer :all])
   (:gen-class))
