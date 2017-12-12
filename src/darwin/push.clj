@@ -3,14 +3,6 @@
   (:require [darwin.push.utilities :refer :all])
   (:gen-class))
 
-(def empty-push-state
-  {:exec '()
-   :integer '()
-   :string '()
-   :boolean '()
-   :move '()
-   :input {}})
-
 (defn interpret-one-step
   "Helper function for interpret-push-program.
   Takes a Push state and executes the next instruction on the exec stack,

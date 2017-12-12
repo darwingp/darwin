@@ -46,8 +46,7 @@
   "Runs an individual with a list of inputs, storing the final Push
    state from the run in the individual's :exit-states list."
   [inputs individual]
-  (let [start-state (assoc empty-push-state :input (mk-inputs inputs))]
-    (interpret-push-program (:program individual) start-state)))
+  (interpret-push-program (:program individual) { :input (mk-inputs inputs) }))
 
 (defn set-total-error
   [ind]
