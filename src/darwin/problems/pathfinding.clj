@@ -4,7 +4,7 @@
   (:require [darwin.gp.mutation :as mutation])
   (:require [darwin.gp.hotspots :as hotspots])
   (:require [darwin.gp.utilities :as utils])
-  (:require [darwin.problems.pathfindingtests.machine :as testing])
+  (:require [darwin.problems.pathfinding.machine :as machine])
   (:gen-class))
 
 (def instructions
@@ -131,9 +131,9 @@
 (defn test-on-map
   "take movestack and location of map and run test"
   [mapfile]
-  (let [maploaded (testing/data-structure-from-file mapfile)]
+  (let [maploaded (machine/data-structure-from-file mapfile)]
     (fn [movestack]
-      (let [testresult (testing/test-instructions-list
+      (let [testresult (machine/test-instructions-list
                          movestack
                          maploaded
                          test-criteria)
@@ -210,6 +210,6 @@
                       :addition-percent 10
                       :mutation-percent 10
                       :decrease-heat-by-age true
-                      :end-action #(do (testing/final-display % "data/obsfiles/easytest2.txt") (println %))
+                      :end-action #(do (machine/final-display % "data/obsfiles/easytest2.txt") (println %))
                       :individual-transform set-exit-states-to-move-stack
                       }})
