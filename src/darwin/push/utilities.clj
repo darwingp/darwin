@@ -1,6 +1,17 @@
 (ns darwin.push.utilities
   (:gen-class))
 
+(defmacro definstr
+  "Macro for defining Push instructions. Position 0 is the deepest arg,
+   the last position is the top of the stack. Defines the instruction
+   inside darwin.push.instructions & the current namespace."
+  [name arg-stacks outputstack operation]
+  (list 'let ['body (list 'fn '[state]
+                  (list 'make-push-instruction 'state operation
+                  arg-stacks outputstack))]
+    (list 'intern ''darwin.push.instructions (list 'quote name) 'body)
+    (list 'intern *ns* (list 'quote name) 'body)))
+
 ;;
 ;; NB: stacks are lists where the head of a stack is (first stack).
 ;;
@@ -21,16 +32,6 @@
   "Pushes item onto stack in state, returning the resulting state."
   [state stack item]
   (assoc state stack (cons item (get state stack '()))))
-
-;; (defn push-many-to-stack
-;;   "Pushes multiple items to the stack at once. Vectors are copied in order
-;;    to on top of the stack and lists are copied in reverse to on top of the stack."
-;;   [state stack items]
-;;   (let [oldstack (get state stack '())
-;;         newstack (if (vector? items)
-;;                      (concat items oldstack) ;; emulate looping push: (reduce #(push-to-stack % stack %1) state items)
-;;                      (concat (reverse items) oldstack))] ;; concat vectors onto the top of the stack in order
-;;     (assoc state stack newstack)))
 
 (defn pop-stack
   "Removes top item of stack, returning the resulting state."
@@ -118,14 +119,6 @@
   [instack n outputstack operation]
   (fn [state]
     (make-push-instruction state operation (repeat n instack) outputstack)))
-
-(defmacro definstr
-  "Macro for defining Push instructions. Position 0 is the deepest arg,
-   the last position is the top of the stack."
-  [name arg-stacks outputstack operation]
-  (list 'def name (list 'fn '[state]
-                  (list 'make-push-instruction 'state operation
-                  arg-stacks outputstack))))
 
 (defn mk-inputs
   "Takes a state and sets multiple inputs (in1, in2, ...) on it

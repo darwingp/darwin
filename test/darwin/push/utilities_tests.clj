@@ -13,26 +13,6 @@
           (stack state-after)
           '(0 1 2))))))
 
-(deftest test-push-many-to-stack
-  (testing "pushing many to the stack using a list"
-    (let [state { :integer '(2 3) }
-          stack :integer
-          items '(1 0)
-          state-after (utilities/push-many-to-stack state stack items)]
-      (is
-        (=
-          (stack state-after)
-          '(0 1 2 3)))))
-  (testing "pushing many to the stack using a vector"
-    (let [state { :integer '(2 3) }
-          stack :integer
-          items [1 0]
-          state-after (utilities/push-many-to-stack state stack items)]
-      (is
-        (=
-          (stack state-after)
-          '(1 0 2 3))))))
-
 (deftest test-pop-stack
   (testing "popping elements from the stack"
     (let [state { :integer '(0 1 2 3) }

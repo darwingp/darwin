@@ -1,6 +1,6 @@
-(ns darwin.problems.pathfindingtests.machine
+(ns darwin.problems.pathfinding.machine
   (:require [darwin.graphics.environment :as display])
-(:gen-class))
+  (:gen-class))
 
 ;starting attributes
 (def start-loc {:x 10 :y 10 :angle 45 :crash 0 :color 4 :moves-made 0 :speed 20 :path '()})           ;x y angle crash total
