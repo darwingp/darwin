@@ -39,16 +39,16 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-(defn angle-noise
-  "returns gaussian noise for angle move instruction generation"
-  ; CITE: https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
-  ; DESC: The Box-Muller method for generating uniformly distributed random numbers
-  [alignment]
-  (let [u (rand) v (rand)]
-    (Math/round
-    (* alignment
-     (* (Math/sqrt (* -2 (Math/log u)))
-        (Math/cos (* 2 Math/PI v)))))))
+;; (defn angle-noise
+;;   "returns gaussian noise for angle move instruction generation"
+;;   ; CITE: https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
+;;   ; DESC: The Box-Muller method for generating uniformly distributed random numbers
+;;   [alignment]
+;;   (let [u (rand) v (rand)]
+;;     (Math/round
+;;     (* alignment
+;;      (* (Math/sqrt (* -2 (Math/log u)))
+;;         (Math/cos (* 2 Math/PI v)))))))
 
 ;move instruction generation
 (definstr new_move [] :move
@@ -99,9 +99,8 @@
       (fn [& moves]
         (list "loop" y moves)))))
 
-;; FIXME: Is this correct??
 (definstr loop_moves_2 [:integer :move :move :move] :move
-  #(list "loop" %1 %2 %3 %4))
+  #(list "loop" %1 (list %2 %3 %4)))
 
 (definstr while_moves [:integer :integer] :exec
   (fn [x y]
@@ -109,9 +108,8 @@
       (fn [& moves]
         (list "move-while" y moves)))))
 
-;; FIXME: is this correct??
 (definstr while_moves_2 [:integer :move :move :move] :move
-  #(list "move-while" %1 %2 %3 %4))
+  #(list "move-while" %1 (list %2 %3 %4)))
 
 (definstr move-dup [:integer :move] :exec
   #(vec (repeat %1 %2)))
