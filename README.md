@@ -88,6 +88,48 @@ Virtual machine
 *population* -> A list of individuals
 *generation* -> A population at a given iteration of evolution.
 
+## Configuration
+
+One more term:
+
+*percentable* -> Either:
+	         1. A list of tuples or a map containing numbered keys that
+                    represent percent probability and values that represent
+		    events that should happen.
+		 2. A single event that should happen every time. Cannot
+		    be a collection
+
+Problems can be easily configured. Below is a commented non-functional example:
+
+    {
+      :population-size 100               ; integer
+      :max-generations 500               ; integer
+      :testcases       '(...)            ; list of testcases
+      :inputses	       '((...) ...)      ; list of inputs (see terminology: inputs)
+      :program-arity   5                 ; How long each inputs is.
+      :instructions    '(integer_+, ...) ; The instructions a program will use
+      :literals        '(1 2 3 4)        ; The literals a program will use
+      :instruction-heat { 'integer_+ 5 } ; Heat map for instructions
+      :literal-heat     { 4 0
+      			  1 2
+			  3 6 }          ; Heat map for literals
+
+      :instruction-arities { 'exec_if 2 } ; Arity map for Plush genes
+      :max-initial-program-size 100 ; max size of randomly generated programs
+      :min-initial-program-size 20  ; minimum size of randomly generated programs
+      :initial-percent-literals 0.6 ; what % randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
+      :behavioral-diversity (a function to calculate behavioral diversity given a population)
+      :evolution-config {
+        :decrease-heat-with-age false ; whether or not to inc the :heat of genes each generation
+        :selection                    ; percentable
+        :crossover                    ; percentable
+        :percentages                  ; percentable with events `:crossover`, `:mutation`, `:addition`, `:deletion`, and `:copy`
+        :deletion-percent 20
+        :addition-percent 25
+        :mutation-percent 13
+        :individual-transform (fn [individual] ...) ; applied immediately after running individual; before select-and-vary
+    }
+
 ## TODO
 
 - [ ] Polyploidy

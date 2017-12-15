@@ -208,31 +208,8 @@
   generations it returns nil. Print reports each generation.
   --
   Takes one argument: a map containing the core parameters to
-  push-gp. The map's keys should include:
-   - population-size (an integer)
-   - max-generations (an integer)
-   - testcases (a list of test cases)
-   - inputses (a list of inputses (see README terminolog: inputs))
-   - program-arity (the number of inputs your evolved program takes)
-   - instructions (a list of instructions)
-   - literals (a list of literals)
-   - instruction-heat (map of instruction to heat or single value)
-   - literal-heat (map of literal to heat or single value)
-   - instruction-arities (a hash of symbols to integers, where the symbols refer to instructions)
-   - number-inputs (the number of inputs the program will take)
-   - max-initial-program-size (max size of randomly generated programs)
-   - min-initial-program-size (minimum size of randomly generated programs)
-   - initial-percent-literals (how much of randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
-   - evolution-config (a map)
-     - decrease-heat-with-age (bool, whether or not to increase the heat of genes with age)
-     - selection (fn that takes a population and returns an individual, or a percentage map like :percentages of such fns)
-     - crossover (fn that takes two programs/genomes and returns a program/genome, or a percentage map like :percentages of such fns)
-     - percentages (list of tuples w/ an integer % in position 0 and a keyword in position 1)
-     - deletion-percent (an integer from 0 to 100)
-     - addition-percent (an integer from 0 to 100)
-     - mutation-percent (an integer from 0 to 100)
-     - individual-transform (a function that takes an individual and returns an individual. Applied before select-and-vary)
-   - behavioral-diversity (a function to calculate behavioral diversity given a population)"
+  push-gp. See README.md for specifics.
+   "
   [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals instruction-heat literal-heat max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform instruction-arities]}]
   (start-plotter)
   (let [end-action (get evolution-config :end-action (fn [_] ))
