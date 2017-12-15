@@ -1,5 +1,6 @@
 (ns darwin.gp
   (:require [darwin.push.literals :refer [ins]])
+  (:require [darwin.utilities :refer :all])
   (:require [darwin.push.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
   (:require [darwin.gp.mutation :refer :all])
@@ -9,10 +10,16 @@
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
 
+(defn print-many-ln
+  "Prints args to stdout in a coder-friendly way."
+  [& args]
+  (println (apply str (map print-str args))))
+
 (defn to-integer
   "Takes literally anything and converts it into an integer"
   [v]
   (cond (keyword? v) (to-integer (name v))
+        (symbol? v) (to-integer (str v))
         (string? v) (bigint v)
         :else v))
 
@@ -35,6 +42,10 @@
                  (if (< perc-remaining perc) ;; FIXME: is this correct?
                    v
                    (recur (- perc-remaining perc) (rest percs))))))))
+
+(defn percentage-map-choice
+  [percentable map default-key]
+  ((percentaged-or-not percentable default-key) map))
 
 (defn select-and-vary
   "Selects parent(s) from population and varies them, returning
@@ -60,21 +71,11 @@
                            (:mutation-percent config)
                            (select)))})
 
-(defn best-n-errors
-  "Given a population and some number n, returns the
-   lowest n errors in population"
-  [pop n]
-  (take n (sort (map :total-error pop))))
-
-(defn print-many-ln
-  "Prints args to stdout in a coder-friendly way."
-  [& args]
-  (println (apply str (map print-str args))))
-
 (defn report
   "Reports information on a generation."
   [population generation-num behavioral-diversity-func]
     (let [best (best-overall-fitness population)
+          best-twenty (take 20 (sort (map :total-error population)))
           behavioral-diversity (if (nil? behavioral-diversity-func)
                                  -1
                                  (behavioral-diversity-func population))
@@ -102,7 +103,7 @@
        (print-many-ln " -> total error: " (:total-error best))
        (print-many-ln " -> size: " (count (:program best)))
        ;(print-many-ln " -> exit state: " (:exit-states best))
-       (print-many-ln "Best 20 errors: " (best-n-errors population 20))
+       (print-many-ln "Best 20 errors: " best-twenty)
        (print-many-ln "Behavioral Diversity: " behavioral-diversity))))
 
 (defn population-has-solution
@@ -123,13 +124,36 @@
         xformed (if (nil? xform) ran (xform ran))]
     (test-individual testcases xformed)))
 
+(defn make-fn-new-element
+  [instructions literals inputs config]
+  (let [event-map { :instruction instructions :literal literals :input inputs }]
+    #(rand-nth (percentage-map-choice config event-map :instruction))))
+
 (defn generate
   "Generate a new individual."
-  [genomic instructions literals percent-literals max-size min-size]
-  (let [k (if genomic :genome :program)]
+  [genomic new-element config]; instructions literals inputs config]
+  (let [max-size (get config :maximum-size 100)
+        min-size (get config :minimum-size 20)
+        k (if genomic :genome :program)]
     {k (repeatedly
          (+ (Math/round (* (- max-size min-size) (rand))) min-size)
-         #(binary-rand-nth percent-literals literals instructions))}))
+         new-element)}))
+
+(defn get-heat
+  [v heatinfo]
+  (cond
+    (map? heatinfo) (get heatinfo v 0)
+    (integer? heatinfo) heatinfo
+    :else 0))
+
+(defn prepare-valuelist
+  "IN: genomic flag
+       heatmap
+       aritymap
+       list of values to be used in push
+   OUT: prepared for use with GP"
+  [genomic heat arity values]
+  (if genomic (map #(gene-wrap (get arity % 0) (get-heat % heat) %) values) values))
 
 (defn make-generations
   "Returns a lazily-evaluated, Aristotelian infinite list
@@ -139,26 +163,19 @@
    instr-arities
    instrs
    literals
+   inputs
    instr-heat
    literal-heat
-   percent-literals
-   max-initial-program-size
-   min-initial-program-size
+   input-heat
+   generation-config
    inputses
    testcases
    evolution-config]
-  (let [wrap #(evaluate-individual
-                inputses
-                testcases
-                (:individual-transform evolution-config)
-                %)
-        get-heat (fn [v heatinfo]
-                   (cond
-                     (map? heatinfo) (get heatinfo v 0)
-                     (integer? heatinfo) heatinfo
-                     :else 0))
-        instrs-universal (if genomic (map #(gene-wrap (get instr-arities % 0) (get-heat % instr-heat) %) instrs) instrs)
-        lits-universal (if genomic (map #(gene-wrap 0 (get-heat % literal-heat) %) literals) literals)
+  (let [xform (:individual-transform evolution-config)
+        wrap #(evaluate-individual inputses testcases xform %)
+        instrs-universal (prepare-valuelist genomic instr-heat instr-arities instrs)
+        lits-universal (prepare-valuelist genomic literal-heat {} literals)
+        inputs-universal (prepare-valuelist genomic input-heat {} inputs)
         should-age-heat (get evolution-config :decrease-heat-by-age false)
         selection-f (percentaged-or-not
                       (:selection evolution-config)
@@ -168,7 +185,16 @@
         addition (percentaged-or-not (:addition evolution-config) uniform-addition)
         mutation (percentaged-or-not (:mutation evolution-config) uniform-mutation)
         op (percentaged-or-not (:percentages evolution-config) :mutation)
-        new-element #(binary-rand-nth percent-literals lits-universal instrs-universal)] ;; :mutation, :deletion, :addition, or :crossover
+        new-element (make-fn-new-element
+                      instrs-universal
+                      lits-universal
+                      inputs-universal
+                      (:new-element evolution-config))
+        new-element-generation (make-fn-new-element
+                                 instrs-universal
+                                 lits-universal
+                                 inputs-universal
+                                 (:composition generation-config))]
     (iterate
      (fn [population]
        (let [select #(if genomic
@@ -195,39 +221,45 @@
         #(wrap
           (generate
             genomic
-            instrs-universal
-            lits-universal
-            percent-literals
-            max-initial-program-size
-            min-initial-program-size))))))
+            new-element-generation
+            generation-config))))))
 
 (defn run-gp
-  "Initializes a population, and then repeatedly
-  generates and evaluates new populations. Stops and returns :SUCCESS
-  if it finds an individual with 0 error, or if it exceeds the maximum
-  generations it returns nil. Print reports each generation.
-  --
-  Takes one argument: a map containing the core parameters to
-  push-gp. See README.md for specifics.
-   "
-  [{:keys [population-size max-generations testcases error-function instructions inputses program-arity literals instruction-heat literal-heat max-initial-program-size min-initial-program-size initial-percent-literals genomic evolution-config behavioral-diversity individual-transform instruction-arities]}]
+  "Initializes a population, and then performs the genetic programming
+   algorithm upon the population. See README.md (Configuration section)
+   Stops and returns :SUCCESS if it finds an individual with 0 error,
+   or if it exceeds the maximum generations it returns nil. Print
+   reports each generation."
+  [{:keys [population-size
+           max-generations
+           testcases
+           inputses
+           program-arity
+           instructions
+           literals
+           instruction-heat
+           literal-heat
+           input-heat
+           generation
+           genomic
+           evolution-config
+           behavioral-diversity
+           individual-transform
+           instruction-arities]}]
   (start-plotter)
-  (let [end-action (get evolution-config :end-action (fn [_] ))
-        all-inputs (take program-arity ins) ; generate in1, in2, in3, ...
-        gens (take
+  (let [gens (take
                max-generations
                (make-generations
                  genomic
                  population-size
                  instruction-arities
-                 (concat all-inputs instructions)
-                 literals ;; THINK ON: should inputs be considered literals
-                          ;; or instructions?
+                 instructions
+                 literals
+                 (take program-arity ins)
                  instruction-heat
                  literal-heat
-                 initial-percent-literals
-                 max-initial-program-size
-                 min-initial-program-size
+                 input-heat
+                 generation
                  inputses
                  testcases
                  evolution-config))
@@ -238,6 +270,6 @@
                        (report %2 (inc %1) behavioral-diversity)
                        %2)
                      gens))]
-    
-    (end-action (reduce (fn [success ind] (if (zero? (:total-error ind)) (reduced (first (:exit-states ind))) ind)) nil solution))
+    ((get evolution-config :end-action (fn [_] ))
+      (filter #(zero? (:total-error %)) solution))
     (if (nil? solution) nil :SUCCESS)))

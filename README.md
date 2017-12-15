@@ -80,8 +80,8 @@ Virtual machine
       :exit-states   ; the Push states reached by running the individual's :program on a series of inputses
     }
 
-		All of these keys are available to crossover/selection operators and are guaranteed before
-                select-and-vary in darwin.gp is called.
+		All of these keys are available to crossover & selection operators and are
+		guaranteed before `darwin.gp/select-and-vary` is called.
 
 *genome* -> A list of genes
 
@@ -107,19 +107,24 @@ Problems can be easily configured. Below is a commented non-functional example:
       :testcases       '(...)            ; list of testcases
       :inputses	       '((...) ...)      ; list of inputs (see terminology: inputs)
       :program-arity   5                 ; How long each inputs is.
+      :input-heat         { 'in1 5
+      		         'in2 4 }
       :instructions    '(integer_+, ...) ; The instructions a program will use
       :literals        '(1 2 3 4)        ; The literals a program will use
       :instruction-heat { 'integer_+ 5 } ; Heat map for instructions
+      :instruction-arities { 'exec_if 2 } ; Arity map for Plush genes
       :literal-heat     { 4 0
       			  1 2
 			  3 6 }          ; Heat map for literals
-
-      :instruction-arities { 'exec_if 2 } ; Arity map for Plush genes
-      :max-initial-program-size 100 ; max size of randomly generated programs
-      :min-initial-program-size 20  ; minimum size of randomly generated programs
-      :initial-percent-literals 0.6 ; what % randomly generated programs/genomes should be literals, a float from 0.0 to 1.0)
-      :behavioral-diversity (a function to calculate behavioral diversity given a population)
+      :generation {
+        :maximum-size 100 ; max size of randomly generated programs
+	:minimum-size 20  ; minimum size of randomly generated programs
+	:composition      ; percentable with events `:literal`, `:instruction`, and `:input`
+      }
+      :behavioral-diversity (fn [population] ...) ; a fn to calculate behavioral diversity
+      :end-action (fn [individuals] ...)           ; a fn applied to the solution individuals (a list)
       :evolution-config {
+        :new-element                  ; percentable, like :generation's :composition
         :decrease-heat-with-age false ; whether or not to inc the :heat of genes each generation
         :selection                    ; percentable
         :crossover                    ; percentable
@@ -144,7 +149,7 @@ Problems can be easily configured. Below is a commented non-functional example:
   - [ ] SK(I) combinator calculus instructions for all stacks
 - [ ] Stack-agnostic abstract instructions
 - [ ] Constant documentation and refactoring
-- [ ] Separate out input (in1, in2, ...) frequency
+- [x] Separate out input (in1, in2, ...) frequency
 
 ### Symbolic Regression problem
 

@@ -1,5 +1,6 @@
 (ns darwin.gp.mutation
   (:require [darwin.gp.utilities :refer :all])
+  (:require [darwin.utilities :refer :all])
   (:gen-class))
 
 (defn uniform-deletion

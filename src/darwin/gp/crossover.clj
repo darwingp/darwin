@@ -1,4 +1,5 @@
 (ns darwin.gp.crossover
+  (:require [darwin.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
   (:gen-class))
 

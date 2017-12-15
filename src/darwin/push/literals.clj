@@ -11,6 +11,6 @@
         'darwin.push.literals
         (symbol (str "in" %))
         (utilities/make-input-instruction %))))]
-       (println n)
+       (locking *out* (println n))
        n)
     (map inc (range))))

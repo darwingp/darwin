@@ -63,8 +63,7 @@
    applied over 'hot' genes."
   [f]
   (fn [& args]
-;    (println args)
-    (let [avg-gene-heat (avg (map #(get % :heat 0) (apply concat args))); (apply avg-heat (apply concat args)) ;; Damn obvious
+    (let [avg-gene-heat (avg (map #(get % :heat 0) (apply concat args)));; Damn obvious
           hotargs (map (fn [x] (filter #(hot? % avg-gene-heat) x)) args)]
       (insert-hot
         (first args)

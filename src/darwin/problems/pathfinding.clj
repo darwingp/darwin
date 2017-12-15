@@ -3,7 +3,6 @@
   (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.gp.mutation :as mutation])
   (:require [darwin.gp.hotspots :as hotspots])
-  (:require [darwin.gp.utilities :as utils])
   (:require [darwin.utilities :refer :all])
   (:require [darwin.problems.pathfinding.machine :as machine])
   (:require [darwin.problems.pathfinding.instructions :refer :all])
@@ -39,8 +38,8 @@
 (defn score-novelty
   "Takes an individual's paths and returns an aggregate score for those paths"
   [indiv-paths avg-paths]
-  (let [calc-dist (fn [p1 p2] (let [xdif (utils/abs (-' (first p1) (first p2)))
-                                    ydif (utils/abs (-' (second p1) (second p2)))]
+  (let [calc-dist (fn [p1 p2] (let [xdif (abs (-' (first p1) (first p2)))
+                                    ydif (abs (-' (second p1) (second p2)))]
                                     (Math/sqrt (+' (*' xdif xdif) (*' ydif ydif)))))]
     (reduce +'
       (map
@@ -179,6 +178,11 @@
     ; "data/obsfiles/test3.txt"
    ))
 
+(def composition
+  '([0 :input]
+    [50 :instruction]
+    [50 :literal]))
+
 (def configuration
   {:genomic true
    :instructions instructions
@@ -188,9 +192,11 @@
    :testcases (map test-on-map test-maps)
    :max-generations 500
    :population-size 150
-   :initial-percent-literals 0.5
-   :max-initial-program-size 120
-   :min-initial-program-size 100
+   :generation {
+     :maximum-size 120
+     :minimum-size 100
+     :composition composition
+   }
    :evolution-config {:selection (list
                                   [65 novelty-selection]
                                   [15 #(selection/tournament-selection % 30)]
@@ -212,6 +218,9 @@
                       :addition-percent 10
                       :mutation-percent 10
                       :decrease-heat-by-age true
-                      :end-action #(do (machine/final-display % "data/obsfiles/easytest2.txt") (println %))
+                      :end-action #(let [move-stack (first (:exit-states (first %)))]
+                                     (machine/final-display move-stack "data/obsfiles/easytest2.txt")
+                                     (println %))
                       :individual-transform set-exit-states-to-move-stack
+                      :new-element composition
                       }})

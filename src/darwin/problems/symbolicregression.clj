@@ -1,8 +1,8 @@
 (ns darwin.problems.symbolicregression
+  (:require [darwin.utilities :as utils])
   (:require [darwin.gp.selection :as selection])
   (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.gp.mutation :as mutation])
-  (:require [darwin.gp.utilities :as utils])
   (:require [darwin.gp.hotspots :as hotspots])
   (:gen-class))
 
@@ -37,6 +37,9 @@
     'integer_% 0
     'in1 3})
 
+(def input-heat
+  { 'in1 4 })
+
 (def literal-heat
   { 3 4 })
 
@@ -48,12 +51,15 @@
    :literal-heat literal-heat
    :inputses (map list (map #(+ 2 %) (range 10)))
    :program-arity 1
+   :input-heat input-heat
    :testcases (list delta-error)
    :max-generations 500
    :population-size 200
-   :initial-percent-literals 0.2
-   :max-initial-program-size 50
-   :min-initial-program-size 10
+   :generation {:maximum-size 50
+                :minimum-size 10
+                :composition '([20 :literal]
+                               [30 :input]
+                               [50 :instruction])}
    :evolution-config {:crossover (hotspots/wrap crossover/uniform-crossover)
                       :deletion #((hotspots/wrap 
                                    (fn [g] (mutation/uniform-deletion %1 g))) %2)
@@ -67,4 +73,7 @@
                       :deletion-percent 7
                       :addition-percent 7
                       :mutation-percent 7
+                      :new-element '([20 :literal]
+                                     [30 :input]
+                                     [50 :instruction])
                       :end-action (fn [_] (println "Done"))}})
