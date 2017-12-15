@@ -7,6 +7,6 @@
 (defn -main
   "Runs push-gp, giving it a map of arguments."
   [& args]
- ; (run-gp symreg/configuration)
-  (run-gp pathfind/configuration)
+  (run-gp symreg/configuration)
+ ; (run-gp pathfind/configuration)
   )

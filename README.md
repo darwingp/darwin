@@ -1,36 +1,53 @@
 # Darwin
 
-Versatile GP system that supports the evolution of both Push programs and Plush genomes. Specifically
-designed to solve a symbolic regression problem and a pathfinding problem. This was implemented for
-Hamilton College's CPSCI 307 (Genetic Programming) class as taught by professor Thomas Helmuth.
-This is the work of Jack Hay and Nate Symer.
+Versatile GP system that supports the evolution of both Push programs and Plush genomes with a
+lush configuration system and modest complement of genetic programming tools (Plush translation,
+testing, crossover operators, selection operators) and an easy framework for defining your own
+push instructions and operators..
+
+This genetic programming system was originally designed to solve a symbolic regression problem
+and a pathfinding problem for Hamilton College's CPSCI 307 (Genetic Programming) class as taught
+by professor Thomas Helmuth. This was originally the work of Jack Hay and Nate Symer, but we welcome
+you, programmers of thd internet, to contribute!
+
+Darwin also paralellizes both the initial generation of individuals, the evaluation of individuals,
+and applications of genetic operators. Darwin is therefore well-suited to problems that require a
+significant amount computation.
 
 ## Usage
 
-There are two ways to run the main GP function:
+This is a standard clojure project using lein:
 
-1. Load `core.clj` into the interpreter, and then run `(-main)`.
-2. From the command line, run `lein run`.
+     1. `$ lein run`
+     2. Load the project into a REPL (like `lein repl`) and evaluate `(-main)`.
 
-## Operation
-- Pathfinding system will likely require several runs to get a satisfactory start and avoid premature convergence or static size.
+## Problems
 
-## Idea for Expansion
+### Symbolic Regression (src/darwin/problems/symbolicregression.clj)
 
-New GP system: Plush, Behavioral diversity, and Gene-level ALPS (gene-age based genetic hotspots)
+  - Solve a basic symbolic regression
+  - Example problem
+
+### Pathfinding (src/darwin/problems/pathfinding.clj)
+
+  - Original Ideas: Plush, Behavioral diversity, and Gene-level ALPS (gene-age based genetic hotspots)
 
 Car driver
   - Avoid obstacles
   - Continue after crashes
   - Generate a program that builds up instructions in the movement stack
   - Instructions are fed into a "virtual machine"
-  - the evolved program (a driver) is fit to a specific map
+  - the evolved program (a driver) is fit to any map
 
 Virtual machine
  - takes a map & starting car position
  - VM instructions (left, right, back, forward, and turn)
  - metrics (how many instrs used, distance, finished or not, # crashes, location of crashes)
    - These metrics could translate into behavioral diversity
+
+#### Notes
+
+ - Pathfinding will likely require several runs to get a satisfactory start and avoid premature convergence or static size.
 
 ## Terminology
 
@@ -40,15 +57,17 @@ Virtual machine
 	         into the individual being tested.
 
 *inputs* -> A list of input values to be used to create the :input attribute on an individual.
-	    Order matters.
+	    Order matters. The plural is inputses. TODO: better terminology
 
 *gene* -> A hash map containing a key :value which denotes the value of the gene after
           translation and other keys representing epigenetic markers. Some epigenetic markers include:
-  - `:silent` -> if set to true, the gene is not expressed.
-  - `:close` -> the number of close parens to insert after the gene
-  - `:no-op` -> No-ops the gene. The gene still affects genome translation.
-  - `:arity` -> The arity of a push instruction. Affects parenthesization.
-  - `:heat` -> How hot a gene is. 0 is the most hot and aleph-naught is the least hot. This depends on the implementation of `darwin.gp.hotspots/hot?'.
+    {
+      :silent false ; if set to true, the gene is not expressed.
+      :close 0 ; the number of close parens to insert after the gene.
+      :no-op false ; If true, the gene is noop'd. The gene still affects genome translation.
+      :arity 0 ; The arity of a push instruction. Affects parenthesization on the exec stack.
+      :heat 0 ; How hot a gene is. The notion of heat depends on the implementation of `darwin.gp.hotspots/hot?'.
+    }
 
 *individual* -> A map containing the following keys:
 
@@ -71,83 +90,32 @@ Virtual machine
 
 ## TODO
 
-### Both
+- [ ] Polyploidy
+- [ ] More instructions
+  - [x] integer-dup
+  - [x] integer-frombool
+  - [x] boolean-and
+  - [x] boolean-or
+  - [x] exec-if
+  - [ ] exec-dotimes
+  - [x] exec-dup
+  - [ ] SK(I) combinator calculus instructions for all stacks
+- [ ] Stack-agnostic abstract instructions
+- [ ] Constant documentation and refactoring
+- [ ] Separate out input (in1, in2, ...) frequency
 
-- [ ] Polyploidy? (if enough time)
+### Symbolic Regression problem
 
-### Nate (up to virtual machine)
+- [ ] Clean up and make into a presentable, well-documented example
 
-- [x] Add layering to genetic hotspots
-- [x] Genetic Hotspots through :age epigenetic marker - like ALPS
-    - This genetic marker is untouched by translation; instead it's
-          used solely by genetic operators.
-- [x] Adapt GP to use Plush genomes in addition to push programs
-   - [x] Generation operators
-   - [x] Mutation operators
-   - [x] Selection operators
-   - [x] Crossover operators
-   - [x] Rewrite translation
-   - [x] Run testcases on genomic individuals
-   - [x] Make genetic operators genome-aware by making them take individuals rather than programs
-- [x] Implement :behavioral-diversity GP param (func that calcs behavioral diversity)
-- [x] Transforms on individuals
-- [x] Implement percentages for crossover and selection operators
-- [x] Figure out where to run the machine - in tests or in transform
-- [x] Generalize select-and-vary
-  - [x] run-gp parameter for selection operator
-        (a function that takes a population and returns an individual)
-  - [x] run-gp parameter for crossover operator
-        (a function that takes two individuals and returns a new individual)
-  - [x] generalize the percentages of all operators too
-- [x] Figure out how to calculate error of the generated instructions
-  - How can one run provide multiple error values?
-    - currently one run per error value
-- [x] Replace calls to random-choice with rand-nth for clarity
-- [x] Improve terminology and variable names
-  - [x] Things like error vs fitness and :total-error vs overall-error
-  - [x] Document format for individuals, genes, etc.
+### Pathfinding problem
 
-### Jack (virtual machine out)
+- [ ] Document VM instruction format/structure
 
-- [x] Virtual Machine
-  - [x] Virtual machine instructions
-  - [x] Replace noop with zero rotate
-  - [x] Load obstacles from file
-- [x] Allow nested conditional/loops
-- [x] Measure behavior diversity
-  - [x] Figure out how to calculate this based on output from the VM
-  - [x] Implement it!
-  - [x] Angle noise distribution
-- [x] Push instructions - these need to manipulate a stack of VM instructions
-- [x] Novelty, archive
-- [x] Define module under darwin.problems.pathfinding for the driver problem.
-  - [x] Move driver VM to submodules of darwin.problems.pathfinding
+### Testing
 
-NOTE*** After all TODO items are complete, we need to check each other's work.
-
-### Instructions to Implement
-
-- integer-dup
-- integer-frombool
-
-- boolean-and
-- boolean-or
-
-- exec-if
-- exec-dotimes
-- exec-dup
-
-- SK(I) combinator calculus instructions for all stacks?
-
-"move" stack
-- move-rotate -> pushes
-
-### Other
-
-- [ ] Implement CI pipeline strategy
-- [ ] Trace system for maintaining diversity
 - [ ] Mock out random numbers for testing purposes
-   - https://github.com/trystan/random-seed
+   - https://github.com/trystan/random-seed- [ ] Mock
 
 ### Machine specifications
 

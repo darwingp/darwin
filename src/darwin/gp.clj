@@ -1,5 +1,5 @@
 (ns darwin.gp
-  (:require [darwin.push.instructions :refer [ins]])
+  (:require [darwin.push.literals :refer [ins]])
   (:require [darwin.push.utilities :refer :all])
   (:require [darwin.gp.utilities :refer :all])
   (:require [darwin.gp.mutation :refer :all])

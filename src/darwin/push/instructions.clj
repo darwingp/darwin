@@ -2,15 +2,6 @@
   (:require [darwin.push.utilities :refer :all])
   (:gen-class))
 
-;; An infinite list representing inputs in1...in<n>.
-;; The list itself is symbols, and each element has a side
-;; effect of defining the necessary function for it to work.
-(def ins (map (fn [i]
-  (let [sym (symbol (str "in" i))]
-    (intern 'darwin.push.instructions sym (make-input-instruction i))
-    sym))
- (map inc (range))))
-
 (definstr integer_+ [:integer :integer] :integer +')
 (definstr integer_- [:integer :integer] :integer -')
 (definstr integer_* [:integer :integer] :integer *')
@@ -22,7 +13,6 @@
 (definstr integer_> [:integer :integer] :boolean >)
 (definstr integer_< [:integer :integer] :boolean <)
 
-;advanced push instructions
 (definstr integer-dup [:integer] :integer
   (fn [x] [x x]))
 
