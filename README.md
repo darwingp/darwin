@@ -18,8 +18,8 @@ significant amount computation.
 
 This is a standard clojure project using lein:
 
-     1. `$ lein run`
-     2. Load the project into a REPL (like `lein repl`) and evaluate `(-main)`.
+1. `$ lein run`
+2. Load the project into a REPL (like `lein repl`) and evaluate `(-main)`.
 
 ## Problems
 
@@ -56,17 +56,16 @@ Virtual machine
 	      2. A map with a key :error. All non-:error keys are assimilated
 	         into the individual being tested.
 
-*inputs* -> A list of input values to be used to create the :input attribute on an individual.
-	    Order matters. The plural is inputses. TODO: better terminology
+*inputs* -> A list of input values to be used to create the :input attribute on an individual. Order matters. The plural is inputses. TODO: better terminology
 
-*gene* -> A hash map containing a key :value which denotes the value of the gene after
-          translation and other keys representing epigenetic markers. Some epigenetic markers include:
+*gene* -> A hash map containing a key :value which denotes the value of the gene after translation and other keys representing epigenetic markers. Some epigenetic markers include:
+
     {
       :silent false ; if set to true, the gene is not expressed.
-      :close 0 ; the number of close parens to insert after the gene.
-      :no-op false ; If true, the gene is noop'd. The gene still affects genome translation.
-      :arity 0 ; The arity of a push instruction. Affects parenthesization on the exec stack.
-      :heat 0 ; How hot a gene is. The notion of heat depends on the implementation of `darwin.gp.hotspots/hot?'.
+      :close 0      ; the number of close parens to insert after the gene.
+      :no-op false  ; If true, the gene is noop'd. The gene still affects genome translation.
+      :arity 0      ; The arity of a push instruction. Affects parenthesization on the exec stack.
+      :heat 0       ; How hot a gene is. The notion of heat depends on the implementation of `darwin.gp.hotspots/hot?'.
     }
 
 *individual* -> A map containing the following keys:
@@ -80,12 +79,13 @@ Virtual machine
       :exit-states   ; the Push states reached by running the individual's :program on a series of inputses
     }
 
-		All of these keys are available to crossover & selection operators and are
-		guaranteed before `darwin.gp/select-and-vary` is called.
+All of these keys are available to crossover & selection operators and are
+guaranteed before `darwin.gp/select-and-vary` is called.
 
 *genome* -> A list of genes
 
 *population* -> A list of individuals
+
 *generation* -> A population at a given iteration of evolution.
 
 ## Configuration
@@ -93,36 +93,37 @@ Virtual machine
 One more term:
 
 *percentable* -> Either:
-	         1. A list of tuples or a map containing numbered keys that
-                    represent percent probability and values that represent
-		    events that should happen.
-		 2. A single event that should happen every time. Cannot
-		    be a collection
+
+1. A list of tuples or a map containing numbered keys that
+   represent percent probability and values that represent
+   events that should happen.
+2. A single event that should happen every time. Cannot
+   be a collection
 
 Problems can be easily configured. Below is a commented non-functional example:
 
     {
-      :population-size 100               ; integer
-      :max-generations 500               ; integer
-      :testcases       '(...)            ; list of testcases
-      :inputses	       '((...) ...)      ; list of inputs (see terminology: inputs)
-      :program-arity   5                 ; How long each inputs is.
-      :input-heat         { 'in1 5
-      		         'in2 4 }
-      :instructions    '(integer_+, ...) ; The instructions a program will use
-      :literals        '(1 2 3 4)        ; The literals a program will use
-      :instruction-heat { 'integer_+ 5 } ; Heat map for instructions
+      :population-size 100                ; integer
+      :max-generations 500                ; integer
+      :testcases       '(...)             ; list of testcases
+      :inputses        '((...) ...)       ; list of inputs (see terminology: inputs)
+      :program-arity   5                  ; How long each inputs is.
+      :input-heat      { 'in1 5
+                         'in2 4 }
+      :instructions    '(integer_+, ...)  ; The instructions a program will use
+      :literals        '(1 2 3 4)         ; The literals a program will use
+      :instruction-heat { 'integer_+ 5 }  ; Heat map for instructions
       :instruction-arities { 'exec_if 2 } ; Arity map for Plush genes
       :literal-heat     { 4 0
-      			  1 2
-			  3 6 }          ; Heat map for literals
+                          1 2
+                          3 6 }           ; Heat map for literals
       :generation {
         :maximum-size 100 ; max size of randomly generated programs
-	:minimum-size 20  ; minimum size of randomly generated programs
-	:composition      ; percentable with events `:literal`, `:instruction`, and `:input`
+        :minimum-size 20  ; minimum size of randomly generated programs
+        :composition      ; percentable with events `:literal`, `:instruction`, and `:input`
       }
       :behavioral-diversity (fn [population] ...) ; a fn to calculate behavioral diversity
-      :end-action (fn [individuals] ...)           ; a fn applied to the solution individuals (a list)
+      :end-action (fn [individuals] ...)          ; a fn applied to the solution individuals (a list)
       :evolution-config {
         :new-element                  ; percentable, like :generation's :composition
         :decrease-heat-with-age false ; whether or not to inc the :heat of genes each generation
