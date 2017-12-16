@@ -1,6 +1,11 @@
 (ns darwin.utilities
   (:gen-class))
 
+(defn print-many-ln
+  "Prints args to stdout in a coder-friendly way."
+  [& args]
+  (println (apply str (map print-str args))))
+
 (defn prepeatedly
   "Like repeatedly, but parallel."
   [n fn]

@@ -122,7 +122,7 @@ Problems can be easily configured. Below is a commented non-functional example:
         :minimum-size 20  ; minimum size of randomly generated programs
         :composition      ; percentable with events `:literal`, `:instruction`, and `:input`
       }
-      :behavioral-diversity (fn [population] ...) ; a fn to calculate behavioral diversity
+      :behavioral (fn [population] ...) ; a fn to calculate behavioral diversity
       :end-action (fn [individuals] ...)          ; a fn applied to the solution individuals (a list)
       :evolution-config {
         :new-element                  ; percentable, like :generation's :composition

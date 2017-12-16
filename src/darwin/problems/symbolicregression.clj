@@ -4,6 +4,7 @@
   (:require [darwin.gp.crossover :as crossover])
   (:require [darwin.gp.mutation :as mutation])
   (:require [darwin.gp.hotspots :as hotspots])
+  (:require [darwin.gp.diversity :as diversity])
   (:gen-class))
 
 (def penalty (reduce *' (repeat 20 (bigint 1000))))
@@ -35,7 +36,7 @@
     'integer_- 1
     'integer_* 6
     'integer_% 0
-    'in1 3})
+    'in1 3 })
 
 (def input-heat
   { 'in1 4 })
@@ -55,11 +56,12 @@
    :testcases (list delta-error)
    :max-generations 500
    :population-size 200
+   :diversity #(diversity/genomic % diversity/manhattan-distance)
    :generation {:maximum-size 50
                 :minimum-size 10
                 :composition '([20 :literal]
-                               [30 :input]
-                               [50 :instruction])}
+                               [20 :input]
+                               [60 :instruction])}
    :evolution-config {:crossover (hotspots/wrap crossover/uniform-crossover)
                       :deletion #((hotspots/wrap 
                                    (fn [g] (mutation/uniform-deletion %1 g))) %2)
@@ -74,6 +76,6 @@
                       :addition-percent 7
                       :mutation-percent 7
                       :new-element '([20 :literal]
-                                     [30 :input]
-                                     [50 :instruction])
+                                     [20 :input]
+                                     [60 :instruction])
                       :end-action (fn [_] (println "Done"))}})

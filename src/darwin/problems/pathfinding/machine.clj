@@ -212,6 +212,7 @@
 ;; POPULATION DIVERSITY
 ;;
 
+;; TODO: document and improve
 (defn calculate-behavior-div
   "this function takes in all the lists of instructions
   for a generation and determines a behavioral diversity value"

@@ -7,13 +7,9 @@
   (:require [darwin.gp.selection :refer :all])
   (:require [darwin.gp.crossover :refer :all])
   (:require [darwin.gp.hotspots :refer :all])
+  (:require [darwin.gp.diversity :as diversity])
   (:require [darwin.graphics.plotter :refer :all])
   (:gen-class))
-
-(defn print-many-ln
-  "Prints args to stdout in a coder-friendly way."
-  [& args]
-  (println (apply str (map print-str args))))
 
 (defn to-integer
   "Takes literally anything and converts it into an integer"
@@ -73,15 +69,15 @@
 
 (defn report
   "Reports information on a generation."
-  [population generation-num behavioral-diversity-func]
+  [population generation-num diversity-func]
     (let [best (best-overall-fitness population)
           best-twenty (take 20 (sort (map :total-error population)))
-          behavioral-diversity (if (nil? behavioral-diversity-func)
-                                 -1
-                                 (behavioral-diversity-func population))
+          diversity (if (nil? diversity-func)
+                        -1
+                        (diversity-func population))
           current-state {
                          :points-fit (:total-error best)
-                         :points-behavior behavioral-diversity
+                         :points-behavior diversity
                          :average-fitness (:total-error best)
                          :best-size (count (:program best))
                          :generation generation-num
@@ -102,9 +98,9 @@
        (print-many-ln " -> errors: " (:errors best))
        (print-many-ln " -> total error: " (:total-error best))
        (print-many-ln " -> size: " (count (:program best)))
-       ;(print-many-ln " -> exit state: " (:exit-states best))
+       ;(print-many-ln " -> exit states: " (:exit-states best))
        (print-many-ln "Best 20 errors: " best-twenty)
-       (print-many-ln "Behavioral Diversity: " behavioral-diversity))))
+       (print-many-ln "Population Diversity: " diversity))))
 
 (defn population-has-solution
   "Returns true if population has a program with zero error.
@@ -243,7 +239,7 @@
            generation
            genomic
            evolution-config
-           behavioral-diversity
+           diversity
            individual-transform
            instruction-arities]}]
   (start-plotter)
@@ -267,7 +263,7 @@
                    population-has-solution
                    (map-indexed
                      #(do
-                       (report %2 (inc %1) behavioral-diversity)
+                       (report %2 (inc %1) diversity)
                        %2)
                      gens))]
     ((get evolution-config :end-action (fn [_] ))
